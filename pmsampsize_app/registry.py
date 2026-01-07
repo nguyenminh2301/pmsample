@@ -28,10 +28,10 @@ class MethodRegistry:
     def __init__(self):
         self._methods: Dict[str, MethodSpec] = {}
         self._categories = {
-            "A": {"en": "Quick / Basic", "vi": "Nhanh / Cơ bản"},
-            "B": {"en": "Prognostic Factor (Power)", "vi": "Yếu tố Tiên lượng (Power)"},
-            "C": {"en": "Prediction Model Development", "vi": "Phát triển Mô hình Dự báo"},
-            "D": {"en": "Validation / Updating", "vi": "Thẩm định / Cập nhật"},
+            "A": {"en": "A. Quick Tools", "vi": "Nhanh / Cơ bản"},
+            "B": {"en": "B. Prognostic Factors", "vi": "Yếu tố Tiên lượng (Power)"},
+            "C": {"en": "C. Prediction Models", "vi": "Phát triển Mô hình Dự báo"},
+            "D": {"en": "D. Validation", "vi": "Thẩm định / Cập nhật"},
         }
 
     def register(self, spec: MethodSpec):
