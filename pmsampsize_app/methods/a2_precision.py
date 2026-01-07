@@ -31,3 +31,7 @@ def render_ui(T):
             st.download_button("Download CSV", df.to_csv(index=False).encode('utf-8'), "precision_results.csv")
         except Exception as e:
             st.error(f"Error: {e}")
+
+    st.markdown("---")
+    with st.expander(T["formulas_header"]):
+        st.markdown(T["a2_content_md"])

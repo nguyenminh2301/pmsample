@@ -134,51 +134,8 @@ def render_intro_page(lang):
     
     st.title(T["title"])
     
-    st.markdown(f"""
-    ### {T.get('intro_heading', 'Welcome')}
-    
-    This tool helps researchers calculate the minimum sample size required for clinical prediction models, specifically focusing on **Prognosis** and **Prediction Modeling**.
-    """)
-    
-    # Dynamic Method List
-    # registry and MethodStatus are already imported globally
-    
-    st.markdown("#### 📚 Available Methods")
-    
-    # Define Category Descriptions
-    cat_descs = {
-        "A": "Quick Tools: Simple EPV rules and Confidence Interval precision.",
-        "B": "Prognostic Factors: Power calculations for Logistic and Cox regression.",
-        "C": "Prediction Models: Validated methods (Riley et al.) and Simulation (Bayesian/Freq).",
-        "D": "Validation: External validation sizing and updating methods."
-    }
-    
-    # Available (A, B, C)
-    for cat in ["A", "B", "C"]:
-        st.markdown(f"**{cat}. {cat_descs[cat]}**")
-        cat_methods = registry.get_by_category(cat)
-        for m in cat_methods:
-            title = m.title_vi if lang == "VI" else m.title_en
-            desc = m.description_vi if lang == "VI" else m.description_en
-            st.markdown(f"• **{title}**: {desc}")
-
-    st.markdown("#### 🚧 Coming Soon")
-    
-    # Coming Soon (D)
-    st.markdown(f"**D. {cat_descs['D']}**")
-    cat_methods_d = registry.get_by_category("D")
-    for m in cat_methods_d:
-        title = m.title_vi if lang == "VI" else m.title_en
-        st.markdown(f"• {title}")
-
-    st.markdown(f"""
-    ---
-    #### ⚠️ Disclaimer
-    {T['footer_disclaimer']}
-    
-    #### 📬 Contact
-    {T['footer_author']}
-    """)
+    # Render detailed markdown content
+    st.markdown(T.get("intro_complete_md", "Introduction content missing."))
     
     st.info("👈 Select a method from the sidebar to begin.")
 
