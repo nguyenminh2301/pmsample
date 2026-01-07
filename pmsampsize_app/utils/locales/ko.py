@@ -645,4 +645,213 @@ $$
 3. Riley RD, Van Calster B, Collins GS. *A note on estimating the Cox–Snell ($R^2$) from a reported C statistic (AUROC) to inform sample size calculations for developing a prediction model with a binary outcome.* Statistics in Medicine. 2021.
 4. Harrell FE Jr, Lee KL, Mark DB. *Multivariable prognostic models: issues in developing models, evaluating assumptions and adequacy, and measuring and reducing errors.* Statistics in Medicine. 1996.
 """,
+        "c6_content_md": """
+## C6: Development Simulation (Frequentist; custom DGM)
+
+### What this method is
+
+C6 is a **simulation-based sample size planning** approach for **prediction model development** (binary outcome), inspired by the philosophy of **samplesizedev** and broader simulation-based design principles.
+
+Instead of relying on a single analytical formula, C6 asks:
+
+> “If we repeatedly develop the model using the planned approach on datasets of size (N), how often will the model meet pre-specified performance criteria on new data?”
+
+It therefore targets **expected performance** (and/or probability of acceptable performance) under a **data-generating mechanism (DGM)** that represents your anticipated clinical population.
+
+---
+
+## When to use
+
+Use C6 when:
+
+* You want a planning method aligned with “**simulate what you will do**,” especially when:
+
+  * predictors may be correlated,
+  * you include non-linear terms or interactions,
+  * event rates are modest or uncertain,
+  * you want criteria based on **calibration** and **discrimination**.
+* You can specify a reasonable DGM using local data or the literature.
+* You are comfortable with simulation and want a more flexible alternative to purely analytical sizing.
+
+## When NOT to use (or use with caution)
+
+Avoid relying on C6 alone when:
+
+* You cannot justify a plausible DGM (predictor distribution, correlations, effect sizes).
+* You do not have computational budget (simulation can be expensive).
+* You plan highly data-adaptive ML pipelines (feature selection, complex tuning) without explicitly simulating the full pipeline (C6 must reflect the actual pipeline to be valid).
+* The target population is heterogeneous across hospitals/centers and you are not simulating clustering/case-mix shifts.
+
+---
+
+# Overview of the algorithm
+
+For each candidate sample size (N), simulate (R) development datasets, fit the planned model, evaluate it on “new data,” and summarize performance.
+
+### Step 1 — Choose a DGM
+
+Define how predictors (X) and outcomes (Y) are generated.
+
+Typical binary-outcome DGM:
+[
+Y \mid X \sim \\text{Bernoulli}(\\pi), \\qquad
+\\pi = \\text{logit}^{-1}(\\eta),
+]
+[
+\\eta = \\beta_0 + \\sum_{j=1}^{P}\\beta_j f_j(X_j),
+]
+where:
+
+* (P) is the **number of parameters/df** used in the fitted model,
+* (f_j(\\cdot)) represent coding choices (linear term, spline basis, dummy coding, etc.).
+
+To achieve a target event rate (p), choose (\\beta_0) so that:
+[
+\\mathbb{E}[\\pi] = p.
+]
+In practice, (\\beta_0) is found by numerical root-finding using Monte Carlo draws from (X).
+
+### Step 2 — Generate a development dataset
+
+For replicate (r):
+
+* Simulate (X^{(r)}) of size (N) from the chosen predictor distribution (with specified correlations).
+* Simulate (Y^{(r)}) from the Bernoulli model above.
+
+### Step 3 — Fit the development model
+
+Fit the planned logistic regression model:
+[
+\\widehat{\\eta} = \\widehat{\\beta}*0 + \\sum*{j=1}^{P}\\widehat{\\beta}_j f_j(X_j).
+]
+**Important:** Simulation must match your intended development strategy (e.g., penalization, pre-specified terms). If separation/non-convergence occurs, a ridge-penalized fallback is often used (and should be counted and reported).
+
+### Step 4 — Evaluate on new data
+
+Generate an independent test set (size (N_{\\text{test}}), often large such as 5000–10000) from the same DGM and compute:
+
+**(a) Discrimination (AUC / C-statistic)**
+[
+\\mathrm{AUC}=\\Pr(\\widehat{\\eta}_1 > \\widehat{\\eta}_0),
+]
+the probability that a randomly selected case has a higher predicted risk than a non-case.
+
+**(b) Calibration slope**
+Estimate (b) from a calibration model on the test set:
+[
+\\text{logit}(Y) = a + b \\cdot \\text{logit}(\\widehat{p}),
+]
+or equivalently using the linear predictor:
+[
+\\text{logit}(Y) = a + b \\cdot \\widehat{\\eta}.
+]
+Here, (b\\approx 1) indicates good calibration; (b<1) suggests overfitting (predictions too extreme).
+
+### Step 5 — Define pass/fail criteria and compute success rates
+
+Across (R) simulations for each (N), compute:
+
+* Mean calibration slope:
+  [
+  \\overline{b} = \\frac{1}{R}\\sum_{r=1}^R b^{(r)}.
+  ]
+* Probability slope is within an acceptable range:
+  [
+  \\widehat{\\Pr}(b \\in [L,U]) = \\frac{1}{R}\\sum_{r=1}^R \\mathbf{1}{b^{(r)}\\in[L,U]}.
+  ]
+* Mean AUC:
+  [
+  \\overline{\\mathrm{AUC}}=\\frac{1}{R}\\sum_{r=1}^R \\mathrm{AUC}^{(r)}.
+  ]
+
+A candidate (N) is “acceptable” if all selected criteria are met, e.g.:
+
+* (\\overline{b} \\ge 0.90)
+* (\\widehat{\\Pr}(0.9 \\le b \\le 1.1) \\ge 0.80)
+* (\\overline{\\mathrm{AUC}} \\ge \\mathrm{AUC}_{\\text{target}})
+
+Choose the **smallest** (N) that passes.
+
+---
+
+# Inputs in the app (where to find them, typical values)
+
+### 1) Outcome prevalence / event rate (p)
+
+**What it is:** expected proportion of events in the development cohort.
+**Where to get it:** local hospital incidence/prevalence (best), registry data, or prior studies in similar settings.
+**Typical planning ranges:** 5%–15% are common in many clinical contexts (but vary widely).
+**Tip:** If uncertain, run **sensitivity analysis** over a plausible range.
+
+### 2) Number of predictor parameters (df) (P)
+
+**What it is:** total degrees of freedom (excluding intercept), including:
+
+* categorical dummies,
+* spline bases,
+* interactions,
+* any additional engineered terms.
+  **Where to get it:** your *final* planned model specification (TRIPOD-style pre-specification).
+  **Typical values:** 10–30 df are common; higher requires stronger evidence and larger samples.
+
+### 3) Target mean AUC (Mode A)
+
+**What it is:** expected discrimination on new data (optimism-adjusted).
+**Where to get it:** prior models in similar populations, pilot data, or published AUCs (prefer externally validated AUC).
+**Typical values:** 0.70–0.85 are common; >0.90 is unusual and often optimistic.
+
+### 4) Candidate sample sizes (N)
+
+Provide a grid (e.g., 1000, 1500, 2000, 3000, 5000).
+**Tip:** include a smaller and larger value to ensure the pass/fail threshold is crossed.
+
+### 5) Number of simulations per (N): (R)
+
+**Interpretation:** Monte Carlo replications.
+
+* Demo: (R \\approx 200) (fast, higher Monte Carlo error)
+* Final: (R \\ge 1000) (more stable)
+  Monte Carlo standard error for a pass probability (\\hat{p}) is:
+  [
+  \\mathrm{MCSE}=\\sqrt{\\frac{\\hat{p}(1-\\hat{p})}{R}}.
+  ]
+  Example: if (\\hat{p}=0.8) and (R=200), MCSE ≈ 0.028.
+
+### 6) Performance criteria (Pass/Fail)
+
+* **Mean calibration slope ≥ 0.9**
+  (typical overfitting control threshold)
+* **Pr(0.9 ≤ slope ≤ 1.1) ≥ 80%**
+  (typical “acceptable calibration” probability threshold)
+* **Mean AUC ≥ target**
+  (discrimination target)
+
+**Where to get thresholds:** practice guidelines, prior studies, and what is clinically acceptable.
+**Common conventions:** slope range 0.90–1.10 and assurance 0.80 are frequently used for planning; use 0.90 assurance for higher certainty.
+
+---
+
+# Strengths and weaknesses
+
+**Strengths**
+
+* Flexible: accommodates correlations, non-linear terms, and realistic modeling choices.
+* Directly targets new-data performance and calibration behavior.
+* Naturally supports sensitivity analyses.
+
+**Weaknesses**
+
+* Results depend on DGM assumptions (garbage in → garbage out).
+* Computationally intensive.
+* Must simulate the full intended modeling pipeline; otherwise results can be misleading.
+
+---
+
+## Key references (2–5)
+
+1. Pavlou M, Ambler G, Seaman SR, et al. *How to develop a more accurate risk prediction model when there are few events.* BMJ. 2015.
+2. Riley RD, Snell KIE, Ensor J, et al. *Minimum sample size required for developing a multivariable prediction model: Part II—binary and time-to-event outcomes.* Statistics in Medicine. 2019.
+3. Pavlou M, et al. *Methodology and software for simulation-based sample size calculation in prediction modeling* (sampsize development/related work). Statistics in Medicine. 2021.
+4. Steyerberg EW. *Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating.* 2nd ed. Springer. 2019.
+""",
 }

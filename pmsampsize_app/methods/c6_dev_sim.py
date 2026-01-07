@@ -15,6 +15,9 @@ def render_ui(T):
     st.header(T["method6_tab"])
     st.info(T["dev_sim_intro"])
     
+    with st.expander(T["formulas_header"]):
+        st.markdown(T["c6_content_md"])
+    
     mode = st.radio(T["mode"], [T["dev_mode_simple"], T["dev_mode_custom"]], horizontal=True, key="dev_mode")
     is_simple = mode == T["dev_mode_simple"]
     

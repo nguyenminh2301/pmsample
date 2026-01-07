@@ -646,4 +646,183 @@ $$
 3. Riley RD, Van Calster B, Collins GS. *A note on estimating the Cox–Snell ($R^2$) from a reported C statistic (AUROC) to inform sample size calculations for developing a prediction model with a binary outcome.* Statistics in Medicine. 2021.
 4. Harrell FE Jr, Lee KL, Mark DB. *Multivariable prognostic models: issues in developing models, evaluating assumptions and adequacy, and measuring and reducing errors.* Statistics in Medicine. 1996.
 """,
+        "c6_content_md": """
+## C6: Mô phỏng phát triển mô hình (Frequentist; DGM tùy biến) 
+
+### Phương pháp này là gì?
+
+C6 là phương pháp **ước tính cỡ mẫu bằng mô phỏng** cho **xây dựng mô hình dự báo** (kết cục nhị phân), theo triết lý gần với **samplesizedev** và các hướng dẫn mô phỏng trong prediction modeling.
+
+Thay vì một công thức đóng, C6 trả lời câu hỏi:
+
+> “Nếu lặp lại nhiều lần quá trình xây dựng mô hình trên dữ liệu cỡ mẫu (N), mô hình có đạt tiêu chí hiệu năng mong muốn trên dữ liệu mới với xác suất đủ cao không?”
+
+Do đó C6 nhắm tới **hiệu năng kỳ vọng** (và/hoặc xác suất đạt hiệu năng chấp nhận được) dưới một **cơ chế sinh dữ liệu (DGM)** mô tả quần thể lâm sàng dự kiến.
+
+---
+
+## Khi nào nên dùng
+
+Dùng C6 khi:
+
+* Muốn “**mô phỏng đúng cách bạn sẽ làm**”, đặc biệt khi:
+
+  * biến dự báo tương quan,
+  * có spline/phi tuyến, tương tác,
+  * tỷ lệ biến cố vừa/không chắc,
+  * muốn tiêu chí dựa trên **calibration** và **discrimination**.
+* Có thể mô tả DGM hợp lý dựa trên dữ liệu bệnh viện hoặc y văn.
+* Chấp nhận chạy mô phỏng và cần phương pháp linh hoạt hơn công thức phân tích.
+
+## Khi nào không nên dùng (hoặc cần thận trọng)
+
+Không nên chỉ dựa vào C6 khi:
+
+* Không biện minh được DGM (phân bố biến, tương quan, hiệu ứng).
+* Hạn chế tài nguyên tính toán.
+* Pipeline phát triển mô hình mang tính “data-adaptive” phức tạp (chọn biến/tuning) nhưng không mô phỏng đầy đủ pipeline đó.
+* Quần thể đích khác biệt mạnh theo trung tâm/case-mix nhưng mô phỏng không phản ánh cụm/khác biệt.
+
+---
+
+# Quy trình mô phỏng (tổng quan)
+
+### Bước 1 — Chọn DGM
+
+[
+Y \mid X \sim \\text{Bernoulli}(\\pi), \\qquad
+\\pi = \\text{logit}^{-1}(\\eta),
+]
+[
+\\eta = \\beta_0 + \\sum_{j=1}^{P}\\beta_j f_j(X_j),
+]
+trong đó (P) là **df**, còn (f_j(\\cdot)) là cách mã hóa (tuyến tính, spline, dummy…).
+
+Chọn (\\beta_0) để đạt tỷ lệ biến cố mục tiêu (p):
+[
+\\mathbb{E}[\\pi] = p.
+]
+(Trong thực hành dùng root-finding dựa trên mô phỏng (X).)
+
+### Bước 2 — Sinh dữ liệu phát triển
+
+Với mỗi lần mô phỏng (r):
+
+* Sinh (X^{(r)}) kích thước (N),
+* Sinh (Y^{(r)}) theo Bernoulli ở trên.
+
+### Bước 3 — Fit mô hình phát triển
+
+[
+\\widehat{\\eta} = \\widehat{\\beta}*0 + \\sum*{j=1}^{P}\\widehat{\\beta}_j f_j(X_j).
+]
+Nếu xảy ra separation/không hội tụ, thường dùng ridge-penalized fallback và báo cáo tỷ lệ xảy ra.
+
+### Bước 4 — Đánh giá trên dữ liệu mới
+
+Sinh tập test độc lập (thường (N_{\\text{test}}) lớn 5000–10000) và tính:
+
+**(a) AUC**
+[
+\\mathrm{AUC}=\\Pr(\\widehat{\\eta}_1 > \\widehat{\\eta}_0).
+]
+
+**(b) Calibration slope**
+Fit mô hình hiệu chỉnh:
+[
+\\text{logit}(Y) = a + b \\cdot \\text{logit}(\\widehat{p})
+]
+hoặc:
+[
+\\text{logit}(Y) = a + b \\cdot \\widehat{\\eta}.
+]
+Trong đó (b\\approx 1) là tốt; (b<1) thường gợi ý overfitting.
+
+### Bước 5 — Tiêu chí đạt/không đạt và chọn (N)
+
+Tóm tắt theo (R) lần mô phỏng:
+
+[
+\\overline{b} = \\frac{1}{R}\\sum_{r=1}^R b^{(r)},
+\\quad
+\\widehat{\\Pr}(b \\in [L,U]) = \\frac{1}{R}\\sum_{r=1}^R \\mathbf{1}{b^{(r)}\\in[L,U]},
+]
+[
+\\overline{\\mathrm{AUC}}=\\frac{1}{R}\\sum_{r=1}^R \\mathrm{AUC}^{(r)}.
+]
+
+Một (N) đạt yêu cầu nếu thỏa tất cả tiêu chí đã chọn (ví dụ):
+
+* (\\overline{b} \\ge 0.90)
+* (\\widehat{\\Pr}(0.9 \\le b \\le 1.1) \\ge 0.80)
+* (\\overline{\\mathrm{AUC}} \\ge \\mathrm{AUC}_{\\text{target}})
+
+Chọn (N) nhỏ nhất đạt.
+
+---
+
+# Chú giải đầu vào (tìm ở đâu, nên chọn bao nhiêu)
+
+### 1) Tỷ lệ biến cố (p)
+
+**Lấy ở đâu:** số liệu bệnh viện/đoàn hệ gần nhất; nếu thiếu dùng y văn.
+**Khoảng hay dùng khi lập kế hoạch:** 5%–15% (tùy bệnh).
+**Khuyến nghị:** chạy độ nhạy theo khoảng plausible.
+
+### 2) Số tham số (df) (P)
+
+**Lấy ở đâu:** đặc tả mô hình dự kiến (bao gồm dummy, spline, tương tác).
+**Thông lệ:** 10–30 df khá phổ biến; df càng lớn càng cần mẫu lớn.
+
+### 3) AUC mục tiêu (Mode A)
+
+**Lấy ở đâu:** mô hình tương tự đã công bố (ưu tiên ngoại kiểm), pilot data.
+**Thông lệ:** 0,70–0,85 thường gặp; >0,90 thường hiếm và dễ lạc quan.
+
+### 4) Danh sách (N) ứng viên
+
+Chọn dải đủ rộng để thấy ngưỡng đạt/không đạt (ví dụ 1000–5000).
+
+### 5) Số mô phỏng mỗi (N) (R)
+
+* Demo: (R \\approx 200)
+* Final: (R \\ge 1000)
+  Sai số Monte Carlo cho xác suất đạt:
+  [
+  \\mathrm{MCSE}=\\sqrt{\\frac{\\hat{p}(1-\\hat{p})}{R}}.
+  ]
+
+### 6) Tiêu chí Pass/Fail
+
+* Mean calibration slope ≥ 0.9
+* Pr(0.9 ≤ slope ≤ 1.1) ≥ 80%
+* Mean AUC ≥ target
+
+**Thông lệ:** slope 0,90–1,10 và ngưỡng xác suất 0,80 hay dùng cho planning; 0,90 nếu muốn chắc chắn hơn.
+
+---
+
+# Điểm mạnh và điểm yếu
+
+**Điểm mạnh**
+
+* Linh hoạt (tương quan, phi tuyến, tương tác).
+* Nhắm trực tiếp hiệu năng trên dữ liệu mới, đặc biệt calibration.
+* Dễ làm phân tích độ nhạy.
+
+**Điểm yếu**
+
+* Phụ thuộc mạnh vào giả định DGM.
+* Tốn tài nguyên tính toán.
+* Phải mô phỏng đúng pipeline dự định; nếu không dễ sai lệch.
+
+---
+
+## Tài liệu tham khảo quan trọng (2–5)
+
+1. Pavlou M, Ambler G, Seaman SR, et al. *How to develop a more accurate risk prediction model when there are few events.* BMJ. 2015.
+2. Riley RD, Snell KIE, Ensor J, et al. *Minimum sample size required for developing a multivariable prediction model: Part II—binary and time-to-event outcomes.* Statistics in Medicine. 2019.
+3. Pavlou M, et al. *Simulation-based sample size calculation for prediction model performance targets* (validation/development methodology). Statistics in Medicine. 2021.
+4. Steyerberg EW. *Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating.* 2nd ed. Springer. 2019.
+""",
 }
