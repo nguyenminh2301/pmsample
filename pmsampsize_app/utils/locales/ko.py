@@ -107,163 +107,163 @@ KO = {
         "footer_disclaimer": "면책 조항: 임상적 보증 없음. 사용자는 결과 검증 및 해석에 대한 책임이 있습니다.",
 
         "intro_complete_md": """
-### Welcome
+### 환영합니다
 
-This app helps clinicians and researchers plan minimum sample size for prognostic research, including:
-* Prognostic factor studies (power to detect associations),
-* Clinical prediction model development (risk prediction), and
-* Model validation / updating (external validation, recalibration).
+이 앱은 임상의와 연구자가 예후 연구를 위한 최소 표본 크기를 계획하는 데 도움을 줍니다:
+* 예후 인자 연구 (연관성 검출을 위한 검정력),
+* 임상 예측 모델 개발 (위험 예측), 및
+* 모델 검증 / 업데이트 (외부 검증, 재보정).
 
-It is designed for binary outcomes (e.g., event vs no event) and, for some modules, time-to-event outcomes (Cox PH).
+이 도구는 이분형 결과 (예: 사건 발생 vs 미발생) 및 일부 모듈에서는 생존 시간 결과 (Cox 비례위험)를 위해 설계되었습니다.
 
-Source code (download): [https://gitlab.com/minhthiennguyen/pmsample/](https://gitlab.com/minhthiennguyen/pmsample/)
+소스 코드 (다운로드): [https://gitlab.com/minhthiennguyen/pmsample/](https://gitlab.com/minhthiennguyen/pmsample/)
 
-### Getting started (for new users)
+### 시작 가이드 (신규 사용자용)
 
-#### 1. Clarify your study goal
-* Are you testing a single prognostic factor (association)?
-* Are you building a prediction model?
-* Are you validating an existing model in a new population?
+#### 1. 연구 목표 명확화
+* 단일 예후 인자 (연관성)를 검정하시나요?
+* 예측 모델을 개발하시나요?
+* 새로운 집단에서 기존 모델을 검증하시나요?
 
-#### 2. Estimate the event rate $p$ (or event fraction for survival)
-* Prefer local hospital data (best).
-* If uncertain, enter a range and run a sensitivity analysis.
+#### 2. 사건 발생률 $p$ 추정 (또는 생존분석을 위한 사건 분율)
+* 가능하면 지역 병원 데이터를 우선 사용하세요 (가장 좋음).
+* 불확실한 경우, 범위를 입력하고 민감도 분석을 실행하세요.
 
-#### 3. Count model complexity correctly (parameters / df)
-Use parameters (degrees of freedom), not just "number of variables."
-* Binary predictor: 1 df
-* Categorical with $L$ levels: $L-1$ df
-* Spline (RCS with $K$ knots): $K-1$ df
-* Interaction: $df(A \\times B) = df(A) \\cdot df(B)$
+#### 3. 모델 복잡도 정확히 계산 (파라미터 / 자유도)
+"변수 수"가 아닌 파라미터 (자유도)를 사용하세요.
+* 이분형 예측변수: 1 df
+* $L$ 수준 범주형: $L-1$ df
+* 스플라인 (RCS, $K$ 매듭): $K-1$ df
+* 상호작용: $df(A \\times B) = df(A) \\cdot df(B)$
 
-#### 4. Choose a method from the catalog below
-* Use **"Quick tools"** for rough planning only.
-* Use **Riley / simulation / assurance** when you are developing a prediction model.
-
----
-
-### When to use this app (and when not to)
-
-**Use this app when you are:**
-* Planning retrospective or prospective cohort studies in prognosis/prediction
-* Developing or validating risk prediction models
-* Estimating sample size for precision (CI width) of prevalence or AUC
-* Designing external validation with calibration and discrimination targets
-
-**Do NOT use this app as the primary tool when you are:**
-* Designing randomized controlled trials (use RCT-specific power/sample size methods)
-* Planning diagnostic accuracy studies for sensitivity/specificity without prediction modeling
-* Expecting a single "correct" number: sample size planning requires assumptions and should include sensitivity analyses
+#### 4. 아래 카탈로그에서 방법 선택
+* **"빠른 도구"**는 대략적인 계획에만 사용하세요.
+* 예측 모델 개발 시 **Riley / 시뮬레이션 / 보증** 방법을 사용하세요.
 
 ---
 
-### Available Methods (Overview)
+### 이 앱을 사용해야 할 때 (그리고 사용하지 말아야 할 때)
 
-#### A. Quick / Basic (fast, approximate)
+**다음 경우에 이 앱을 사용하세요:**
+* 예후/예측 분야에서 후향적 또는 전향적 코호트 연구 계획
+* 위험 예측 모델 개발 또는 검증
+* 유병률 또는 AUC의 정밀도 (신뢰구간 너비)에 따른 표본 크기 추정
+* 보정 및 판별력 목표를 가진 외부 검증 설계
 
-**A1 — Rules of Thumb (EPV/EPP) (heuristic)**
-* **Use when:** you need a quick sanity check on whether events are "roughly sufficient" for a planned model size.
-* **Do not use when:** model includes splines/interactions/variable selection, or event rate is low—EPV/EPP does not guarantee good calibration or low optimism.
-* **Key inputs:** event rate $p$, number of parameters $P$ (df), target EPP (e.g., 10/15/20)
-* **Core output:** required events $E=t \\cdot P$, required sample size $N=\\lceil E/p \\rceil$
-* **Strengths:** extremely simple; good for early feasibility
-* **Weaknesses:** can be misleading; not performance-based
-
-**A2 — Baseline Risk Precision (CI width for prevalence)**
-* **Use when:** your goal is to estimate the event rate $p$ with a desired CI half-width (e.g., ±2%).
-* **Do not use when:** you want prediction model performance guarantees (AUC/calibration slope).
-* **Key inputs:** expected $p$, CI method (Wilson recommended), confidence level, target half-width $d$
-* **Core output:** minimum $N$ such that CI half-width $\\le d$
-* **Strengths:** direct precision target; transparent assumptions
-* **Weaknesses:** about prevalence only, not model performance
-
-#### B. Prognostic factor (power) (association-focused, not prediction model sizing)
-
-**B3 — Logistic OR Power (Hsieh)**
-* **Use when:** you want power to detect a target odds ratio (OR) for a prognostic factor in logistic regression.
-* **Do not use when:** your primary goal is prediction model development (calibration/discrimination), not hypothesis testing.
-* **Key inputs:** baseline risk $p_0$, target OR, alpha, power, exposure prevalence (binary) or SD (continuous), optional $R^2$ with covariates
-* **Core output:** required $N$ (and implied events) to detect the OR
-* **Strengths:** classic power framework for association
-* **Weaknesses:** does not address prediction model performance; sensitive to input assumptions
-
-**B4 — Cox HR Power (Schoenfeld)**
-* **Use when:** time-to-event outcome; you want power to detect a hazard ratio (HR) under Cox PH.
-* **Do not use when:** PH assumption likely violated, or event fraction is highly uncertain and cannot be reasonably estimated.
-* **Key inputs:** HR, alpha, power, allocation proportion (binary) or SD (continuous), expected event fraction during follow-up
-* **Core output:** required number of events; convert to $N$ using event fraction
-* **Strengths:** widely accepted; event-based planning is intuitive
-* **Weaknesses:** depends strongly on event fraction and follow-up/censoring assumptions
-
-#### C. Prediction model development (recommended for risk model building)
-
-**C5 — Riley et al. (Analytical; pmsampsize-like)**
-* **Use when:** developing a multivariable prediction model; you want to control overfitting and ensure adequate precision.
-* **Do not use when:** you cannot provide reasonable assumptions for prevalence and anticipated model performance (AUC or $R^2$); in that case, use sensitivity analysis or simulation.
-* **Key inputs:** event rate $p$, parameters $P$ (df), target shrinkage (e.g., 0.90), anticipated model performance (AUC or Cox–Snell $R^2$)
-* **Core output:** minimum $N$ meeting multiple criteria (overfitting control + precision)
-* **Strengths:** principled, performance-aware, widely cited
-* **Weaknesses:** depends on performance assumptions; requires careful df counting
-
-**C6 — Development Simulation (Frequentist; samplesizedev/custom DGM)**
-* **Use when:** you prefer "simulate what you will do," especially with nonlinearity/interactions and custom data structures.
-* **Do not use when:** you cannot specify a plausible data-generating mechanism (DGM) or you need results instantly (compute-intensive).
-* **Key inputs:** candidate $N$ grid, DGM assumptions (predictor distributions/correlations/effects), performance targets (e.g., calibration slope range, AUC threshold), simulation replicates, seed
-* **Core output:** smallest $N$ achieving targets with acceptable probability/precision
-* **Strengths:** flexible; aligns with complex modeling
-* **Weaknesses:** assumptions-heavy; computational cost
-
-**C7 — Bayesian Assurance (MCMC)**
-* **Use when:** the final model will be estimated with Bayesian MCMC, and you want sample size based on assurance (probability of meeting posterior performance/precision targets).
-* **Do not use when:** priors cannot be justified or computation budget is limited.
-* **Key inputs:** DGM, priors, candidate $N$, MCMC settings, assurance threshold (e.g., 80%/90%), performance/precision targets
-* **Core output:** minimal $N$ meeting assurance threshold
-* **Strengths:** coherent for Bayesian workflows; directly targets posterior criteria
-* **Weaknesses:** computationally intensive; requires prior specification
-
-#### D. Validation / Updating (for existing models)
-
-**D8 — AUC Precision (Hanley–McNeil / presize)**
-* **Use when:** your validation goal is precision of AUC (CI width).
-* **Do not use when:** calibration (slope/CITL) is the primary concern—this method targets AUC only.
-* **Key inputs:** expected AUC, prevalence or case-control ratio, confidence level, target CI width
-* **Core output:** minimum $N$ to achieve desired AUC CI width
-* **Strengths:** simple; quick planning for discrimination precision
-* **Weaknesses:** approximate variance; ignores calibration
-
-**D9 — External Validation (Tailored; pmvalsampsize / sampsizeval)**
-* **Use when:** you want validation sizing targeting multiple performance measures (calibration + discrimination), often requiring assumptions about the LP distribution.
-* **Do not use when:** you cannot justify LP distribution assumptions or expected performance.
-* **Key inputs:** prevalence, expected AUC, calibration slope/CITL targets, CI widths or SE targets, LP distribution assumptions
-* **Core output:** recommended $N$ meeting precision criteria across measures
-* **Strengths:** tailored; calibration-aware
-* **Weaknesses:** requires additional assumptions; more complex
-
-**D10 — External Validation (Simulation; LP-based)**
-* **Use when:** you can specify/estimate the distribution of the linear predictor (LP) in the target validation population and want simulation-based precision planning.
-* **Do not use when:** LP distribution is unknown and cannot be approximated.
-* **Key inputs:** LP distribution (normal/beta/empirical), miscalibration parameters, CI width targets for metrics, replicates, seed
-* **Core output:** minimal $N$ achieving precision targets under simulation
-* **Strengths:** very flexible; matches "simulate what you expect"
-* **Weaknesses:** assumptions-heavy; computational cost
-
-**D11 — Updating / Recalibration (intercept/slope)**
-* **Use when:** you will recalibrate an existing model (update intercept and/or slope) and need adequate precision.
-* **Do not use when:** you are developing a brand-new model (use C5–C7).
-* **Key inputs:** updating type (intercept only vs intercept+slope), event rate, precision targets
-* **Core output:** $N$ sufficient for stable updating
-* **Strengths:** practical for real-world deployment
-* **Weaknesses:** depends on local case-mix and model transportability assumptions
+**다음 경우에는 주요 도구로 이 앱을 사용하지 마세요:**
+* 무작위 대조 시험 (RCT) 설계 (RCT 전용 검정력/표본 크기 방법 사용)
+* 예측 모델링 없이 민감도/특이도에 대한 진단 정확도 연구 계획
+* 단일 "정확한" 숫자를 기대하는 경우: 표본 크기 계획은 가정에 의존하며 민감도 분석을 포함해야 함
 
 ---
 
-#### disclaimer
+### 이용 가능한 방법 (개요)
 
-No clinical warranty; users are responsible for validation and interpretation. Always document assumptions and run sensitivity analyses.
+#### A. 빠른 / 기본 (신속, 근사)
 
-#### Contact
+**A1 — 경험적 규칙 (EPV/EPP) (휴리스틱)**
+* **사용 시점:** 계획된 모델 크기에 대해 사건 수가 "대략 충분한지" 빠르게 확인할 때.
+* **사용하지 말아야 할 경우:** 모델에 스플라인/상호작용/변수 선택이 포함되거나 사건 발생률이 낮은 경우—EPV/EPP는 좋은 보정 또는 낮은 낙관주의를 보장하지 않음.
+* **주요 입력:** 사건 발생률 $p$, 파라미터 수 $P$ (df), 목표 EPP (예: 10/15/20)
+* **핵심 출력:** 필요 사건 수 $E=t \\cdot P$, 필요 표본 크기 $N=\\lceil E/p \\rceil$
+* **장점:** 매우 간단함; 초기 타당성 검토에 적합
+* **단점:** 오해의 소지가 있음; 성능 기반이 아님
 
-Author & Maintenance: Minh Nguyen (minhnt@ump.edu.vn)
+**A2 — 기준 위험 정밀도 (유병률에 대한 CI 너비)**
+* **사용 시점:** 목표가 원하는 CI 반폭 (예: ±2%)으로 사건 발생률 $p$를 추정하는 것일 때.
+* **사용하지 말아야 할 경우:** 예측 모델 성능 보장 (AUC/보정 기울기)을 원할 때.
+* **주요 입력:** 예상 $p$, CI 방법 (Wilson 권장), 신뢰 수준, 목표 반폭 $d$
+* **핵심 출력:** CI 반폭 $\\le d$를 충족하는 최소 $N$
+* **장점:** 직접적인 정밀도 목표; 투명한 가정
+* **단점:** 유병률에만 해당, 모델 성능은 아님
+
+#### B. 예후 인자 (검정력) (연관성 중심, 예측 모델 크기 결정 아님)
+
+**B3 — 로지스틱 OR 검정력 (Hsieh)**
+* **사용 시점:** 로지스틱 회귀에서 예후 인자에 대한 목표 오즈비 (OR) 검출 검정력이 필요할 때.
+* **사용하지 말아야 할 경우:** 주요 목표가 예측 모델 개발 (보정/판별력)일 때, 가설 검정이 아닐 때.
+* **주요 입력:** 기준 위험 $p_0$, 목표 OR, 알파, 검정력, 노출 유병률 (이분형) 또는 SD (연속형), 선택적 공변량과의 $R^2$
+* **핵심 출력:** OR 검출에 필요한 $N$ (및 암시된 사건 수)
+* **장점:** 연관성에 대한 고전적 검정력 프레임워크
+* **단점:** 예측 모델 성능을 다루지 않음; 입력 가정에 민감
+
+**B4 — Cox HR 검정력 (Schoenfeld)**
+* **사용 시점:** 생존 시간 결과; Cox 비례위험 하에서 위험비 (HR) 검출 검정력이 필요할 때.
+* **사용하지 말아야 할 경우:** 비례위험 가정이 위반될 가능성이 높거나, 사건 분율이 매우 불확실하여 합리적으로 추정할 수 없을 때.
+* **주요 입력:** HR, 알파, 검정력, 배분 비율 (이분형) 또는 SD (연속형), 추적 기간 동안 예상 사건 분율
+* **핵심 출력:** 필요 사건 수; 사건 분율을 사용하여 $N$으로 변환
+* **장점:** 널리 인정됨; 사건 기반 계획이 직관적
+* **단점:** 사건 분율 및 추적/중도절단 가정에 강하게 의존
+
+#### C. 예측 모델 개발 (위험 모델 구축에 권장)
+
+**C5 — Riley 등 (분석적; pmsampsize 유사)**
+* **사용 시점:** 다변량 예측 모델 개발; 과적합 제어 및 적절한 정밀도 보장이 필요할 때.
+* **사용하지 말아야 할 경우:** 유병률 및 예상 모델 성능 (AUC 또는 $R^2$)에 대한 합리적인 가정을 제공할 수 없을 때; 이 경우 민감도 분석 또는 시뮬레이션 사용.
+* **주요 입력:** 사건 발생률 $p$, 파라미터 $P$ (df), 목표 수축 (예: 0.90), 예상 모델 성능 (AUC 또는 Cox–Snell $R^2$)
+* **핵심 출력:** 여러 기준 충족 최소 $N$ (과적합 제어 + 정밀도)
+* **장점:** 원칙에 기반, 성능 인식, 널리 인용됨
+* **단점:** 성능 가정에 의존; 신중한 자유도 계산 필요
+
+**C6 — 개발 시뮬레이션 (빈도주의; samplesizedev/사용자 정의 DGM)**
+* **사용 시점:** "수행할 것을 시뮬레이션"하는 것을 선호, 특히 비선형성/상호작용 및 사용자 정의 데이터 구조가 있을 때.
+* **사용하지 말아야 할 경우:** 그럴듯한 데이터 생성 메커니즘을 지정할 수 없거나 즉각적인 결과가 필요할 때.
+* **주요 입력:** 후보 $N$ 그리드, DGM 가정, 성능 목표 (예: 보정 기울기 범위, AUC 임계값), 시뮬레이션 반복, 시드
+* **핵심 출력:** 허용 가능한 확률/정밀도로 목표 달성하는 최소 $N$
+* **장점:** 유연함; 복잡한 모델링과 일치
+* **단점:** 가정에 크게 의존; 계산 비용
+
+**C7 — 베이지안 보증 (MCMC)**
+* **사용 시점:** 최종 모델이 베이지안 MCMC로 추정되고, 보증 기반 표본 크기가 필요할 때.
+* **사용하지 말아야 할 경우:** 사전분포를 정당화할 수 없거나 계산 예산이 제한적일 때.
+* **주요 입력:** DGM, 사전분포, 후보 $N$, MCMC 설정, 보증 임계값 (예: 80%/90%), 성능/정밀도 목표
+* **핵심 출력:** 보증 임계값 충족 최소 $N$
+* **장점:** 베이지안 워크플로우와 일관됨; 사후 기준 직접 목표
+* **단점:** 계산 집약적; 사전분포 사양 필요
+
+#### D. 검증 / 업데이트 (기존 모델용)
+
+**D8 — AUC 정밀도 (Hanley–McNeil / presize)**
+* **사용 시점:** 검증 목표가 AUC의 정밀도 (CI 너비)일 때.
+* **사용하지 말아야 할 경우:** 보정 (기울기/CITL)이 주요 관심사일 때—이 방법은 AUC만 목표.
+* **주요 입력:** 예상 AUC, 유병률 또는 환자-대조군 비율, 신뢰 수준, 목표 CI 너비
+* **핵심 출력:** 원하는 AUC CI 너비 달성을 위한 최소 $N$
+* **장점:** 간단함; 판별력 정밀도에 대한 빠른 계획
+* **단점:** 근사 분산; 보정 무시
+
+**D9 — 외부 검증 (맞춤형; pmvalsampsize / sampsizeval)**
+* **사용 시점:** 여러 성능 측정을 목표로 하는 검증 크기 결정, 종종 LP 분포 가정 필요.
+* **사용하지 말아야 할 경우:** LP 분포 가정을 정당화할 수 없을 때.
+* **주요 입력:** 유병률, 예상 AUC, 보정 기울기/CITL 목표, CI 너비 또는 SE 목표, LP 분포 가정
+* **핵심 출력:** 여러 측정에 대한 정밀도 기준 충족 권장 $N$
+* **장점:** 맞춤형; 보정 인식
+* **단점:** 추가 가정 필요; 더 복잡함
+
+**D10 — 외부 검증 (시뮬레이션; LP 기반)**
+* **사용 시점:** 목표 검증 집단에서 LP 분포를 지정/추정할 수 있고 시뮬레이션 기반 정밀도 계획을 원할 때.
+* **사용하지 말아야 할 경우:** LP 분포가 알려지지 않고 근사할 수 없을 때.
+* **주요 입력:** LP 분포 (정규/베타/경험적), 오보정 파라미터, 측정값에 대한 CI 너비 목표, 반복, 시드
+* **핵심 출력:** 시뮬레이션 하에 정밀도 목표 달성 최소 $N$
+* **장점:** 매우 유연함; "예상하는 것을 시뮬레이션"과 일치
+* **단점:** 가정에 크게 의존; 계산 비용
+
+**D11 — 업데이트 / 재보정 (절편/기울기)**
+* **사용 시점:** 기존 모델을 재보정하고 적절한 정밀도가 필요할 때.
+* **사용하지 말아야 할 경우:** 완전히 새로운 모델을 개발할 때 (C5–C7 사용).
+* **주요 입력:** 업데이트 유형, 사건 발생률, 정밀도 목표
+* **핵심 출력:** 안정적인 업데이트에 충분한 $N$
+* **장점:** 실제 배포에 실용적
+* **단점:** 지역 케이스 믹스 및 모델 이동성 가정에 의존
+
+---
+
+#### 면책 조항
+
+임상적 보증 없음; 사용자는 검증 및 해석에 책임이 있습니다. 항상 가정을 문서화하고 민감도 분석을 수행하세요.
+
+#### 연락처
+
+저자 및 유지관리: Minh Nguyen (minhnt@ump.edu.vn)
 """,
 
         "a2_content_md": """
