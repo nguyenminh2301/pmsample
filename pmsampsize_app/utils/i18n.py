@@ -1,0 +1,247 @@
+
+TRANS = {
+    "EN": {
+        "title": "Minh Sample Size App (Binary Prediction Models)",
+        "sidebar_title": "Configuration",
+        "language": "Language / Ngôn ngữ",
+        "mode": "Method Selection",
+        "mode_riley": "Method 1: Riley et al. (Analytical)",
+        "mode_bayes": "Method 2: Bayesian Assurance (Simulation)",
+        "mode_single": "Single Scenario",
+        "mode_batch": "Sensitivity Analysis (Ranges)",
+        "method1_tab": "Method 1 (Riley)",
+        "method2_tab": "Method 2 (Bayesian)",
+        "nav_title": "Navigation",
+        "nav_intro": "Introduction & Formulas",
+        "nav_calc": "Sample Size Calculator",
+        "intro_heading": "Welcome",
+        "intro_text": "This tool helps researchers calculate the minimum sample size required for developing a clinical prediction model with a binary outcome.",
+        "formula_heading": "Mathematical Framework (Method 1)",
+        "formula_intro": "Method 1 uses the closed-form solutions provided by Riley et al., while Method 2 uses Bayesian MCMC simulation.",
+        "sens_guide_title": "💡 How to use Sensitivity Analysis (Batch Mode)",
+        "sens_guide_text": """
+        - **Ranges**: Enter `min-max` (e.g., `0.05-0.10`). The app will generate steps automatically.
+        - **Specific Values**: Enter comma-separated lists (e.g., `0.05, 0.10, 0.15`).
+        """,
+        "detail_view": "View Detailed Calculation for Scenario",
+        "footer_refs": "References: Riley et al. (2018, 2020), BayesAssurance.",
+        "calc_btn": "Calculate",
+        "results": "Results",
+        "sanity": "Sanity Check (EPV Rules)",
+        "download_csv": "Download CSV",
+        "download_report": "Download Full Report",
+        "error_p": "Prevalence must be between 0 and 1.",
+        "error_auc": "AUC must be between 0.5 and 1.",
+        "error_parse": "Could not parse input.",
+        
+        # Riley specific
+        "riley_inputs": "Input Parameters (Riley)",
+        "prevalence": "Outcome Prevalence (Event Rate)",
+        "prevalence_help": "Proportion of participants with the event (0 < p < 1).",
+        "parameters": "Number of Predictor Parameters (df)",
+        "parameters_help": "Total degrees of freedom (excluding intercept).",
+        "shrinkage": "Target Global Shrinkage (S)",
+        "shrinkage_help": "Desired shrinkage factor (default 0.9).",
+        "perf_measure": "Anticipated Performance",
+        "perf_auc": "AUC (C-statistic)",
+        "perf_r2": "Cox-Snell R-squared",
+        "perf_cons": "Conservative (15% of Max R2)",
+        
+        # Bayesian specific
+        "bayes_inputs": "Simulation Settings (Bayesian Assurance)",
+        "dgm_settings": "Data Generating Mechanism",
+        "sim_settings": "Simulation & MCMC",
+        "eval_settings": "Evaluation Criteria",
+        "n_candidates": "Candidate Sample Sizes (comma separated)",
+        "n_candidates_help": "List of N values to test, e.g., 500, 1000, 1500.",
+        "correlation": "Predictor Correlation (rho)",
+        "n_sims": "Number of Simulations per N",
+        "assurance_threshold": "Assurance Threshold (Target Probability)",
+        "run_simulation": "Run Bayesian Simulation",
+        "simulation_running": "Running Simulations... This may take a while.",
+        "assurance_result": "Assurance Analysis",
+        
+        # Method 6 (Dev Sim)
+        "mode_dev_sim": "Method 6: Development Simulation (Freq)",
+        "method6_tab": "Method 6 (Simulation)",
+        "dev_sim_intro": "Simulation-based sample size for model development (frequentist approach similar to `samplesizedev`).",
+        "dev_mode_simple": "Mode A: Simple (AUC-driven)",
+        "dev_mode_custom": "Mode B: Custom DGM",
+        "target_auc": "Target Mean AUC (C-statistic)",
+        "target_auc_help": "Algorithm will find Beta coefficients to achieve this AUC.",
+        "criteria_settings": "Performance Criteria (Pass/Fail)",
+        "crit_slope_mean": "Mean Calibration Slope >= 0.9",
+        "crit_slope_ci": "Pr(0.9 <= Slope <= 1.1) >= 80%",
+        "crit_auc": "Mean AUC >= Target",
+        "audit_trail": "RNG Audit Trail (JSON)",
+        "future_methods": "Coming in future versions...",
+        
+        # Quick Methods
+        "method_quick_tab": "A. Quick / Basic",
+        "quick_mode_epv": "A1: EPV / EPP Rule (Heuristic)",
+        "quick_mode_risk": "A2: Baseline Risk Precision (CI Width)",
+        "target_epv": "Target Events Per Parameter (EPP)",
+        "target_epv_help": "Common heuristic values are 10, 15, 20. EPP is preferred over EPV.",
+        "epv_warning_title": "⚠️ Important Warning",
+        "epv_warning_text": "EPV/EPP is a rough heuristic. It does not guarantee calibration, discrimination, or prevent optimism. It is sensitive to variable selection and non-linear terms.",
+        "ci_level": "Confidence Level",
+        "ci_half_width": "Target Half-Width (Margin of Error)",
+        "ci_method": "CI Method",
+        "ci_method_wilson": "Wilson Score (Recommended)",
+        "ci_method_wald": "Wald (Simple)",
+        "ci_method_cp": "Clopper-Pearson (Conservative)",
+        "risk_help": "Calculates N to estimate the event rate p with a specific precision. Does not ensure prediction model performance.",
+        
+        # Power Methods (B)
+        "title_b3": "B3: Logistic Power (Hsieh)",
+        "title_b4": "B4: Cox Power (Schoenfeld)",
+        
+        # UI Basics
+        "d8_assumptions": "**Assumptions**: Uses Hanley & McNeil (1982) variance approximation. Symmetric Normal assumption for AUC. Numerical optimization to find N.",
+        "d8_mode_n_to_width": "Compute CI width from N",
+        "d8_mode_width_to_n": "Compute required N from CI width",
+        "d8_opt_settings": "Advanced Optimizer Settings",
+        "d8_practical_rounding": "Show Practical Integer Rounding",
+        "d8_n_input": "Sample Size (N)",
+        "d8_width_input": "CI Width (Total)",
+        "d8_opt_bound": "Search Upper Limit",
+        "d8_opt_tol": "Tolerance",
+        
+        # D9
+        "title_d9": "D9: External Validation (Tailored)",
+        "common_inputs": "Common Parameters",
+        
+        # UI Basics
+        "search_placeholder": "Search methods...",
+        "settings": "Settings",
+        
+        # Footer
+        "footer_copyright": "© 2026 Prognostic Research Sample Size Tool. For academic/research only.",
+        "footer_author": "Author & Maintenance: Minh Nguyen (minhnt@ump.edu.vn)",
+        "footer_disclaimer": "Disclaimer: No clinical warranty; users are responsible for validation and interpretation."
+    },
+    "VI": {
+        "title": "Công cụ tính cỡ mẫu cho nghiên cứu tiên lượng",
+        "sidebar_title": "Cấu hình",
+        "language": "Ngôn ngữ / Language",
+        "mode": "Chọn Phương pháp",
+        "mode_riley": "Phương pháp 1: Riley et al. (Công thức)",
+        "mode_bayes": "Phương pháp 2: Bayesian Assurance (Mô phỏng)",
+        "mode_single": "Kịch bản đơn (Single)",
+        "mode_batch": "Phân tích độ nhạy (Nhiều giá trị)",
+        "method1_tab": "Phương pháp 1 (Riley)",
+        "method2_tab": "Phương pháp 2 (Bayesian)",
+        "nav_title": "Điều hướng",
+        "nav_intro": "Giới thiệu & Công thức",
+        "nav_calc": "Công cụ tính toán",
+        "intro_heading": "Giới thiệu",
+        "intro_text": "Ứng dụng hỗ trợ ước tính cỡ mẫu tối thiểu cho mô hình dự báo lâm sàng (biến nhị phân).",
+        "formula_heading": "Cơ sở Toán học (Phương pháp 1)",
+        "formula_intro": "Phương pháp 1 dùng công thức giải tích (Riley), Phương pháp 2 dùng mô phỏng Bayesian MCMC.",
+        "sens_guide_title": "💡 Hướng dẫn nhập Phân tích Độ nhạy",
+        "sens_guide_text": """
+        - **Khoảng giá trị**: Nhập `min-max` (VD: `0.05-0.10`).
+        - **Danh sách giá trị**: Nhập dấu phẩy (VD: `0.05, 0.10, 0.15`).
+        """,
+        "detail_view": "Xem chi tiết",
+        "footer_refs": "Tài liệu tham khảo: Riley et al. (2018, 2020), BayesAssurance.",
+        "calc_btn": "Tính toán",
+        "results": "Kết quả",
+        "sanity": "Kiểm tra nhanh (EPV)",
+        "download_csv": "Tải xuống CSV",
+        "download_report": "Tải Báo cáo Đầy đủ",
+        "error_p": "Tỷ lệ phải từ 0 đến 1.",
+        "error_auc": "AUC phải từ 0.5 đến 1.",
+        "error_parse": "Lỗi nhập liệu.",
+        
+        # Riley specific
+        "riley_inputs": "Tham số đầu vào (Riley)",
+        "prevalence": "Tỷ lệ biến cố (Prevalence)",
+        "prevalence_help": "Tỷ lệ người có biến cố (0 < p < 1).",
+        "parameters": "Số tham số dự báo (df)",
+        "parameters_help": "Tổng bậc tự do của các biến (trừ intercept).",
+        "shrinkage": "Hệ số co trượt (Shrinkage)",
+        "shrinkage_help": "Hệ số S mong muốn (mặc định 0.9).",
+        "perf_measure": "Hiệu năng dự kiến",
+        "perf_auc": "AUC (C-statistic)",
+        "perf_r2": "Cox-Snell R-squared",
+        "perf_cons": "Thận trọng (Conservative)",
+        
+        # Bayesian specific
+        "bayes_inputs": "Cài đặt Mô phỏng (Bayesian Assurance)",
+        "dgm_settings": "Cơ chế Sinh Dữ liệu (DGM)",
+        "sim_settings": "Cài đặt Mô phỏng & MCMC",
+        "eval_settings": "Tiêu chuẩn Đánh giá",
+        "n_candidates": "Các mức Cỡ mẫu thử nghiệm (cách nhau bởi dấu phẩy)",
+        "n_candidates_help": "Danh sách N muốn kiểm tra, VD: 500, 1000, 1500.",
+        "correlation": "Hệ số tương quan (rho)",
+        "n_sims": "Số lần mô phỏng cho mỗi N",
+        "assurance_threshold": "Ngưỡng Assurance (Xác suất đạt yêu cầu)",
+        "run_simulation": "Chạy Mô phỏng",
+        "simulation_running": "Đang chạy mô phỏng... Vui lòng đợi.",
+        "assurance_result": "Phân tích Assurance",
+
+        # Method 6 (Dev Sim)
+        "mode_dev_sim": "Phương pháp 6: Mô phỏng Phát triển (Freq)",
+        "method6_tab": "PP 6 (Mô phỏng)",
+        "dev_sim_intro": "Tính cỡ mẫu phát triển mô hình dựa trên mô phỏng (theo phương pháp `samplesizedev`).",
+        "dev_mode_simple": "Chế độ A: Đơn giản (theo AUC)",
+        "dev_mode_custom": "Chế độ B: DGM Tùy chỉnh",
+        "target_auc": "AUC Mục tiêu (C-statistic trung bình)",
+        "target_auc_help": "Thuật toán sẽ tự tìm hệ số Beta để đạt AUC này.",
+        "criteria_settings": "Tiêu chí Đạt (Pass/Fail)",
+        "crit_slope_mean": "Calibration Slope TB >= 0.9",
+        "crit_slope_ci": "Pr(0.9 <= Slope <= 1.1) >= 80%",
+        "crit_auc": "AUC TB >= Mục tiêu",
+        "audit_trail": "RNG Audit Trail (JSON)",
+        "future_methods": "Sắp ra mắt...",
+
+        # Quick Methods
+        "method_quick_tab": "A. Nhanh / Cơ bản",
+        "quick_mode_epv": "A1: Quy tắc EPV / EPP (Kinh nghiệm)",
+        "quick_mode_risk": "A2: Ước lượng Tỷ lệ nền (Độ rộng CI)",
+        "target_epv": "Số biến cố trên tham số mục tiêu (EPP)",
+        "target_epv_help": "Giá trị thường dùng: 10, 15, 20. EPP tốt hơn EPV.",
+        "epv_warning_title": "⚠️ Cảnh báo Quan trọng",
+        "epv_warning_text": "EPV/EPP chỉ là quy tắc kinh nghiệm thô. Nó KHÔNG đảm bảo độ chính xác, phân biệt hay ngăn ngừa overfitting. Rất nhạy cảm với việc chọn biến và đa cộng tuyến.",
+        "ci_level": "Độ tin cậy (Confidence Level)",
+        "ci_half_width": "Bán kính CI mong muốn (Sai số biên)",
+        "ci_method": "Phương pháp CI",
+        "ci_method_wilson": "Wilson Score (Khuyên dùng)",
+        "ci_method_wald": "Wald (Đơn giản)",
+        "ci_method_cp": "Clopper-Pearson (Thận trọng)",
+        "risk_help": "Tính N để ước lượng tỷ lệ p với độ chính xác nhất định. KHÔNG đảm bảo hiệu năng mô hình dự báo.",
+        
+        # Power Methods (B)
+        "title_b4": "B4: Cox Power (Schoenfeld)",
+        
+        # Validations (D)
+        "title_d8": "D8: Độ chính xác AUC (Hanley-McNeil)",
+        "d8_desc": "Tính cỡ mẫu để ước lượng AUC với độ chính xác (độ rộng CI) mong muốn.",
+        "auc_expected": "AUC dự kiến (C-statistic)",
+        "formulas_header": "📚 Công thức & Chi tiết kỹ thuật",
+        "d8_assumptions": "**Giả định**: Sử dụng xấp xỉ phương sai Hanley & McNeil (1982). Giả định phân phối chuẩn đối xứng cho AUC. Tối ưu hóa số học để tìm N.",
+        "d8_mode_n_to_width": "Tính độ rộng CI từ N",
+        "d8_mode_width_to_n": "Tính N từ độ rộng CI",
+        "d8_opt_settings": "Cài đặt Tối ưu hóa Nâng cao",
+        "d8_practical_rounding": "Hiển thị làm tròn số nguyên (Thực tế)",
+        "d8_n_input": "Cỡ mẫu (N)",
+        "d8_width_input": "Độ rộng CI (Tổng)",
+        "d8_opt_bound": "Cận trên tìm kiếm (Upper Limit)",
+        "d8_opt_tol": "Dung sai (Tolerance)",
+        
+        # D9
+        "title_d9": "D9: Thẩm định ngoài (Tailored)",
+        "common_inputs": "Tham số chung",
+        
+        # UI Basics
+        "intro_heading": "Chào mừng đến với Minh Sample Size App",
+        "search_placeholder": "Tìm phương pháp...",
+        "settings": "Cài đặt",
+
+        # Footer
+        "footer_copyright": "© 2026 Minh Sample Size App. Dành cho nghiên cứu/học thuật. Không bán thương mại.",
+        "footer_author": "Tác giả & Bảo trì: Minh Nguyen (minhnt@ump.edu.vn)",
+        "footer_disclaimer": "Miễn trừ trách nhiệm: Không đảm bảo tính ứng dụng lâm sàng; người dùng tự chịu trách nhiệm kiểm định."
+    }
+}
