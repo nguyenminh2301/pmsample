@@ -536,6 +536,151 @@ $$
 2. Hsieh FY. *Sample size tables for logistic regression.* Statistics in Medicine. 1989;8(7):795–802.
 3. Whittemore AS. *Sample size for logistic regression with small response probability.* Journal of the American Statistical Association. 1981;76:27–32.
 """,
+        "c5_content_md": """
+### What this method is
+
+C5 implements the **Riley et al. analytical minimum sample size criteria** for **developing a multivariable clinical prediction model** with a **binary outcome** (logistic regression). The goal is to ensure the development dataset is large enough to:
+
+1. **Limit overfitting** (via a target global shrinkage / calibration slope),
+2. Achieve **adequate precision** for model performance (via a bound on optimism in $R^2$), and
+3. Estimate the **overall outcome risk** (intercept/baseline risk) with acceptable precision.
+
+This is a **model development** method (not external validation). It is particularly suitable when you plan a **pre-specified model form** (predictors and coding defined in advance) and want a **principled alternative to EPV rules**.
+
+---
+
+### When to use
+
+Use C5 when:
+
+* You are **developing** a new prediction model for a **binary outcome**.
+* You can specify (even approximately) the **event rate** and an anticipated **overall model performance** (Cox–Snell $R^2$ or AUC).
+* You want to target **low overfitting** (e.g., shrinkage $S \\ge 0.90$) and reasonable precision.
+
+### When NOT to use (or use with caution)
+
+Do not rely on C5 alone when:
+
+* You will do extensive **data-driven variable selection**, multiple interactions/splines, or heavy ML tuning without adjusting the **effective number of parameters (df)**.
+* Your data are strongly **clustered** (multicenter) without accounting for design effects.
+* The intended modeling approach is not standard logistic regression (e.g., complex ML) unless you map complexity to an appropriate **effective df** or switch to simulation-based sizing.
+* You cannot justify any plausible performance input (AUC/$R^2$); in that case run wide sensitivity analyses and consider simulation-based methods.
+
+---
+
+## Key inputs (what each means)
+
+1. **Outcome prevalence / event rate** (p)
+   Expected proportion with (Y=1) in the development dataset.
+
+2. **Number of predictor parameters (df)** (P)
+   Total degrees of freedom for all candidate predictors **excluding the intercept**.
+   Include: dummy variables, spline bases, interactions (and any other basis expansions).
+
+3. **Anticipated performance** (choose one)
+
+* **Cox–Snell ($R^2_{CS}$)**: preferred if available from related prior studies (ideally optimism-adjusted).
+* **AUC (C-statistic)**: if $R^2_{CS}$ is unavailable, the tool can approximate $R^2_{CS}$ from AUC and ($p$) using a published approach.
+* **Conservative (15% of max $R^2$)**: a fallback when neither AUC nor $R^2$ is available; use with caution.
+
+4. **Target global shrinkage** (S)
+   A target for **overall overfitting control** (often interpreted similarly to an expected calibration slope after internal validation).
+
+* Common default: $S = 0.90$ ($\\approx$ 10% shrinkage of predictor effects).
+* More conservative: $S = 0.95$ (requires larger sample size).
+
+---
+
+## Core concepts and formulas
+
+### Cox–Snell ($R^2$) and its maximum
+
+Cox–Snell ($R^2$) for a fitted logistic model can be written as:
+$$
+R^2_{CS} = 1-\\exp\\left(\\frac{2}{n}(\\ell_0-\\ell_1)\\right),
+$$
+where $\\ell_0$ is the intercept-only log-likelihood and $\\ell_1$ is the model log-likelihood.
+
+For binary outcomes, $R^2_{CS}$ cannot reach 1. Its maximum depends on the outcome prevalence:
+$$
+\\ell_0 = n\\Big[p\\ln(p) + (1-p)\\ln(1-p)\\Big],
+$$
+$$
+R^2_{CS,\\max}=1-\\exp\\left(\\frac{2\\ell_0}{n}\\right)
+=1-\\exp\\Big(2[p\\ln(p) + (1-p)\\ln(1-p)]\\Big).
+$$
+
+Nagelkerke ($R^2$) rescales Cox–Snell ($R^2$) to ([0,1]):
+$$
+R^2_{Nag}=\\frac{R^2_{CS}}{R^2_{CS,\\max}}.
+$$
+
+---
+
+## The three Riley criteria (binary outcome)
+
+### Criterion 1 — Control overfitting via target shrinkage (S)
+
+Minimum sample size to target global shrinkage (S):
+$$
+n_1=\\left\\lceil
+\\frac{P}{(S-1)\\ln\\left(1-\\frac{R^2_{CS}}{S}\\right)}
+\\right\\rceil.
+$$
+
+### Criterion 2 — Limit optimism in ($R^2$) (default absolute difference 0.05)
+
+This criterion targets a small absolute difference (default $\\delta=0.05$) between apparent and adjusted **Nagelkerke** ($R^2$). The required shrinkage implied by this constraint is:
+$$
+S_{\\delta}=\\frac{R^2_{CS}}{R^2_{CS}+\\delta R^2_{CS,\\max}}.
+$$
+Then:
+$$
+n_2=\\left\\lceil
+\\frac{P}{(S_{\\delta}-1)\\ln\\left(1-\\frac{R^2_{CS}}{S_{\\delta}}\\right)}
+\\right\\rceil.
+$$
+
+### Criterion 3 — Precise estimation of the overall outcome risk (intercept)
+
+This targets precision of the **average outcome risk** ($p$) (baseline risk) within ($\\pm d$) on the probability scale (default $d=0.05$ at 95% CI):
+$$
+n_3=\\left\\lceil
+\\left(\\frac{z_{1-\\alpha/2}}{d}\\right)^2 p(1-p)
+\\right\\rceil,
+\\quad \\text{default } z_{0.975}=1.96,; d=0.05.
+$$
+
+### Final recommendation
+
+$$
+n_{\\min}=\\max(n_1,n_2,n_3),\\qquad
+E = n_{\\min}p,\\qquad
+EPP=\\frac{E}{P}.
+$$
+
+---
+
+## Practical guidance (typical choices)
+
+* **Shrinkage (S)**: use **0.90** as a standard target; consider **0.95** if you want stronger overfitting control or if the model is complex.
+* **$\\delta=0.05$** for Criterion 2: commonly kept at the default.
+* **Intercept precision (d=0.05)**: default corresponds to estimating baseline risk within ±5%. If baseline risk must be estimated more precisely, you would need a smaller ($d$) (larger ($n$)).
+* **Anticipated ($R^2_{CS}$)**:
+
+  * Prefer **optimism-adjusted** values from related studies (or apparent values from external validation data).
+  * If only AUC is available, use the published AUC→$R^2_{CS}$ approximation method.
+  * If neither is available, the **15% of $R^2_{CS,\\max}$** option is a conservative fallback for exploratory planning—always run sensitivity analyses.
+
+---
+
+## Key references (2–5)
+
+1. Riley RD, Snell KIE, Ensor J, et al. *Minimum sample size required for developing a multivariable prediction model: PART II—binary and time-to-event outcomes.* Statistics in Medicine. 2019.
+2. Riley RD, Ensor J, Snell KIE, et al. *Calculating the sample size required for developing a clinical prediction model.* BMJ. 2020.
+3. Riley RD, Van Calster B, Collins GS. *A note on estimating the Cox–Snell ($R^2$) from a reported C statistic (AUROC) to inform sample size calculations for developing a prediction model with a binary outcome.* Statistics in Medicine. 2021.
+4. Harrell FE Jr, Lee KL, Mark DB. *Multivariable prognostic models: issues in developing models, evaluating assumptions and adequacy, and measuring and reducing errors.* Statistics in Medicine. 1996.
+""",
     },
     "VI": {
         "title": "Prognostic Research Sample Size Tool",
@@ -1039,6 +1184,149 @@ $$
 2. Hsieh FY. *Sample size tables for logistic regression.* Statistics in Medicine. 1989;8(7):795–802.
 3. Whittemore AS. *Sample size for logistic regression with small response probability.* Journal of the American Statistical Association. 1981;76:27–32.
 """,
+        "c5_content_md": """
+### Phương pháp này là gì?
+
+C5 triển khai các **tiêu chí cỡ mẫu tối thiểu của Riley và cộng sự** cho **xây dựng mô hình dự báo đa biến** với **kết cục nhị phân** (hồi quy logistic). Mục tiêu là bảo đảm cỡ mẫu đủ để:
+
+1. **Hạn chế overfitting** (nhắm tới hệ số co rút toàn cục / calibration slope mục tiêu),
+2. Bảo đảm **độ chính xác** của hiệu năng mô hình (giới hạn mức “lạc quan” của $R^2$), và
+3. Ước tính **nguy cơ nền/tỷ lệ biến cố chung** (intercept) đủ chính xác.
+
+Đây là phương pháp cho **phát triển mô hình** (không phải ngoại kiểm). Đặc biệt phù hợp khi bạn xây dựng mô hình logistic với **danh sách biến và cách mã hóa được xác định trước**, và muốn thay thế quy tắc EPV đơn giản bằng phương pháp có cơ sở hơn.
+
+---
+
+### Khi nào nên dùng
+
+Dùng C5 khi:
+
+* Bạn đang **xây dựng** mô hình dự báo cho **kết cục nhị phân**.
+* Bạn có thể ước lượng (dù gần đúng) **tỷ lệ biến cố** và **hiệu năng dự kiến** (Cox–Snell $R^2$ hoặc AUC).
+* Bạn muốn nhắm tới **ít overfitting** (ví dụ $S \\ge 0{,}90$) và độ chính xác hợp lý.
+
+### Khi nào không nên dùng (hoặc cần thận trọng)
+
+Không nên chỉ dựa vào C5 khi:
+
+* Bạn dự định **chọn biến theo dữ liệu**, dùng nhiều tương tác/spline/tinh chỉnh phức tạp mà chưa quy đổi đúng **df hiệu dụng**.
+* Dữ liệu có **cụm/đa trung tâm** mà chưa tính design effect.
+* Phương pháp mô hình hóa khác xa logistic chuẩn (ML phức tạp) mà không có cách quy đổi độ phức tạp sang **df hiệu dụng**; khi đó nên cân nhắc mô phỏng.
+* Bạn không thể biện minh bất kỳ giả định nào về AUC/$R^2$; khi đó nên chạy độ nhạy rộng và/hoặc dùng mô phỏng.
+
+---
+
+## Chú giải các đầu vào
+
+1. **Tỷ lệ biến cố** (p)
+   Tỷ lệ (Y=1) dự kiến trong bộ dữ liệu phát triển mô hình.
+
+2. **Số tham số mô hình (df)** (P)
+   Tổng bậc tự do của tất cả biến dự báo **không tính intercept**.
+   Bao gồm: dummy của biến phân loại, basis spline, tương tác, và mọi biến đổi tạo thêm hệ số.
+
+3. **Hiệu năng dự kiến** (chọn một)
+
+* **Cox–Snell ($R^2_{CS}$)**: ưu tiên nếu có từ nghiên cứu liên quan (lý tưởng là đã hiệu chỉnh lạc quan).
+* **AUC (C-statistic)**: nếu không có $R^2_{CS}$, có thể xấp xỉ $R^2_{CS}$ từ AUC và ($p$) theo phương pháp đã công bố.
+* **Bảo thủ (15% của $R^2$ tối đa)**: dùng khi không có AUC/$R^2$; chỉ nên dùng cho ước tính sơ bộ và luôn chạy phân tích độ nhạy.
+
+4. **Mục tiêu shrinkage toàn cục** (S)
+   Thước đo kiểm soát overfitting (thường diễn giải gần với calibration slope kỳ vọng sau nội kiểm).
+
+* Mặc định hay dùng: $S=0{,}90$ (tương đương cần shrink ~10%).
+* Bảo thủ hơn: $S=0{,}95$.
+
+---
+
+## Khái niệm và công thức
+
+### Cox–Snell ($R^2$) và giá trị tối đa
+
+$$
+R^2_{CS} = 1-\\exp\\left(\\frac{2}{n}(\\ell_0-\\ell_1)\\right),
+$$
+trong đó $\\ell_0$ là log-likelihood mô hình chỉ có intercept và $\\ell_1$ là log-likelihood mô hình đầy đủ.
+
+Với kết cục nhị phân, $R^2_{CS}$ không đạt 1. Giá trị tối đa phụ thuộc ($p$):
+$$
+\\ell_0 = n\\Big[p\\ln(p) + (1-p)\\ln(1-p)\\Big],
+$$
+$$
+R^2_{CS,\\max}=1-\\exp\\left(\\frac{2\\ell_0}{n}\\right)
+=1-\\exp\\Big(2[p\\ln(p) + (1-p)\\ln(1-p)]\\Big).
+$$
+
+Nagelkerke ($R^2$):
+$$
+R^2_{Nag}=\\frac{R^2_{CS}}{R^2_{CS,\\max}}.
+$$
+
+---
+
+## Ba tiêu chí Riley (kết cục nhị phân)
+
+### Tiêu chí 1 — Giới hạn overfitting bằng shrinkage mục tiêu (S)
+
+$$
+n_1=\\left\\lceil
+\\frac{P}{(S-1)\\ln\\left(1-\\frac{R^2_{CS}}{S}\\right)}
+\\right\\rceil.
+$$
+
+### Tiêu chí 2 — Giới hạn mức lạc quan của ($R^2$) (mặc định 0,05)
+
+Tiêu chí này nhắm tới chênh lệch tuyệt đối (mặc định $\\delta=0{,}05$) giữa ($R^2$) biểu kiến và ($R^2$) hiệu chỉnh trên thang **Nagelkerke**. Shrinkage tương ứng:
+$$
+S_{\\delta}=\\frac{R^2_{CS}}{R^2_{CS}+\\delta R^2_{CS,\\max}}.
+$$
+Sau đó:
+$$
+n_2=\\left\\lceil
+\\frac{P}{(S_{\\delta}-1)\\ln\\left(1-\\frac{R^2_{CS}}{S_{\\delta}}\\right)}
+\\right\\rceil.
+$$
+
+### Tiêu chí 3 — Ước tính chính xác nguy cơ nền (intercept)
+
+Nhắm tới ước tính ($p$) trong khoảng ($\\pm d$) (mặc định $d=0{,}05$ ở mức 95%):
+$$
+n_3=\\left\\lceil
+\\left(\\frac{z_{1-\\alpha/2}}{d}\\right)^2 p(1-p)
+\\right\\rceil,
+\\quad \\text{mặc định } z_{0.975}=1.96,; d=0.05.
+$$
+
+### Kết quả cuối cùng
+
+$$
+n_{\\min}=\\max(n_1,n_2,n_3),\\qquad
+E = n_{\\min}p,\\qquad
+EPP=\\frac{E}{P}.
+$$
+
+---
+
+## Gợi ý chọn giá trị theo thông lệ
+
+* **Shrinkage (S)**: thường chọn **0,90**; cân nhắc **0,95** nếu mô hình phức tạp hoặc muốn giảm overfitting mạnh hơn.
+* **$\\delta=0{,}05$** (Tiêu chí 2): thường giữ mặc định.
+* **Độ chính xác intercept (d=0{,}05)**: mặc định tương ứng ước tính nguy cơ nền trong ±5%. Nếu cần chính xác hơn (d nhỏ hơn) thì cần (n) lớn hơn.
+* **$R^2_{CS}$ dự kiến**:
+
+  * Ưu tiên giá trị **đã hiệu chỉnh lạc quan** từ nghiên cứu phát triển tương tự, hoặc giá trị biểu kiến từ ngoại kiểm.
+  * Nếu chỉ có AUC, dùng phương pháp xấp xỉ AUC→$R^2_{CS}$ theo bài báo hướng dẫn.
+  * Nếu không có AUC/$R^2$, tùy chọn **15% của $R^2_{CS,\\max}$** chỉ nên dùng để ước tính sơ bộ và luôn chạy phân tích độ nhạy.
+
+---
+
+## Tài liệu tham khảo quan trọng (2–5)
+
+1. Riley RD, Snell KIE, Ensor J, et al. *Minimum sample size required for developing a multivariable prediction model: PART II—binary and time-to-event outcomes.* Statistics in Medicine. 2019.
+2. Riley RD, Ensor J, Snell KIE, et al. *Calculating the sample size required for developing a clinical prediction model.* BMJ. 2020.
+3. Riley RD, Van Calster B, Collins GS. *A note on estimating the Cox–Snell ($R^2$) from a reported C statistic (AUROC) to inform sample size calculations for developing a prediction model with a binary outcome.* Statistics in Medicine. 2021.
+4. Harrell FE Jr, Lee KL, Mark DB. *Multivariable prognostic models: issues in developing models, evaluating assumptions and adequacy, and measuring and reducing errors.* Statistics in Medicine. 1996.
+""",
     },
     "KO": {
         "title": "예후 연구 표본 크기 도구",
@@ -1540,6 +1828,151 @@ $$
 1. Hsieh FY, Bloch DA, Larsen MD. *A simple method of sample size calculation for linear and logistic regression.* Statistics in Medicine. 1998;17(14):1623–1634.
 2. Hsieh FY. *Sample size tables for logistic regression.* Statistics in Medicine. 1989;8(7):795–802.
 3. Whittemore AS. *Sample size for logistic regression with small response probability.* Journal of the American Statistical Association. 1981;76:27–32.
+""",
+        "c5_content_md": """
+### What this method is
+
+C5 implements the **Riley et al. analytical minimum sample size criteria** for **developing a multivariable clinical prediction model** with a **binary outcome** (logistic regression). The goal is to ensure the development dataset is large enough to:
+
+1. **Limit overfitting** (via a target global shrinkage / calibration slope),
+2. Achieve **adequate precision** for model performance (via a bound on optimism in $R^2$), and
+3. Estimate the **overall outcome risk** (intercept/baseline risk) with acceptable precision.
+
+This is a **model development** method (not external validation). It is particularly suitable when you plan a **pre-specified model form** (predictors and coding defined in advance) and want a **principled alternative to EPV rules**.
+
+---
+
+### When to use
+
+Use C5 when:
+
+* You are **developing** a new prediction model for a **binary outcome**.
+* You can specify (even approximately) the **event rate** and an anticipated **overall model performance** (Cox–Snell $R^2$ or AUC).
+* You want to target **low overfitting** (e.g., shrinkage $S \\ge 0.90$) and reasonable precision.
+
+### When NOT to use (or use with caution)
+
+Do not rely on C5 alone when:
+
+* You will do extensive **data-driven variable selection**, multiple interactions/splines, or heavy ML tuning without adjusting the **effective number of parameters (df)**.
+* Your data are strongly **clustered** (multicenter) without accounting for design effects.
+* The intended modeling approach is not standard logistic regression (e.g., complex ML) unless you map complexity to an appropriate **effective df** or switch to simulation-based sizing.
+* You cannot justify any plausible performance input (AUC/$R^2$); in that case run wide sensitivity analyses and consider simulation-based methods.
+
+---
+
+## Key inputs (what each means)
+
+1. **Outcome prevalence / event rate** (p)
+   Expected proportion with (Y=1) in the development dataset.
+
+2. **Number of predictor parameters (df)** (P)
+   Total degrees of freedom for all candidate predictors **excluding the intercept**.
+   Include: dummy variables, spline bases, interactions (and any other basis expansions).
+
+3. **Anticipated performance** (choose one)
+
+* **Cox–Snell ($R^2_{CS}$)**: preferred if available from related prior studies (ideally optimism-adjusted).
+* **AUC (C-statistic)**: if $R^2_{CS}$ is unavailable, the tool can approximate $R^2_{CS}$ from AUC and ($p$) using a published approach.
+* **Conservative (15% of max $R^2$)**: a fallback when neither AUC nor $R^2$ is available; use with caution.
+
+4. **Target global shrinkage** (S)
+   A target for **overall overfitting control** (often interpreted similarly to an expected calibration slope after internal validation).
+
+* Common default: $S = 0.90$ ($\\approx$ 10% shrinkage of predictor effects).
+* More conservative: $S = 0.95$ (requires larger sample size).
+
+---
+
+## Core concepts and formulas
+
+### Cox–Snell ($R^2$) and its maximum
+
+Cox–Snell ($R^2$) for a fitted logistic model can be written as:
+$$
+R^2_{CS} = 1-\\exp\\left(\\frac{2}{n}(\\ell_0-\\ell_1)\\right),
+$$
+where $\\ell_0$ is the intercept-only log-likelihood and $\\ell_1$ is the model log-likelihood.
+
+For binary outcomes, $R^2_{CS}$ cannot reach 1. Its maximum depends on the outcome prevalence:
+$$
+\\ell_0 = n\\Big[p\\ln(p) + (1-p)\\ln(1-p)\\Big],
+$$
+$$
+R^2_{CS,\\max}=1-\\exp\\left(\\frac{2\\ell_0}{n}\\right)
+=1-\\exp\\Big(2[p\\ln(p) + (1-p)\\ln(1-p)]\\Big).
+$$
+
+Nagelkerke ($R^2$) rescales Cox–Snell ($R^2$) to ([0,1]):
+$$
+R^2_{Nag}=\\frac{R^2_{CS}}{R^2_{CS,\\max}}.
+$$
+
+---
+
+## The three Riley criteria (binary outcome)
+
+### Criterion 1 — Control overfitting via target shrinkage (S)
+
+Minimum sample size to target global shrinkage (S):
+$$
+n_1=\\left\\lceil
+\\frac{P}{(S-1)\\ln\\left(1-\\frac{R^2_{CS}}{S}\\right)}
+\\right\\rceil.
+$$
+
+### Criterion 2 — Limit optimism in ($R^2$) (default absolute difference 0.05)
+
+This criterion targets a small absolute difference (default $\\delta=0.05$) between apparent and adjusted **Nagelkerke** ($R^2$). The required shrinkage implied by this constraint is:
+$$
+S_{\\delta}=\\frac{R^2_{CS}}{R^2_{CS}+\\delta R^2_{CS,\\max}}.
+$$
+Then:
+$$
+n_2=\\left\\lceil
+\\frac{P}{(S_{\\delta}-1)\\ln\\left(1-\\frac{R^2_{CS}}{S_{\\delta}}\\right)}
+\\right\\rceil.
+$$
+
+### Criterion 3 — Precise estimation of the overall outcome risk (intercept)
+
+This targets precision of the **average outcome risk** ($p$) (baseline risk) within ($\\pm d$) on the probability scale (default $d=0.05$ at 95% CI):
+$$
+n_3=\\left\\lceil
+\\left(\\frac{z_{1-\\alpha/2}}{d}\\right)^2 p(1-p)
+\\right\\rceil,
+\\quad \\text{default } z_{0.975}=1.96,; d=0.05.
+$$
+
+### Final recommendation
+
+$$
+n_{\\min}=\\max(n_1,n_2,n_3),\\qquad
+E = n_{\\min}p,\\qquad
+EPP=\\frac{E}{P}.
+$$
+
+---
+
+## Practical guidance (typical choices)
+
+* **Shrinkage (S)**: use **0.90** as a standard target; consider **0.95** if you want stronger overfitting control or if the model is complex.
+* **$\\delta=0.05$** for Criterion 2: commonly kept at the default.
+* **Intercept precision (d=0.05)**: default corresponds to estimating baseline risk within ±5%. If baseline risk must be estimated more precisely, you would need a smaller ($d$) (larger ($n$)).
+* **Anticipated ($R^2_{CS}$)**:
+
+  * Prefer **optimism-adjusted** values from related studies (or apparent values from external validation data).
+  * If only AUC is available, use the published AUC→$R^2_{CS}$ approximation method.
+  * If neither is available, the **15% of $R^2_{CS,\\max}$** option is a conservative fallback for exploratory planning—always run sensitivity analyses.
+
+---
+
+## Key references (2–5)
+
+1. Riley RD, Snell KIE, Ensor J, et al. *Minimum sample size required for developing a multivariable prediction model: PART II—binary and time-to-event outcomes.* Statistics in Medicine. 2019.
+2. Riley RD, Ensor J, Snell KIE, et al. *Calculating the sample size required for developing a clinical prediction model.* BMJ. 2020.
+3. Riley RD, Van Calster B, Collins GS. *A note on estimating the Cox–Snell ($R^2$) from a reported C statistic (AUROC) to inform sample size calculations for developing a prediction model with a binary outcome.* Statistics in Medicine. 2021.
+4. Harrell FE Jr, Lee KL, Mark DB. *Multivariable prognostic models: issues in developing models, evaluating assumptions and adequacy, and measuring and reducing errors.* Statistics in Medicine. 1996.
 """,
     }
 }
