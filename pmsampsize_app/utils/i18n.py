@@ -5,19 +5,19 @@ TRANS = {
         "sidebar_title": "Configuration",
         "language": "Language / Ngôn ngữ",
         "mode": "Method Selection",
-        "mode_riley": "Method 1: Riley et al. (Analytical)",
-        "mode_bayes": "Method 2: Bayesian Assurance (Simulation)",
+        "mode_riley": "Method C5: Riley et al. (Analytical)",
+        "mode_bayes": "Method C6: Bayesian Assurance (Simulation)",
         "mode_single": "Single Scenario",
         "mode_batch": "Sensitivity Analysis (Ranges)",
-        "method1_tab": "Method 1 (Riley)",
-        "method2_tab": "Method 2 (Bayesian)",
+        "method1_tab": "Method C5 (Riley)",
+        "method2_tab": "Method C6 (Bayesian)",
         "nav_title": "Navigation",
         "nav_intro": "Introduction & Formulas",
         "nav_calc": "Sample Size Calculator",
         "intro_heading": "Welcome",
         "intro_text": "This tool helps researchers calculate the minimum sample size required for developing a clinical prediction model with a binary outcome.",
-        "formula_heading": "Mathematical Framework (Method 1)",
-        "formula_intro": "Method 1 uses the closed-form solutions provided by Riley et al., while Method 2 uses Bayesian MCMC simulation.",
+        "formula_heading": "Mathematical Framework (Method C5)",
+        "formula_intro": "Method C5 uses the closed-form solutions provided by Riley et al., while Method C6 uses Bayesian MCMC simulation.",
         "sens_guide_title": "💡 How to use Sensitivity Analysis (Batch Mode)",
         "sens_guide_text": """
         - **Ranges**: Enter `min-max` (e.g., `0.05-0.10`). The app will generate steps automatically.
@@ -47,6 +47,11 @@ TRANS = {
         "perf_r2": "Cox-Snell R-squared",
         "perf_cons": "Conservative (15% of Max R2)",
         
+        # Bayesian specific 
+        "perf_cons_help": "Conservative (15% of Max R2)",
+        "perf_auc_help": "Anticipated AUC (C-statistic)",
+        "perf_r2_help": "Anticipated Cox-Snell R-squared",
+        "perf_cons_help": "Conservative (15% of Max R2)",
         # Bayesian specific
         "bayes_inputs": "Simulation Settings (Bayesian Assurance)",
         "dgm_settings": "Data Generating Mechanism",
@@ -360,6 +365,148 @@ Uses Beta quantiles to form conservative intervals. Typically yields larger samp
 ### Key references
 1. **Wilson EB.** Probable inference, the law of succession, and statistical inference. *JASA.* 1927.
 2. **Newcombe RG.** Two-sided confidence intervals for the single proportion. *Stat Med.* 1998.
+""",
+
+        "b3_content_md": """
+### Purpose (what this method is)
+
+This module estimates the **minimum sample size** needed to detect an association between a predictor (X) and a **binary outcome** (Y) using **logistic regression**, targeting a specified **odds ratio (OR)**, **two-sided ($\\alpha$)**, and **power**.
+
+This is a **prognostic factor / association-focused** power calculation (testing a regression coefficient), **not** a prediction-model performance method. It does **not** guarantee good calibration or discrimination of a multivariable prediction model.
+
+---
+
+### When to use
+
+Use B3 when:
+* You want power to detect a **clinically meaningful OR** for a **single predictor** (binary or continuous) in logistic regression.
+* Your primary goal is **hypothesis testing** (is the predictor associated with the outcome?), not building a risk prediction model.
+
+### When NOT to use
+
+Do not use B3 as your main approach when:
+* Your goal is **prediction model development** (use Riley/pmsampsize or simulation/assurance methods).
+* You plan **data-driven variable selection**, many interactions/splines, or complex machine-learning tuning (power for a single coefficient is not the right target).
+* Data are **clustered** (multicenter/ward-level correlation) or strongly dependent without adjusting the design effect.
+* You have a **case–control** design with fixed case/control sampling (baseline risks ($p_0$) may not represent the source population).
+
+---
+
+## Statistical model and parameters
+
+Logistic regression model:
+$$ \\text{logit}{P(Y=1\\mid X)}=\\beta_0+\\beta_1 X $$
+
+* For **binary** ($X \\in \\{0,1\\}$):
+  $$ \\mathrm{OR}=\\exp(\\beta_1) $$
+* For **continuous** ($X$): OR must be defined for a specific change in ($X$), commonly **1 SD increase**.
+
+Hypothesis test:
+$$ H_0:\\beta_1=0 \\quad \\text{vs}\\quad H_1:\\beta_1\\neq 0 $$
+
+---
+
+## Inputs (what each value means)
+
+1. **Alpha (two-sided)** ($\\alpha$)
+   Common choices: 0.05 (standard), 0.01 (more stringent).
+
+2. **Power** ($1-\\beta$)
+   Common choices: 0.80 (standard), 0.90 (more conservative).
+
+3. **Baseline event rate** ($p_0$)
+   * For **binary predictor**: ($p_0 = P(Y=1\\mid X=0)$) (event rate in the reference group).
+   * For **continuous predictor**: ($p_0$) is typically interpreted as the event rate at the **mean** of ($X$) (after centering).
+
+4. **Target odds ratio** ($\\mathrm{OR}$)
+   The smallest OR that is clinically meaningful and worth detecting.
+
+5. **Predictor type**
+* **Binary predictor**: requires **prevalence of (X=1)**, denoted ($q=P(X=1)$).
+* **Continuous predictor**: typically requires the OR for a **1 SD increase** (or you must convert using SD).
+
+6. **($R^2$) with other covariates**
+   ($R^2$) is the squared multiple correlation from regressing ($X$) on other covariates in a multivariable model.
+   * If ($X$) is correlated with other predictors, the effective information about ($\\beta_1$) decreases, so the required sample size increases.
+
+---
+
+# Calculation
+
+## Step 1 — Convert OR and baseline risk to ($p_1$) (binary ($X$))
+
+If ($X$) is binary, compute the event rate in the exposed group ($p_1=P(Y=1\\mid X=1)$) from ($p_0$) and OR:
+
+$$ \\text{odds}_0=\\frac{p_0}{1-p_0},\\quad \\text{odds}_1=\\mathrm{OR}\\cdot \\text{odds}_0,\\quad
+p_1=\\frac{\\text{odds}_1}{1+\\text{odds}_1} $$
+
+Overall event rate:
+$$ p=(1-q)p_0+q p_1 $$
+
+## Step 2 — Z-scores
+
+Let:
+$$ z_{\\alpha}=z_{1-\\alpha/2}, \\qquad z_{\\beta}=z_{1-\\beta}=z_{\\text{power}} $$
+
+## A) Binary predictor sample size (Hsieh approach)
+
+With ($q=P(X=1)$), ($p_0=P(Y=1\\mid X=0)$), ($p_1=P(Y=1\\mid X=1)$), and ($p$) as above:
+
+$$
+n_0=
+\\frac{
+\\left[
+z_{\\alpha}\\sqrt{\\frac{p(1-p)}{q(1-q)}}
++
+z_{\\beta}\\sqrt{\\frac{p_1(1-p_1)}{q}+\\frac{p_0(1-p_0)}{1-q}}
+\\right]^2
+}
+{(p_1-p_0)^2}
+$$
+
+### Adjustment for correlation with other covariates
+
+If you plan a multivariable model and the predictor of interest ($X$) correlates with other covariates, inflate the sample size using:
+
+$$ n=\\frac{n_0}{1-R^2} $$
+
+### Expected number of events
+
+$$ E \\approx n\\cdot p $$
+
+---
+
+## B) Continuous predictor sample size (Hsieh approach)
+
+Assume a logistic model with a continuous predictor ($X$) and define OR for a **1 SD increase** in ($X$), denoted ($\\mathrm{OR}_{SD}$). Let ($p_0$) be the event rate at the mean of ($X$):
+
+$$ n_0=\\frac{(z_{\\alpha}+z_{\\beta})^2}{p_0(1-p_0) [\\log(\\mathrm{OR}_{SD})]^2} $$
+
+If the user has an OR per 1-unit increase, ($\\mathrm{OR}_{unit}$), and SD of ($X$) is ($\\sigma_X$), convert:
+$$ \\log(\\mathrm{OR}_{SD})=\\log(\\mathrm{OR}_{unit})\\cdot \\sigma_X $$
+
+Then apply the same multivariable correlation inflation:
+$$ n=\\frac{n_0}{1-R^2} $$
+
+---
+
+## Practical guidance: what values to choose (common conventions)
+
+* **($\\alpha$)**: 0.05 (two-sided) is typical; use smaller ($\\alpha$) if multiple testing is expected.
+* **Power**: 0.80 is common; 0.90 is preferred when missing the effect would be costly.
+* **OR**: choose the **minimum clinically meaningful** OR (often in the 1.2–2.0 range depending on context).
+* **Baseline risk ($p_0$)**: use local hospital/cohort data if available; otherwise use literature estimates and run sensitivity analyses.
+* **Binary predictor prevalence ($q$)**: use local prevalence; note ($q$) near 0.5 gives the **largest information** (smaller ($n$)); very small/large ($q$) increases required ($n$).
+* **($R^2$)**: if uncertain, run a sensitivity range (e.g., 0, 0.1, 0.25, 0.5). Even moderate correlation can inflate ($n$) substantially via ($1/(1-R^2)$).
+* **Continuous predictors**: consider standardizing ($X$) to mean 0, SD 1 so ($\\mathrm{OR}_{SD}$) is easy to interpret.
+
+---
+
+## Key references (2–5)
+
+1. Hsieh FY, Bloch DA, Larsen MD. *A simple method of sample size calculation for linear and logistic regression.* Statistics in Medicine. 1998;17(14):1623–1634.
+2. Hsieh FY. *Sample size tables for logistic regression.* Statistics in Medicine. 1989;8(7):795–802.
+3. Whittemore AS. *Sample size for logistic regression with small response probability.* Journal of the American Statistical Association. 1981;76:27–32.
 """
     },
     "VI": {
@@ -708,6 +855,133 @@ Dùng phân vị Beta. Đây là phương pháp bảo thủ.
 ### Tài liệu tham khảo quan trọng
 1. **Wilson EB.** Probable inference... *JASA.* 1927.
 2. **Newcombe RG.** Two-sided confidence intervals... *Stat Med.* 1998.
+""",
+
+        "b3_content_md": """
+### Mục đích (phương pháp này là gì)
+
+Chức năng này ước tính **cỡ mẫu tối thiểu** để phát hiện mối liên quan giữa biến dự báo (X) và **kết cục nhị phân** (Y) bằng **hồi quy logistic**, với **OR mục tiêu**, **($\\alpha$) hai phía**, và **power** đã chọn.
+
+Đây là phương pháp **power cho nghiên cứu yếu tố tiên lượng / kiểm định liên quan** (kiểm định hệ số hồi quy), **không phải** phương pháp đảm bảo hiệu năng của **mô hình dự báo**. Nó **không đảm bảo** calibration/discrimination của mô hình đa biến.
+
+---
+
+### Khi nào nên dùng
+
+Dùng B3 khi:
+* Bạn cần power để phát hiện **OR có ý nghĩa lâm sàng** cho **một biến** (nhị phân hoặc liên tục) trong logistic regression.
+* Mục tiêu là **kiểm định giả thuyết** (biến có liên quan kết cục hay không), không phải xây dựng mô hình dự báo nguy cơ.
+
+### Khi nào không nên dùng
+
+Không dùng B3 làm phương pháp chính khi:
+* Mục tiêu là **xây dựng mô hình dự báo** (nên dùng Riley/pmsampsize hoặc mô phỏng/assurance).
+* Bạn dự định **chọn biến theo dữ liệu**, dùng nhiều spline/tương tác, hoặc tuning mô hình phức tạp (power cho 1 hệ số không còn là mục tiêu phù hợp).
+* Dữ liệu có **phụ thuộc/cụm** (đa trung tâm/khoa/phòng) mà chưa tính design effect.
+* Thiết kế **case–control** với số ca/chứng cố định (giá trị ($p_0$) không phản ánh nguy cơ nền quần thể).
+
+---
+
+## Mô hình và tham số
+
+Mô hình logistic:
+$$ \\text{logit}{P(Y=1\\mid X)}=\\beta_0+\\beta_1 X $$
+
+* Nếu ($X$) nhị phân 0/1:
+  $$ \\mathrm{OR}=\\exp(\\beta_1) $$
+* Nếu ($X$) liên tục: OR phải gắn với một mức thay đổi của ($X$) (thông dụng nhất: **tăng 1 SD**).
+
+Kiểm định:
+$$ H_0:\\beta_1=0 \\quad \\text{vs}\\quad H_1:\\beta_1\\neq 0 $$
+
+---
+
+## Chú giải các đầu vào
+
+1. **Alpha (2 phía)** ($\\alpha$): thường 0,05; 0,01 nếu nghiêm ngặt hơn.
+2. **Power** ($1-\\beta$): thường 0,80; 0,90 nếu cần thận trọng.
+3. **Tỷ lệ biến cố nền** ($p_0$)
+   * Với ($X$) nhị phân: ($p_0=P(Y=1\\mid X=0)$).
+   * Với ($X$) liên tục: ($p_0$) thường hiểu là tỷ lệ biến cố tại **giá trị trung bình** của ($X$) (sau khi center).
+4. **OR mục tiêu**: mức OR nhỏ nhất có ý nghĩa lâm sàng.
+5. **Loại biến dự báo**
+   * Nhị phân: cần ($q=P(X=1)$).
+   * Liên tục: cần OR cho **tăng 1 SD** (hoặc phải quy đổi từ OR theo 1 đơn vị).
+6. **($R^2$) với các đồng biến khác**
+   * ($R^2$) là mức độ ($X$) được giải thích bởi các đồng biến khác (khi hồi quy ($X$) theo các biến khác).
+   * ($R^2$) càng lớn → cần cỡ mẫu càng lớn (vì thông tin “độc lập” của ($X$) giảm).
+
+---
+
+# Cách tính (công thức)
+
+## Bước 1 — Quy đổi OR và ($p_0$) sang ($p_1$) (khi ($X$) nhị phân)
+
+$$ \\text{odds}_0=\\frac{p_0}{1-p_0},\\quad \\text{odds}_1=\\mathrm{OR}\\cdot \\text{odds}_0,\\quad
+p_1=\\frac{\\text{odds}_1}{1+\\text{odds}_1} $$
+
+Tỷ lệ biến cố chung:
+$$ p=(1-q)p_0+q p_1 $$
+
+## Bước 2 — Z-score
+
+$$ z_{\\alpha}=z_{1-\\alpha/2}, \\qquad z_{\\beta}=z_{1-\\beta}=z_{\\text{power}} $$
+
+## A) Cỡ mẫu với biến dự báo nhị phân
+
+$$
+n_0=
+\\frac{
+\\left[
+z_{\\alpha}\\sqrt{\\frac{p(1-p)}{q(1-q)}}
++
+z_{\\beta}\\sqrt{\\frac{p_1(1-p_1)}{q}+\\frac{p_0(1-p_0)}{1-q}}
+\\right]^2
+}
+{(p_1-p_0)^2}
+$$
+
+### Hiệu chỉnh khi có nhiều đồng biến (tương quan với biến khác)
+
+$$ n=\\frac{n_0}{1-R^2} $$
+
+### Số biến cố kỳ vọng
+
+$$ E \\approx n\\cdot p $$
+
+---
+
+## B) Cỡ mẫu với biến dự báo liên tục
+
+Giả định OR được định nghĩa cho **tăng 1 SD** của ($X$) (ký hiệu ($\\mathrm{OR}_{SD}$)), và ($p_0$) là tỷ lệ biến cố tại trung bình của ($X$):
+
+$$ n_0=\\frac{(z_{\\alpha}+z_{\\beta})^2}{p_0(1-p_0) [\\log(\\mathrm{OR}_{SD})]^2} $$
+
+Nếu OR nhập theo **tăng 1 đơn vị** là ($\\mathrm{OR}_{unit}$), và SD của ($X$) là ($\\sigma_X$), thì:
+$$ \\log(\\mathrm{OR}_{SD})=\\log(\\mathrm{OR}_{unit})\\cdot \\sigma_X $$
+
+Sau đó hiệu chỉnh tương quan đồng biến:
+$$ n=\\frac{n_0}{1-R^2} $$
+
+---
+
+## Nên chọn giá trị bao nhiêu theo thông lệ?
+
+* **($\\alpha$)**: 0,05 (hai phía) là phổ biến; giảm ($\\alpha$) nếu có nhiều kiểm định.
+* **Power**: 0,80 (thường dùng); 0,90 (thận trọng hơn).
+* **OR mục tiêu**: chọn OR nhỏ nhất có ý nghĩa lâm sàng (thường 1,2–2,0 tùy bối cảnh).
+* **($p_0$)**: ưu tiên dữ liệu bệnh viện; nếu chưa có, dùng y văn và chạy độ nhạy.
+* **($q$)**: lấy từ tỷ lệ phơi nhiễm thực tế; ($q$) gần 0,5 thường cho cỡ mẫu nhỏ hơn; ($q$) rất thấp/cao làm tăng ($n$).
+* **($R^2$)**: nếu chưa chắc, chạy độ nhạy (0; 0,1; 0,25; 0,5).
+* **Biến liên tục**: nên chuẩn hóa ($X$) (mean 0, SD 1) để OR theo 1 SD dễ hiểu.
+
+---
+
+## Tài liệu tham khảo quan trọng (2–5)
+
+1. Hsieh FY, Bloch DA, Larsen MD. *A simple method of sample size calculation for linear and logistic regression.* Statistics in Medicine. 1998;17(14):1623–1634.
+2. Hsieh FY. *Sample size tables for logistic regression.* Statistics in Medicine. 1989;8(7):795–802.
+3. Whittemore AS. *Sample size for logistic regression with small response probability.* Journal of the American Statistical Association. 1981;76:27–32.
 """
     },
     "KO": {
@@ -1041,6 +1315,144 @@ Beta 분위수를 사용합니다. 보수적인 방법입니다.
 ### 주요 참고 문헌
 1. **Wilson EB.** Probable inference... *JASA.* 1927.
 2. **Newcombe RG.** Two-sided confidence intervals... *Stat Med.* 1998.
+""",
+
+        "b3_content_md": """
+### Purpose (what this method is)
+
+This module estimates the **minimum sample size** needed to detect an association between a predictor (X) and a **binary outcome** (Y) using **logistic regression**, targeting a specified **odds ratio (OR)**, **two-sided ($\\alpha$)**, and **power**.
+
+This is a **prognostic factor / association-focused** power calculation (testing a regression coefficient), **not** a prediction-model performance method. It does **not** guarantee good calibration or discrimination of a multivariable prediction model.
+
+---
+
+### When to use
+
+Use B3 when:
+* You want power to detect a **clinically meaningful OR** for a **single predictor** (binary or continuous) in logistic regression.
+* Your primary goal is **hypothesis testing** (is the predictor associated with the outcome?), not building a risk prediction model.
+
+### When NOT to use
+
+Do not use B3 as your main approach when:
+* Your goal is **prediction model development** (use Riley/pmsampsize or simulation/assurance methods).
+* You plan **data-driven variable selection**, many interactions/splines, or complex machine-learning tuning (power for a single coefficient is not the right target).
+* Data are **clustered** (multicenter/ward-level correlation) or strongly dependent without adjusting the design effect.
+* You have a **case–control** design with fixed case/control sampling (baseline risks ($p_0$) may not represent the source population).
+
+---
+
+## Statistical model and parameters
+
+Logistic regression model:
+$$ \\text{logit}{P(Y=1\\mid X)}=\\beta_0+\\beta_1 X $$
+
+* For **binary** ($X \\in \\{0,1\\}$):
+  $$ \\mathrm{OR}=\\exp(\\beta_1) $$
+* For **continuous** ($X$): OR must be defined for a specific change in ($X$), commonly **1 SD increase**.
+
+Hypothesis test:
+$$ H_0:\\beta_1=0 \\quad \\text{vs}\\quad H_1:\\beta_1\\neq 0 $$
+
+---
+
+## Inputs (what each value means)
+
+1. **Alpha (two-sided)** ($\\alpha$)
+   Common choices: 0.05 (standard), 0.01 (more stringent).
+
+2. **Power** ($1-\\beta$)
+   Common choices: 0.80 (standard), 0.90 (more conservative).
+
+3. **Baseline event rate** ($p_0$)
+   * For **binary predictor**: ($p_0 = P(Y=1\\mid X=0)$) (event rate in the reference group).
+   * For **continuous predictor**: ($p_0$) is typically interpreted as the event rate at the **mean** of ($X$) (after centering).
+
+4. **Target odds ratio** ($\\mathrm{OR}$)
+   The smallest OR that is clinically meaningful and worth detecting.
+
+5. **Predictor type**
+* **Binary predictor**: requires **prevalence of (X=1)**, denoted ($q=P(X=1)$).
+* **Continuous predictor**: typically requires the OR for a **1 SD increase** (or you must convert using SD).
+
+6. **($R^2$) with other covariates**
+   ($R^2$) is the squared multiple correlation from regressing ($X$) on other covariates in a multivariable model.
+   * If ($X$) is correlated with other predictors, the effective information about ($\\beta_1$) decreases, so the required sample size increases.
+
+---
+
+# Calculation
+
+## Step 1 — Convert OR and baseline risk to ($p_1$) (binary ($X$))
+
+If ($X$) is binary, compute the event rate in the exposed group ($p_1=P(Y=1\\mid X=1)$) from ($p_0$) and OR:
+
+$$ \\text{odds}_0=\\frac{p_0}{1-p_0},\\quad \\text{odds}_1=\\mathrm{OR}\\cdot \\text{odds}_0,\\quad
+p_1=\\frac{\\text{odds}_1}{1+\\text{odds}_1} $$
+
+Overall event rate:
+$$ p=(1-q)p_0+q p_1 $$
+
+## Step 2 — Z-scores
+
+Let:
+$$ z_{\\alpha}=z_{1-\\alpha/2}, \\qquad z_{\\beta}=z_{1-\\beta}=z_{\\text{power}} $$
+
+## A) Binary predictor sample size (Hsieh approach)
+
+$$
+n_0=
+\\frac{
+\\left[
+z_{\\alpha}\\sqrt{\\frac{p(1-p)}{q(1-q)}}
++
+z_{\\beta}\\sqrt{\\frac{p_1(1-p_1)}{q}+\\frac{p_0(1-p_0)}{1-q}}
+\\right]^2
+}
+{(p_1-p_0)^2}
+$$
+
+### Adjustment for correlation with other covariates
+
+$$ n=\\frac{n_0}{1-R^2} $$
+
+### Expected number of events
+
+$$ E \\approx n\\cdot p $$
+
+---
+
+## B) Continuous predictor sample size (Hsieh approach)
+
+Assume a logistic model with a continuous predictor ($X$) and define OR for a **1 SD increase** in ($X$), denoted ($\\mathrm{OR}_{SD}$). Let ($p_0$) be the event rate at the mean of ($X$):
+
+$$ n_0=\\frac{(z_{\\alpha}+z_{\\beta})^2}{p_0(1-p_0) [\\log(\\mathrm{OR}_{SD})]^2} $$
+
+If the user has an OR per 1-unit increase, ($\\mathrm{OR}_{unit}$), and SD of ($X$) is ($\\sigma_X$), convert:
+$$ \\log(\\mathrm{OR}_{SD})=\\log(\\mathrm{OR}_{unit})\\cdot \\sigma_X $$
+
+Then apply the same multivariable correlation inflation:
+$$ n=\\frac{n_0}{1-R^2} $$
+
+---
+
+## Practical guidance: what values to choose (common conventions)
+
+* **($\\alpha$)**: 0.05 (two-sided) is typical; use smaller ($\\alpha$) if multiple testing is expected.
+* **Power**: 0.80 is common; 0.90 is preferred when missing the effect would be costly.
+* **OR**: choose the **minimum clinically meaningful** OR (often in the 1.2–2.0 range depending on context).
+* **Baseline risk ($p_0$)**: use local hospital/cohort data if available; otherwise use literature estimates and run sensitivity analyses.
+* **Binary predictor prevalence ($q$)**: use local prevalence; note ($q$) near 0.5 gives the **largest information** (smaller ($n$)); very small/large ($q$) increases required ($n$).
+* **($R^2$)**: if uncertain, run a sensitivity range (e.g., 0, 0.1, 0.25, 0.5). Even moderate correlation can inflate ($n$) substantially via ($1/(1-R^2)$).
+* **Continuous predictors**: consider standardizing ($X$) to mean 0, SD 1 so ($\\mathrm{OR}_{SD}$) is easy to interpret.
+
+---
+
+## Key references (2–5)
+
+1. Hsieh FY, Bloch DA, Larsen MD. *A simple method of sample size calculation for linear and logistic regression.* Statistics in Medicine. 1998;17(14):1623–1634.
+2. Hsieh FY. *Sample size tables for logistic regression.* Statistics in Medicine. 1989;8(7):795–802.
+3. Whittemore AS. *Sample size for logistic regression with small response probability.* Journal of the American Statistical Association. 1981;76:27–32.
 """
     }
 }
