@@ -95,6 +95,7 @@ TRANS = {
         # Power Methods (B)
         "title_b3": "B3: Logistic Power (Hsieh)",
         "title_b4": "B4: Cox Power (Schoenfeld)",
+        "interpretation": "Interpretation",
         
         # UI Basics
         "d8_assumptions": "**Assumptions**: Uses Hanley & McNeil (1982) variance approximation. Symmetric Normal assumption for AUC. Numerical optimization to find N.",
@@ -228,7 +229,9 @@ TRANS = {
         "risk_help": "Tính N để ước lượng tỷ lệ p với độ chính xác nhất định. KHÔNG đảm bảo hiệu năng mô hình dự báo.",
         
         # Power Methods (B)
+        "title_b3": "B3: Logistic Power (Hsieh)",
         "title_b4": "B4: Cox Power (Schoenfeld)",
+        "interpretation": "Giải thích kết quả",
         
         # Validations (D)
         "title_d8": "D8: AUC Precision (Hanley-McNeil)",
