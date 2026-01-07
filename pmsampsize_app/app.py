@@ -127,14 +127,7 @@ def render_sidebar(lang):
         st.rerun()
 
 
-def render_sidebar(lang):
-    """Renders the Tree Navigation and Settings."""
-    T = TRANS.get(lang, TRANS["EN"])
-    st.sidebar.title(T["title"])
-    
-    # 1. Search
-    search_query = st.sidebar.text_input(T["search_placeholder"], "")
-...
+
 def render_intro_page(lang):
     """Renders the Introduction / Dashboard page."""
     T = TRANS.get(lang, TRANS["EN"]) # Fallback
@@ -144,7 +137,7 @@ def render_intro_page(lang):
     st.markdown(f"""
     ### {T.get('intro_heading', 'Welcome')}
     
-    specifically focusing on **Prognosis** and **Prediction Modeling**.
+    This tool helps researchers calculate the minimum sample size required for clinical prediction models, specifically focusing on **Prognosis** and **Prediction Modeling**.
     """)
     
     # Dynamic Method List
