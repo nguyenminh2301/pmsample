@@ -21,15 +21,11 @@ def render_ui(T):
         
     if st.button(T["calc_btn"], key="btn_q1"):
         try:
-            # Helper to parse input (duplicated from app.py, maybe move to utils?)
-            # For now defined locally or imported if we had a utils module
-            from pmsampsize_app.app import parse_input
-            
             p_list = parse_input(p_str)
             P_list = parse_input(P_str, int)
             epv_list = parse_input(epv_str)
             
-            df = core_quick_epv.calculate_epv_size(p_list, P_list, epv_list)
+            df = core_epv.calculate_epv_size(p_list, P_list, epv_list)
             st.dataframe(df)
             st.download_button("Download CSV", df.to_csv(index=False).encode('utf-8'), "epv_results.csv")
         except Exception as e:
