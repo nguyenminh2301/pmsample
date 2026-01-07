@@ -26,7 +26,7 @@ def render_ui(T):
             w_list = parse_input(width_str)
             c_list = parse_input(conf_str)
             
-            df = core_quick_binom_precision.generate_binom_grid(p_list, w_list, c_list, method)
+            df = core_precision.generate_binom_grid(p_list, w_list, c_list, method)
             st.dataframe(df.style.format({"P_expected": "{:.3f}", "Actual_Half_Width": "{:.4f}"}))
             st.download_button("Download CSV", df.to_csv(index=False).encode('utf-8'), "precision_results.csv")
         except Exception as e:

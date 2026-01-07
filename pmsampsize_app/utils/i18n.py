@@ -107,6 +107,21 @@ TRANS = {
         "d8_opt_bound": "Search Upper Limit",
         "d8_opt_tol": "Tolerance",
         
+        # Validations (D)
+        "title_d8": "D8: AUC Precision (Hanley-McNeil)",
+        "d8_desc": "Calculate sample size for estimating AUC with desired precision (CI width).",
+        "auc_expected": "Expected AUC (C-statistic)",
+        "formulas_header": "📚 Formulas & Technical Details",
+        "d8_assumptions": "**Assumptions**: Uses Hanley & McNeil (1982) variance approximation. Symmetric Normal assumption for AUC.",
+        "d8_mode_n_to_width": "Calculate CI Width from N",
+        "d8_mode_width_to_n": "Calculate N from CI Width",
+        "d8_opt_settings": "Advanced Optimizer Settings",
+        "d8_practical_rounding": "Show Practical Rounding",
+        "d8_n_input": "Sample Size (N)",
+        "d8_width_input": "CI Width (Total)",
+        "d8_opt_bound": "Search Upper Limit",
+        "d8_opt_tol": "Tolerance",
+        
         # D9
         "title_d9": "D9: External Validation (Tailored)",
         "common_inputs": "Common Parameters",
@@ -216,8 +231,8 @@ TRANS = {
         "title_b4": "B4: Cox Power (Schoenfeld)",
         
         # Validations (D)
-        "title_d8": "D8: Độ chính xác AUC (Hanley-McNeil)",
-        "d8_desc": "Tính cỡ mẫu để ước lượng AUC với độ chính xác (độ rộng CI) mong muốn.",
+        "title_d8": "D8: AUC Precision (Hanley-McNeil)",
+        "d8_desc": "Calculate sample size for estimating AUC with desired precision (CI width).",
         "auc_expected": "AUC dự kiến (C-statistic)",
         "formulas_header": "📚 Công thức & Chi tiết kỹ thuật",
         "d8_assumptions": "**Giả định**: Sử dụng xấp xỉ phương sai Hanley & McNeil (1982). Giả định phân phối chuẩn đối xứng cho AUC. Tối ưu hóa số học để tìm N.",
