@@ -468,7 +468,7 @@ $$
 Giả định OR được định nghĩa cho **tăng 1 SD** của ($X$) (ký hiệu ($\\mathrm{OR}_{SD}$)), và ($p_0$) là tỷ lệ biến cố tại trung bình của ($X$):
 
 $$
-n_0=\\frac{(z_{\\alpha}+z_{\\beta})^2}{p_0(1-p_0), [\\log(\\mathrm{OR}_{SD})]^2}
+n_0=\\frac{(z_{\\alpha}+z_{\\beta})^2}{p_0(1-p_0) [\\log(\\mathrm{OR}_{SD})]^2}
 $$
 
 Nếu OR nhập theo **tăng 1 đơn vị** là ($\\mathrm{OR}_{unit}$), và SD của ($X$) là ($\\sigma_X$), thì:
@@ -502,6 +502,8 @@ $$
 3. Whittemore AS. *Sample size for logistic regression with small response probability.* Journal of the American Statistical Association. 1981;76:27–32.
 """,
         "c5_content_md": """
+### C5: Riley et al. (Phân tích)
+
 ### Phương pháp này là gì?
 
 C5 triển khai các **tiêu chí cỡ mẫu tối thiểu của Riley và cộng sự** cho **xây dựng mô hình dự báo đa biến** với **kết cục nhị phân** (hồi quy logistic). Mục tiêu là bảo đảm cỡ mẫu đủ để:
@@ -561,7 +563,7 @@ Không nên chỉ dựa vào C5 khi:
 ### Cox–Snell ($R^2$) và giá trị tối đa
 
 $$
-R^2_{CS} = 1-\\exp\\left(\\frac{2}{n}(\\ell_0-\\ell_1)\\right),
+R^2_{CS} = 1-\\exp!\\left(\\frac{2}{n}(\\ell_0-\\ell_1)\\right),
 $$
 trong đó $\\ell_0$ là log-likelihood mô hình chỉ có intercept và $\\ell_1$ là log-likelihood mô hình đầy đủ.
 
@@ -570,8 +572,8 @@ $$
 \\ell_0 = n\\Big[p\\ln(p) + (1-p)\\ln(1-p)\\Big],
 $$
 $$
-R^2_{CS,\\max}=1-\\exp\\left(\\frac{2\\ell_0}{n}\\right)
-=1-\\exp\\Big(2[p\\ln(p) + (1-p)\\ln(1-p)]\\Big).
+R^2_{CS,\\max}=1-\\exp!\\left(\\frac{2\\ell_0}{n}\\right)
+=1-\\exp!\\Big(2[p\\ln(p) + (1-p)\\ln(1-p)]\\Big).
 $$
 
 Nagelkerke ($R^2$):
@@ -587,7 +589,7 @@ $$
 
 $$
 n_1=\\left\\lceil
-\\frac{P}{(S-1)\\ln\\left(1-\\frac{R^2_{CS}}{S}\\right)}
+\\frac{P}{(S-1),\\ln!\\left(1-\\frac{R^2_{CS}}{S}\\right)}
 \\right\\rceil.
 $$
 
@@ -595,12 +597,12 @@ $$
 
 Tiêu chí này nhắm tới chênh lệch tuyệt đối (mặc định $\\delta=0{,}05$) giữa ($R^2$) biểu kiến và ($R^2$) hiệu chỉnh trên thang **Nagelkerke**. Shrinkage tương ứng:
 $$
-S_{\\delta}=\\frac{R^2_{CS}}{R^2_{CS}+\\delta R^2_{CS,\\max}}.
+S_{\\delta}=\\frac{R^2_{CS}}{R^2_{CS}+\\delta,R^2_{CS,\\max}}.
 $$
 Sau đó:
 $$
 n_2=\\left\\lceil
-\\frac{P}{(S_{\\delta}-1)\\ln\\left(1-\\frac{R^2_{CS}}{S_{\\delta}}\\right)}
+\\frac{P}{(S_{\\delta}-1),\\ln!\\left(1-\\frac{R^2_{CS}}{S_{\\delta}}\\right)}
 \\right\\rceil.
 $$
 
@@ -618,7 +620,7 @@ $$
 
 $$
 n_{\\min}=\\max(n_1,n_2,n_3),\\qquad
-E = n_{\\min}p,\\qquad
+E = n_{\\min},p,\\qquad
 EPP=\\frac{E}{P}.
 $$
 

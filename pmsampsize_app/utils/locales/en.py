@@ -502,7 +502,7 @@ $$
 Assume a logistic model with a continuous predictor ($X$) and define OR for a **1 SD increase** in ($X$), denoted ($\\mathrm{OR}_{SD}$). Let ($p_0$) be the event rate at the mean of ($X$):
 
 $$
-n_0=\\frac{(z_{\\alpha}+z_{\\beta})^2}{p_0(1-p_0)[\\log(\\mathrm{OR}_{SD})]^2}
+n_0=\\frac{(z_{\\alpha}+z_{\\beta})^2}{p_0(1-p_0) [\\log(\\mathrm{OR}_{SD})]^2}
 $$
 
 If the user has an OR per 1-unit increase, ($\\mathrm{OR}_{unit}$), and SD of ($X$) is ($\\sigma_X$), convert:
@@ -595,24 +595,24 @@ Do not rely on C5 alone when:
 ### Cox–Snell ($R^2$) and its maximum
 
 Cox–Snell ($R^2$) for a fitted logistic model can be written as:
-$$
-R^2_{CS} = 1-\\exp\\left(\\frac{2}{n}(\\ell_0-\\ell_1)\\right),
-$$
-where $\\ell_0$ is the intercept-only log-likelihood and $\\ell_1$ is the model log-likelihood.
+[
+R^2_{CS} = 1-\\exp!\\left(\\frac{2}{n}(\\ell_0-\\ell_1)\\right),
+]
+where (\\ell_0) is the intercept-only log-likelihood and (\\ell_1) is the model log-likelihood.
 
-For binary outcomes, $R^2_{CS}$ cannot reach 1. Its maximum depends on the outcome prevalence:
-$$
+For binary outcomes, ($R^2_{CS}$) cannot reach 1. Its maximum depends on the outcome prevalence:
+[
 \\ell_0 = n\\Big[p\\ln(p) + (1-p)\\ln(1-p)\\Big],
-$$
-$$
-R^2_{CS,\\max}=1-\\exp\\left(\\frac{2\\ell_0}{n}\\right)
-=1-\\exp\\Big(2[p\\ln(p) + (1-p)\\ln(1-p)]\\Big).
-$$
+]
+[
+R^2_{CS,\\max}=1-\\exp!\\left(\\frac{2\\ell_0}{n}\\right)
+=1-\\exp!\\Big(2[p\\ln(p) + (1-p)\\ln(1-p)]\\Big).
+]
 
 Nagelkerke ($R^2$) rescales Cox–Snell ($R^2$) to ([0,1]):
-$$
+[
 R^2_{Nag}=\\frac{R^2_{CS}}{R^2_{CS,\\max}}.
-$$
+]
 
 ---
 
@@ -621,55 +621,55 @@ $$
 ### Criterion 1 — Control overfitting via target shrinkage (S)
 
 Minimum sample size to target global shrinkage (S):
-$$
+[
 n_1=\\left\\lceil
-\\frac{P}{(S-1)\\ln\\left(1-\\frac{R^2_{CS}}{S}\\right)}
+\\frac{P}{(S-1),\\ln!\\left(1-\\frac{R^2_{CS}}{S}\\right)}
 \\right\\rceil.
-$$
+]
 
 ### Criterion 2 — Limit optimism in ($R^2$) (default absolute difference 0.05)
 
-This criterion targets a small absolute difference (default $\\delta=0.05$) between apparent and adjusted **Nagelkerke** ($R^2$). The required shrinkage implied by this constraint is:
-$$
-S_{\\delta}=\\frac{R^2_{CS}}{R^2_{CS}+\\delta R^2_{CS,\\max}}.
-$$
+This criterion targets a small absolute difference (default (\\delta=0.05)) between apparent and adjusted **Nagelkerke** ($R^2$). The required shrinkage implied by this constraint is:
+[
+S_{\\delta}=\\frac{R^2_{CS}}{R^2_{CS}+\\delta,R^2_{CS,\\max}}.
+]
 Then:
-$$
+[
 n_2=\\left\\lceil
-\\frac{P}{(S_{\\delta}-1)\\ln\\left(1-\\frac{R^2_{CS}}{S_{\\delta}}\\right)}
+\\frac{P}{(S_{\\delta}-1),\\ln!\\left(1-\\frac{R^2_{CS}}{S_{\\delta}}\\right)}
 \\right\\rceil.
-$$
+]
 
 ### Criterion 3 — Precise estimation of the overall outcome risk (intercept)
 
-This targets precision of the **average outcome risk** ($p$) (baseline risk) within ($\\pm d$) on the probability scale (default $d=0.05$ at 95% CI):
-$$
+This targets precision of the **average outcome risk** (p) (baseline risk) within (\\pm d) on the probability scale (default (d=0.05) at 95% CI):
+[
 n_3=\\left\\lceil
 \\left(\\frac{z_{1-\\alpha/2}}{d}\\right)^2 p(1-p)
 \\right\\rceil,
 \\quad \\text{default } z_{0.975}=1.96,; d=0.05.
-$$
+]
 
 ### Final recommendation
 
-$$
+[
 n_{\\min}=\\max(n_1,n_2,n_3),\\qquad
-E = n_{\\min}p,\\qquad
+E = n_{\\min},p,\\qquad
 EPP=\\frac{E}{P}.
-$$
+]
 
 ---
 
 ## Practical guidance (typical choices)
 
 * **Shrinkage (S)**: use **0.90** as a standard target; consider **0.95** if you want stronger overfitting control or if the model is complex.
-* **$\\delta=0.05$** for Criterion 2: commonly kept at the default.
-* **Intercept precision (d=0.05)**: default corresponds to estimating baseline risk within ±5%. If baseline risk must be estimated more precisely, you would need a smaller ($d$) (larger ($n$)).
+* **(\\delta=0.05)** for Criterion 2: commonly kept at the default.
+* **Intercept precision (d=0.05)**: default corresponds to estimating baseline risk within ±5%. If baseline risk must be estimated more precisely, you would need a smaller (d) (larger (n)).
 * **Anticipated ($R^2_{CS}$)**:
 
   * Prefer **optimism-adjusted** values from related studies (or apparent values from external validation data).
-  * If only AUC is available, use the published AUC→$R^2_{CS}$ approximation method.
-  * If neither is available, the **15% of $R^2_{CS,\\max}$** option is a conservative fallback for exploratory planning—always run sensitivity analyses.
+  * If only AUC is available, use the published AUC→($R^2_{CS}$) approximation method.
+  * If neither is available, the **15% of ($R^2_{CS,\\max}$)** option is a conservative fallback for exploratory planning—always run sensitivity analyses.
 
 ---
 
