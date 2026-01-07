@@ -54,10 +54,11 @@ def apply_theme():
 
 def render_sidebar(lang):
     """Renders the Tree Navigation and Settings."""
-    st.sidebar.title("Minh Sample Size")
+    T = TRANS.get(lang, TRANS["EN"])
+    st.sidebar.title(T["title"])
     
     # 1. Search
-    search_query = st.sidebar.text_input("🔍 Search methods...", "")
+    search_query = st.sidebar.text_input(T["search_placeholder"], "")
     
     # 2. Tree Navigation
     st.sidebar.markdown("### Method Catalog")
@@ -97,11 +98,15 @@ def render_sidebar(lang):
     st.sidebar.markdown("### Settings")
     
     # Language
-    lang_idx = 1 if lang == "VI" else 0
-    new_lang = st.sidebar.selectbox("Language / Ngôn ngữ", ["English (EN)", "Tiếng Việt (VI)", "中文 (ZH)", "日本語 (JP)", "한국어 (KO)"], index=lang_idx)
+    lang_idx = 0
+    if lang == "VI": lang_idx = 1
+    elif lang == "KO": lang_idx = 2
+    
+    new_lang = st.sidebar.selectbox("Language / Ngôn ngữ", ["English (EN)", "Tiếng Việt (VI)", "한국어 (KO)", "中文 (ZH)", "日本語 (JP)"], index=lang_idx)
     
     if "English" in new_lang: selected_lang = "EN"
     elif "Tiếng Việt" in new_lang: selected_lang = "VI"
+    elif "한국어" in new_lang: selected_lang = "KO"
     else:
         st.sidebar.info("Coming soon / Sắp ra mắt")
         selected_lang = lang # Keep current
@@ -122,11 +127,19 @@ def render_sidebar(lang):
         st.rerun()
 
 
+def render_sidebar(lang):
+    """Renders the Tree Navigation and Settings."""
+    T = TRANS.get(lang, TRANS["EN"])
+    st.sidebar.title(T["title"])
+    
+    # 1. Search
+    search_query = st.sidebar.text_input(T["search_placeholder"], "")
+...
 def render_intro_page(lang):
     """Renders the Introduction / Dashboard page."""
     T = TRANS.get(lang, TRANS["EN"]) # Fallback
     
-    st.title("Minh Sample Size App (Binary Prediction Models)")
+    st.title(T["title"])
     
     st.markdown(f"""
     ### {T.get('intro_heading', 'Welcome')}
