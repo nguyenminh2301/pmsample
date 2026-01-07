@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import time
 import json
+import os
 import matplotlib.pyplot as plt
 
 # Import internal modules (with fallback for direct execution)
@@ -61,11 +62,18 @@ def render_sidebar(lang):
     search_query = st.sidebar.text_input(T["search_placeholder"], "")
     
     # 2. Tree Navigation
-    st.sidebar.markdown("### Method Catalog")
+    st.sidebar.markdown("### " + T.get("nav_title", "Method Catalog")) # Use T["nav_title"] here
     
     # "Introduction" is effectively the home page
-    if st.sidebar.button("🏠 " + ("Giới thiệu" if lang=="VI" else "Introduction"), use_container_width=True):
-        st.session_state["selected_method"] = "intro"
+    # User requested to default to README and hide Introduction (or make it secondary)
+    # Replaced Intro with README in prominence
+    
+    if st.sidebar.button("📄 " + T.get("nav_readme", "Detailed Documentation (README)"), use_container_width=True):
+        st.session_state["selected_method"] = "readme"
+
+    # Hidden or moved Intro
+    # if st.sidebar.button("🏠 " + T.get("nav_intro", "Introduction"), use_container_width=True):
+    #     st.session_state["selected_method"] = "intro"
 
     # Categories
     categories = ["A", "B", "C", "D"]
@@ -140,6 +148,36 @@ def render_intro_page(lang):
     st.info("👈 Select a method from the sidebar to begin.")
 
 
+def render_readme_page(lang):
+    """Renders the README.md file as the documentation page."""
+    
+    # Determine file path based on language
+    # Assuming app.py is in pmsampsize_app/
+    # And README files are in root/
+    
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    
+    filename = "README.md"
+    if lang == "VI":
+        filename = "README_VI.md"
+    elif lang == "KO":
+        filename = "README_KO.md"
+        
+    file_path = os.path.join(root_dir, filename)
+    
+    # Fallback to English if specific lang file doesn't exist
+    if not os.path.exists(file_path):
+        file_path = os.path.join(root_dir, "README.md")
+        
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+            st.markdown(content)
+    except Exception as e:
+        st.error(f"Error loading documentation: {e}")
+        st.info(f"Looking for: {file_path}")
+
+
 def render_method_page(method_id, lang):
     """Renders a specific method page."""
     # Find method
@@ -194,7 +232,7 @@ def render_method_page(method_id, lang):
 def main():
     # Initialize Session State
     if "lang" not in st.session_state: st.session_state["lang"] = "EN"
-    if "selected_method" not in st.session_state: st.session_state["selected_method"] = "intro"
+    if "selected_method" not in st.session_state: st.session_state["selected_method"] = "readme" # Default to README
     if "theme" not in st.session_state: st.session_state["theme"] = "Coder"
     
     # Apply Theme
@@ -211,6 +249,8 @@ def main():
     
     if method_id == "intro":
         render_intro_page(lang)
+    elif method_id == "readme":
+        render_readme_page(lang)
     else:
         render_method_page(method_id, lang)
 

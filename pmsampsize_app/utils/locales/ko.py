@@ -10,6 +10,7 @@ KO = {
         "method1_tab": "방법 1 (Riley)",
         "method2_tab": "방법 2 (Bayesian)",
         "nav_title": "탐색",
+        "nav_readme": "상세 문서 (README)",
         "nav_intro": "소개 및 공식",
         "nav_calc": "표본 크기 계산기",
         "intro_heading": "환영합니다",

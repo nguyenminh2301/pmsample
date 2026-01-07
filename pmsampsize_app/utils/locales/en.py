@@ -10,6 +10,7 @@ EN = {
         "method1_tab": "Method C5 (Riley)",
         "method2_tab": "Method C6 (Bayesian)",
         "nav_title": "Navigation",
+        "nav_readme": "Documentation (README)",
         "nav_intro": "Introduction & Formulas",
         "nav_calc": "Sample Size Calculator",
         "intro_heading": "Welcome",

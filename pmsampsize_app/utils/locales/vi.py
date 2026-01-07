@@ -10,6 +10,7 @@ VI = {
         "method1_tab": "Phương pháp 1 (Riley)",
         "method2_tab": "Phương pháp 2 (Bayesian)",
         "nav_title": "Điều hướng",
+        "nav_readme": "Tài liệu Chi tiết (README)",
         "nav_intro": "Giới thiệu & Công thức",
         "nav_calc": "Công cụ tính toán",
         "intro_heading": "Giới thiệu",
