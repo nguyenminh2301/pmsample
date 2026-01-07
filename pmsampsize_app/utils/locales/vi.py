@@ -825,4 +825,178 @@ Chọn dải đủ rộng để thấy ngưỡng đạt/không đạt (ví dụ 
 3. Pavlou M, et al. *Simulation-based sample size calculation for prediction model performance targets* (validation/development methodology). Statistics in Medicine. 2021.
 4. Steyerberg EW. *Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating.* 2nd ed. Springer. 2019.
 """,
+    "c7_content_md": """
+## C7: Bayesian Assurance (MCMC) — Tiếng Việt
+
+### Phương pháp này là gì?
+**Bayesian assurance** là phương pháp lập kế hoạch cỡ mẫu bằng mô phỏng cho **xây dựng mô hình Bayes** (ở đây: hồi quy logistic Bayes cho kết cục nhị phân).  
+Khác với “power” (frequentist), assurance nhắm tới **xác suất vô điều kiện** để nghiên cứu đạt **tiêu chí thành công** đã định trước (ví dụ: tiêu chí calibration, discrimination và/hoặc độ chính xác hậu nghiệm).
+
+Nói đơn giản:
+> “Nếu lặp lại toàn bộ nghiên cứu nhiều lần (sinh dữ liệu + fit Bayes bằng MCMC), xác suất mô hình đạt yêu cầu là bao nhiêu?”
+
+---
+
+### Khi nào nên dùng
+Dùng C7 khi:
+- Phân tích cuối cùng là **Bayes** và ước lượng bằng **MCMC**.
+- Bạn muốn chọn cỡ mẫu sao cho đạt **xác suất thành công mục tiêu** (ví dụ ≥80% hoặc ≥90%).
+- Bạn có thể đưa ra giả định hợp lý về:
+  - tỷ lệ biến cố tại bệnh viện,
+  - cấu trúc tương quan của biến dự báo,
+  - hiệu ứng hợp lý (pilot/y văn),
+  - prior cho các hệ số hồi quy.
+
+### Khi nào không nên dùng (hoặc cần thận trọng)
+Không nên chỉ dựa vào C7 khi:
+- Không thể biện minh prior hoặc **cơ chế sinh dữ liệu (DGM)**.
+- Hạn chế tài nguyên tính toán (MCMC tốn thời gian; nhạy với cài đặt).
+- Pipeline thực tế có bước “data-adaptive” lớn (chọn biến/tuning) nhưng bạn **không mô phỏng đầy đủ** pipeline đó.
+- Dữ liệu có cụm/đa trung tâm nhưng DGM bỏ qua clustering (dễ đánh giá thiếu cỡ mẫu).
+
+---
+
+## Mô hình và DGM
+
+### Hồi quy logistic Bayes (mô hình phân tích)
+\[
+Y_i \sim \\text{Bernoulli}(\\pi_i), \\qquad
+\\text{logit}(\\pi_i)=\\beta_0 + \\sum_{j=1}^{P}\\beta_j f_j(X_{ij})
+\]
+- \(P\) = số tham số/df (**không tính intercept**).
+- \(f_j(\cdot)\): cách mã hóa biến (tuyến tính, dummy, spline, tương tác…).
+
+**Ví dụ prior “weakly informative” hay dùng:**
+\[
+\\beta_j \sim \\mathcal{N}(0,\\sigma_\\beta^2),\\quad \\sigma_\\beta \\in [1, 2.5],
+\\qquad \\beta_0 \sim \\mathcal{N}(0, 5^2)
+\]
+(Trong thực hành cần chạy độ nhạy theo prior hợp lý.)
+
+### DGM cho biến dự báo (ví dụ equicorrelation)
+Nếu app dùng một tham số tương quan \\(\\rho\\) (mọi cặp biến có cùng tương quan):
+\[
+\\mathrm{Corr}(X_j, X_k)=\\rho \\quad (j\\neq k),
+\\qquad
+\\Sigma_{jk}=
+\\begin{cases}
+1,& j=k\\\\
+\\rho,& j\\neq k
+\\end{cases}
+\]
+Sau đó sinh dữ liệu dự báo theo cơ chế tương quan (ví dụ Gaussian copula), rồi chuyển thành biến liên tục/nhị phân.
+
+### Khớp tỷ lệ biến cố mục tiêu
+Chọn intercept (hoặc hằng số hiệu chỉnh) để:
+\[
+\\mathbb{E}[\\pi_i]=p
+\]
+(thường giải bằng root-finding dựa trên mô phỏng \\(X\\).)
+
+---
+
+## “Assurance” là gì (công thức chính)
+Gọi:
+- \\(\\theta\\): tham số “thật” theo DGM,
+- \\(y\\): dữ liệu quan sát cỡ mẫu \\(N\\),
+- \\(S(y)\\): biến chỉ báo thành công (1 nếu đạt tiêu chí, 0 nếu không).
+
+**Assurance tại cỡ mẫu \\(N\\):**
+\[
+\\mathcal{A}(N)=\\Pr(\\text{thành công tại }N)
+=\\mathbb{E}_{\\theta}\\left[\\mathbb{E}_{y\\mid \\theta,N}\\left\\{S(y)\\right\\}\\right]
+\]
+
+**Ước lượng Monte Carlo trong app (với \\(R\\) mô phỏng cho mỗi \\(N\\)):**
+\[
+\\widehat{\\mathcal{A}}(N)=\\frac{1}{R}\\sum_{r=1}^{R} S\\!\\left(y^{(r)}\\right)
+\]
+
+Sai số Monte Carlo:
+\[
+\\mathrm{MCSE}\\left(\\widehat{\\mathcal{A}}(N)\\right)
+=\\sqrt{\\frac{\\widehat{\\mathcal{A}}(N)\\left[1-\\widehat{\\mathcal{A}}(N)\\right]}{R}}
+\]
+
+**Quy tắc chọn cỡ mẫu:**
+Chọn \\(N\\) nhỏ nhất sao cho:
+\[
+\\widehat{\\mathcal{A}}(N)\\ge \\mathcal{A}_\\text{target}
+\]
+(ví dụ 0,80 hoặc 0,90).
+
+---
+
+## Tiêu chí thành công (ví dụ thường dùng)
+Tùy cấu hình app, có thể chọn một hoặc nhiều tiêu chí:
+- **Calibration slope** trong khoảng chấp nhận:
+  \[
+  0.90 \le b \le 1.10
+  \]
+  với \\(b\\) ước lượng từ mô hình hiệu chỉnh trên dữ liệu test/validation:
+  \[
+  \\text{logit}(Y)=a + b\\cdot \\text{logit}(\\widehat{p})
+  \]
+- **Discrimination (AUC)**:
+  \[
+  \\mathrm{AUC} \\ge 0.75 \\;(\\text{hoặc ngưỡng do bạn chọn})
+  \]
+- **Độ chính xác hậu nghiệm**, ví dụ độ rộng CrI 95% của slope:
+  \[
+  \\mathrm{Width}\\left(\\text{CrI}_{95\\%}(b)\\right) \\le w
+  \\quad (\\text{ví dụ } w=0.20)
+  \]
+
+---
+
+## Chú giải đầu vào (tìm ở đâu; chọn bao nhiêu)
+
+### 1) Tỷ lệ biến cố \\(p\\)
+**Nguồn:** dữ liệu hồi cứu/đoàn hệ gần nhất tại bệnh viện; registry; y văn tương đồng.  
+**Thông lệ khi lập kế hoạch:** 0,05–0,15 thường gặp (tùy bệnh).  
+**Khuyến nghị:** chạy độ nhạy theo khoảng plausible.
+
+### 2) Số tham số (df) \\(P\\)
+**Nguồn:** đặc tả mô hình dự kiến (đếm theo tham số, không phải số biến).  
+Bao gồm dummy, spline, tương tác; không tính intercept.  
+**Thông lệ:** 10–30 df; df càng cao càng cần mẫu lớn và prior hợp lý.
+
+### 3) Tương quan biến dự báo \\(\\rho\\)
+**Nguồn:** ước lượng từ dữ liệu bệnh viện (ma trận tương quan của biến ứng viên).  
+Nếu chưa biết, chạy độ nhạy (0; 0,1; 0,3).  
+**Thông lệ:** 0–0,3 là mức nhẹ–vừa; tương quan cao làm tăng bất ổn và có thể tăng cỡ mẫu.
+
+### 4) Danh sách \\(N\\) ứng viên
+Chọn dải đủ rộng để thấy ngưỡng đạt/không đạt (500–2000 hoặc hơn tùy khả thi).
+
+### 5) Số mô phỏng mỗi \\(N\\) (R)
+- **Demo:** 50–200  
+- **Final:** ≥500–1000  
+Dùng MCSE để đánh giá độ ổn định.
+
+### 6) Ngưỡng assurance \\(\\mathcal{A}_\\text{target}\\)
+- **0,80:** hay dùng khi ưu tiên khả thi  
+- **0,90:** khi muốn chắc chắn cao hơn
+
+---
+
+## Ưu điểm và nhược điểm
+**Ưu điểm**
+- Phù hợp “end-to-end” với workflow Bayes; nhắm trực tiếp tiêu chí hậu nghiệm.
+- Linh hoạt với DGM, tương quan, tiêu chí hiệu năng và độ chính xác.
+- Có thể xử lý biến cố hiếm tốt hơn khi dùng prior co rút (regularizing priors).
+
+**Nhược điểm**
+- Tốn tính toán; nhạy với cài đặt MCMC và hội tụ.
+- Phụ thuộc giả định DGM và prior → cần phân tích độ nhạy.
+- Phải mô phỏng đúng pipeline dự kiến để tránh ước tính sai.
+
+---
+
+## Tài liệu tham khảo quan trọng (2–5)
+1) O'Hagan A. Assurance in clinical trial design. *Pharmaceutical Statistics.* 2005.  
+2) Pan J, Banerjee S. bayesassurance: An R Package for Calculating Sample Size and Bayesian Assurance. *The R Journal.* 2023.  
+3) Gelman A, Jakulin A, Pittau MG, Su Y-S. A weakly informative default prior distribution for logistic and other regression models. *The Annals of Applied Statistics.* 2008.  
+4) Sahu SK, Smith TMF. Bayesian methods of sample size determination. *Statistical Methodology / related Bayesian SSD literature.* 2006.
+""",
 }

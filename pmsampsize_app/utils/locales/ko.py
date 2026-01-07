@@ -854,4 +854,180 @@ Provide a grid (e.g., 1000, 1500, 2000, 3000, 5000).
 3. Pavlou M, et al. *Methodology and software for simulation-based sample size calculation in prediction modeling* (sampsize development/related work). Statistics in Medicine. 2021.
 4. Steyerberg EW. *Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating.* 2nd ed. Springer. 2019.
 """,
+    "c7_content_md": """
+## C7: Bayesian Assurance (MCMC)
+
+### What this method is
+**Bayesian assurance** is a simulation-based approach to sample size planning for **Bayesian model development** (here: Bayesian logistic regression for a binary outcome).  
+Instead of targeting "power" (frequentist), assurance targets the **unconditional probability** that your study will meet **pre-specified success criteria** (e.g., calibration and discrimination thresholds, and/or posterior precision).
+
+In plain terms:
+> "If we repeat the whole study many times (data generation + Bayesian MCMC fitting), what is the probability that the fitted model will be good enough?"
+
+---
+
+### When to use
+Use C7 when:
+- Your final analysis is **Bayesian** and will be estimated by **MCMC**.
+- You want sample size chosen to achieve **a target probability of success** (e.g., ≥80% or ≥90%).
+- You can specify reasonable assumptions for:
+  - event rate in your hospital cohort,
+  - predictor correlation structure and distributions,
+  - plausible effect sizes (from local pilot data or literature),
+  - priors for regression coefficients.
+
+### When NOT to use (or use with caution)
+Avoid relying on C7 alone when:
+- You cannot justify priors or a plausible **data-generating mechanism (DGM)**.
+- You do not have the compute budget (MCMC is slow; results can be sensitive to MCMC settings).
+- Your real development pipeline includes substantial data-adaptive steps (feature selection, heavy tuning) that you are **not** simulating.
+- Data are clustered/multicenter but the DGM ignores clustering (may underestimate required N).
+
+---
+
+## Core model and DGM
+
+### Bayesian logistic regression (analysis model)
+\[
+Y_i \sim \\text{Bernoulli}(\\pi_i), \\qquad
+\\text{logit}(\\pi_i)=\\beta_0 + \\sum_{j=1}^{P}\\beta_j f_j(X_{ij})
+\]
+- \(P\) = number of predictor parameters (degrees of freedom; **exclude intercept**).
+- \(f_j(\\cdot)\) represents your coding choices (linear term, dummies, spline bases, interactions).
+
+**Example priors (typical weakly informative defaults):**
+\[
+\\beta_j \sim \\mathcal{N}(0,\\sigma_\\beta^2),\\quad \\sigma_\\beta \\in [1, 2.5],
+\\qquad \\beta_0 \sim \\mathcal{N}(0, 5^2)
+\]
+(Your app may use fixed priors; users should run sensitivity analyses over plausible priors.)
+
+### DGM for predictors (example equicorrelation)
+If the app uses a single correlation parameter \\(\\rho\\) (equicorrelation):
+\[
+\\mathrm{Corr}(X_j, X_k)=\\rho \\quad (j\\neq k),
+\\qquad
+\\Sigma_{jk}=
+\\begin{cases}
+1,& j=k\\\\
+\\rho,& j\\neq k
+\\end{cases}
+\]
+Predictors are then generated from a correlated mechanism (e.g., Gaussian copula / multivariate normal core), and transformed into continuous/binary predictors as needed.
+
+### Setting the event rate
+The intercept (or a calibration constant) is chosen so that the marginal event rate matches the target prevalence:
+\[
+\\mathbb{E}[\\pi_i]=p
+\]
+This is typically solved numerically using Monte Carlo draws of \(X\).
+
+---
+
+## What "assurance" means (key formula)
+Let:
+- \\(\\theta\\) denote the "true" parameters under the DGM (effect sizes, correlation structure, etc.).
+- \\(y\\) denote the observed dataset of size \\(N\\).
+- \\(S(y)\\) be a **success indicator** that equals 1 if performance/precision criteria are met.
+
+**Assurance at sample size \\(N\\):**
+\[
+\\mathcal{A}(N)=\\Pr(\\text{Success at }N)
+=\\mathbb{E}_{\\theta}\\left[\\mathbb{E}_{y\\mid \\theta,N}\\left\\{S(y)\\right\\}\\right]
+\]
+
+**Monte Carlo estimate used in the app (for each candidate \\(N\\)):**
+\[
+\\widehat{\\mathcal{A}}(N)=\\frac{1}{R}\\sum_{r=1}^{R} S\\!\\left(y^{(r)}\right)
+\]
+where each replicate \\(r\\) simulates a dataset, fits the Bayesian model with MCMC, and evaluates success criteria.
+
+Monte Carlo standard error (helpful for interpreting stability):
+\[
+\\mathrm{MCSE}\\left(\\widehat{\\mathcal{A}}(N)\\right)
+=\\sqrt{\\frac{\\widehat{\\mathcal{A}}(N)\\left[1-\\widehat{\\mathcal{A}}(N)\\right]}{R}}
+\]
+
+**Decision rule:**
+Choose the smallest \\(N\\) such that:
+\[
+\\widehat{\\mathcal{A}}(N)\\ge \\mathcal{A}_\\text{target}
+\]
+(e.g., 0.80 or 0.90).
+
+---
+
+## Success criteria (typical examples)
+Your app may implement one or more of the following (user-selectable):
+- **Calibration slope** in an acceptable range:
+  \[
+  0.90 \le b \le 1.10
+  \]
+  where \\(b\\) is estimated from a calibration model on validation/test data:
+  \[
+  \\text{logit}(Y)=a + b\\cdot \\text{logit}(\\widehat{p})
+  \]
+- **Discrimination** threshold:
+  \[
+  \\mathrm{AUC} \\ge 0.75 \\;(\\text{or your chosen target})
+  \]
+- **Posterior precision** target, e.g. 95% credible interval width for calibration slope:
+  \[
+  \\mathrm{Width}\\left(\\text{CrI}_{95\\%}(b)\\right) \\le w
+  \\quad (\\text{e.g., } w=0.20)
+  \]
+
+---
+
+## Input guide (where to find values; typical choices)
+
+### 1) Outcome prevalence (event rate) \\(p\\)
+**Where to get it:** local hospital cohort/registry; recent retrospective data.  
+**Typical planning ranges:** 0.05–0.15 are common in many clinical settings, but use your disease context.  
+**Tip:** If uncertain, run a sensitivity analysis over a plausible range.
+
+### 2) Number of predictor parameters (df) \\(P\\)
+**Where to get it:** your finalized model specification (count **parameters**, not variables).  
+Include dummies, spline bases, interactions. Exclude intercept.  
+**Typical range:** 10–30 df is common; larger df demands much larger \\(N\\) and stronger prior justification.
+
+### 3) Predictor correlation \\(\\rho\\)
+**Where to get it:** estimate from pilot/hospital data (correlation matrix of candidate predictors).  
+If unknown, use sensitivity analysis (e.g., \\(\\rho=0, 0.1, 0.3\\)).  
+**Typical:** mild-to-moderate correlations (0–0.3) are common; higher correlations increase instability and may increase required \\(N\\).
+
+### 4) Candidate sample sizes \\(N\\)
+Choose a grid wide enough to cross the pass/fail boundary (e.g., 500, 1000, 1500, 2000, …).  
+Start from feasibility constraints (available charts/records) and expand upward.
+
+### 5) Number of simulations per \\(N\\) (replicates) \\(R\\)
+- **Demo:** 50–200 (fast; higher MC error)  
+- **Final planning:** ≥500–1000 (more stable assurance estimate)  
+Use MCSE to judge stability.
+
+### 6) Assurance threshold \\(\\mathcal{A}_\\text{target}\\)
+- **0.80**: common for feasibility-driven planning  
+- **0.90**: preferred when you want higher confidence in meeting criteria
+
+---
+
+## Strengths and weaknesses
+**Strengths**
+- Fully aligned with Bayesian workflows; directly targets **posterior** success/precision.
+- Flexible: accommodates complex DGM, correlations, and performance-based criteria.
+- Can incorporate prior knowledge and realistically handle rare events with regularizing priors.
+
+**Weaknesses**
+- Computationally intensive; results can depend on MCMC settings and convergence.
+- Sensitive to DGM and prior assumptions → requires sensitivity analyses.
+- Must simulate the actual planned pipeline to avoid under/over-estimation.
+
+---
+
+## Key references (2–5)
+1) O'Hagan A. Assurance in clinical trial design. *Pharmaceutical Statistics.* 2005.  
+2) Pan J, Banerjee S. bayesassurance: An R Package for Calculating Sample Size and Bayesian Assurance. *The R Journal.* 2023.  
+3) Gelman A, Jakulin A, Pittau MG, Su Y-S. A weakly informative default prior distribution for logistic and other regression models. *The Annals of Applied Statistics.* 2008.  
+4) Sahu SK, Smith TMF. Bayesian methods of sample size determination. *Statistical Methodology / related Bayesian SSD literature.* 2006.
+""",
 }

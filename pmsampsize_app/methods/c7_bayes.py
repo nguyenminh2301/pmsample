@@ -11,6 +11,9 @@ def render_ui(T):
     
     st.warning("⚠️ **Beta Feature**: This method requires significantly more computational power and may take minutes to run. Ensure you have `pymc` and `statsmodels` installed.")
     
+    with st.expander(T["formulas_header"]):
+        st.markdown(T["c7_content_md"])
+    
     # 1. DGM
     with st.expander(T["dgm_settings"], expanded=True):
         col1, col2 = st.columns(2)
