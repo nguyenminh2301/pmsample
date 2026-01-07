@@ -140,9 +140,13 @@ def render_ui(T):
         
         # Provide interpretation
         st.markdown(f"""
-        **interpretation**:
+        **{T['interpretation']}**:
         To detect an OR of {or_target} with {int(power*100)}% power at alpha={alpha}, 
         assuming baseline rate {p0} and predictor properties defined, 
         you need {n_req} subjects.
         """)
+
+    st.markdown("---")
+    with st.expander(T.get("formulas_header", "Formulas & Technical Details")):
+        st.markdown(T.get("b3_content_md", "Content not found."))
 
