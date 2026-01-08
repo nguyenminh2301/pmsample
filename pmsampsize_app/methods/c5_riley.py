@@ -74,9 +74,9 @@ def render_ui(T):
             csv = df.to_csv(index=False).encode('utf-8')
             st.download_button(label=T["download_csv"], data=csv, file_name='riley_results.csv', mime='text/csv')
 
-            st.markdown("---")
-            with st.expander(T.get("formulas_header", "Formulas & Technical Details")):
-                st.markdown(T.get("c5_content_md", "Content not found."))
-            
         except Exception as e:
             st.error(f"{T['error_parse']} {e}")
+
+    st.markdown("---")
+    with st.expander(T.get("formulas_header", "Formulas & Technical Details")):
+        st.markdown(T.get("c5_content_md", "Content not found."))

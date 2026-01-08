@@ -46,6 +46,23 @@ def apply_theme():
         css = """
         <style>
         .stApp { background-color: #ffffff; color: #000000; }
+        
+        /* Enhance contrast for inputs and numbers */
+        div[data-baseweb="input"] > div {
+            border-color: #666 !important;
+        }
+        input {
+            color: #000000 !important;
+            font-weight: 600 !important;
+        }
+        /* Metrics */
+        .stMetricValue {
+            color: #000000 !important;
+        }
+        /* Dataframes */
+        .stDataFrame {
+            border: 1px solid #ddd;
+        }
         </style>
         """
     
@@ -86,13 +103,19 @@ def render_sidebar(lang):
         
         # Apply Search Filter
         if search_query:
-            cat_methods = [m for m in cat_methods if search_query.lower() in (m.title_en + m.title_vi).lower()]
+            cat_methods = [m for m in cat_methods if search_query.lower() in (m.title_en + m.title_vi + m.title_zh + m.title_jp + m.title_fr + m.title_de).lower()]
             if not cat_methods:
                 continue # Skip empty categories during search
         
         with st.sidebar.expander(cat_name, expanded=(search_query!="")):
             for m in cat_methods:
-                title = m.title_vi if lang == "VI" else m.title_en
+                title = m.title_en
+                if lang == "VI": title = m.title_vi
+                elif lang == "ZH": title = m.title_zh
+                elif lang == "JP": title = m.title_jp
+                elif lang == "FR": title = m.title_fr
+                elif lang == "DE": title = m.title_de
+                
                 icon = "✨" if m.status == MethodStatus.AVAILABLE else "🚧"
                 if m.status == MethodStatus.BETA: icon = "🧪"
                 
@@ -109,12 +132,20 @@ def render_sidebar(lang):
     lang_idx = 0
     if lang == "VI": lang_idx = 1
     elif lang == "KO": lang_idx = 2
+    elif lang == "ZH": lang_idx = 3
+    elif lang == "JP": lang_idx = 4
+    elif lang == "FR": lang_idx = 5
+    elif lang == "DE": lang_idx = 6
     
-    new_lang = st.sidebar.selectbox("Language / Ngôn ngữ", ["English (EN)", "Tiếng Việt (VI)", "한국어 (KO)", "中文 (ZH)", "日本語 (JP)"], index=lang_idx)
+    new_lang = st.sidebar.selectbox("Language / Ngôn ngữ / 语言 / 言語 / Langue / Sprache", ["English (EN)", "Tiếng Việt (VI)", "한국어 (KO)", "中文 (ZH)", "日本語 (JP)", "Français (FR)", "Deutsch (DE)"], index=lang_idx)
     
     if "English" in new_lang: selected_lang = "EN"
     elif "Tiếng Việt" in new_lang: selected_lang = "VI"
     elif "한국어" in new_lang: selected_lang = "KO"
+    elif "中文" in new_lang: selected_lang = "ZH"
+    elif "日本語" in new_lang: selected_lang = "JP"
+    elif "Français" in new_lang: selected_lang = "FR"
+    elif "Deutsch" in new_lang: selected_lang = "DE"
     else:
         st.sidebar.info("Coming soon / Sắp ra mắt")
         selected_lang = lang # Keep current
@@ -162,6 +193,14 @@ def render_readme_page(lang):
         filename = "README_VI.md"
     elif lang == "KO":
         filename = "README_KO.md"
+    elif lang == "ZH":
+        filename = "README_ZH.md"
+    elif lang == "JP":
+        filename = "README_JP.md"
+    elif lang == "FR":
+        filename = "README_FR.md"
+    elif lang == "DE":
+        filename = "README_DE.md"
         
     file_path = os.path.join(root_dir, filename)
     
@@ -189,7 +228,13 @@ def render_method_page(method_id, lang):
     T = TRANS.get(lang, TRANS["EN"])
     
     # Title
-    title = m.title_vi if lang == "VI" else m.title_en
+    # Title
+    title = m.title_en
+    if lang == "VI": title = m.title_vi
+    elif lang == "ZH": title = m.title_zh
+    elif lang == "JP": title = m.title_jp
+    elif lang == "FR": title = m.title_fr
+    elif lang == "DE": title = m.title_de
     st.title(title)
         
     # Tags / Badges
@@ -199,7 +244,13 @@ def render_method_page(method_id, lang):
     #         st.caption(f"🏷️ {tag}")
 
     # Description
-    desc = m.description_vi if lang == "VI" else m.description_en
+    # Description
+    desc = m.description_en
+    if lang == "VI": desc = m.description_vi
+    elif lang == "ZH": desc = m.description_zh
+    elif lang == "JP": desc = m.description_jp
+    elif lang == "FR": desc = m.description_fr
+    elif lang == "DE": desc = m.description_de
     st.markdown(f"_{desc}_")
     
     st.divider()

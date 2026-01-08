@@ -15,9 +15,6 @@ def render_ui(T):
     st.header(T["method6_tab"])
     st.info(T["dev_sim_intro"])
     
-    with st.expander(T["formulas_header"]):
-        st.markdown(T["c6_content_md"])
-    
     mode = st.radio(T["mode"], [T["dev_mode_simple"], T["dev_mode_custom"]], horizontal=True, key="dev_mode")
     is_simple = mode == T["dev_mode_simple"]
     
@@ -104,3 +101,7 @@ def render_ui(T):
             
         except Exception as e:
             st.error(f"Error: {e}")
+
+    st.markdown("---")
+    with st.expander(T.get("formulas_header", "Formulas & Technical Details")):
+        st.markdown(T.get("c6_content_md", "Formulas not found."))

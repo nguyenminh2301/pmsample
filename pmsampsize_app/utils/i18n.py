@@ -1,8 +1,12 @@
 
-from .locales import EN, VI, KO
+from .locales import EN, VI, KO, ZH, JP, FR, DE
 
 TRANS = {
     "EN": EN,
     "VI": VI,
-    "KO": KO
+    "KO": KO,
+    "ZH": ZH,
+    "JP": JP,
+    "FR": FR,
+    "DE": DE
 }

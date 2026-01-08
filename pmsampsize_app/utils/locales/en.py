@@ -595,24 +595,24 @@ Do not rely on C5 alone when:
 ### Cox–Snell ($R^2$) and its maximum
 
 Cox–Snell ($R^2$) for a fitted logistic model can be written as:
-[
+$$
 R^2_{CS} = 1-\\exp!\\left(\\frac{2}{n}(\\ell_0-\\ell_1)\\right),
-]
+$$
 where (\\ell_0) is the intercept-only log-likelihood and (\\ell_1) is the model log-likelihood.
 
 For binary outcomes, ($R^2_{CS}$) cannot reach 1. Its maximum depends on the outcome prevalence:
-[
+$$
 \\ell_0 = n\\Big[p\\ln(p) + (1-p)\\ln(1-p)\\Big],
-]
-[
+$$
+$$
 R^2_{CS,\\max}=1-\\exp!\\left(\\frac{2\\ell_0}{n}\\right)
 =1-\\exp!\\Big(2[p\\ln(p) + (1-p)\\ln(1-p)]\\Big).
-]
+$$
 
 Nagelkerke ($R^2$) rescales Cox–Snell ($R^2$) to ([0,1]):
-[
+$$
 R^2_{Nag}=\\frac{R^2_{CS}}{R^2_{CS,\\max}}.
-]
+$$
 
 ---
 
@@ -621,42 +621,42 @@ R^2_{Nag}=\\frac{R^2_{CS}}{R^2_{CS,\\max}}.
 ### Criterion 1 — Control overfitting via target shrinkage (S)
 
 Minimum sample size to target global shrinkage (S):
-[
+$$
 n_1=\\left\\lceil
 \\frac{P}{(S-1),\\ln!\\left(1-\\frac{R^2_{CS}}{S}\\right)}
 \\right\\rceil.
-]
+$$
 
 ### Criterion 2 — Limit optimism in ($R^2$) (default absolute difference 0.05)
 
 This criterion targets a small absolute difference (default (\\delta=0.05)) between apparent and adjusted **Nagelkerke** ($R^2$). The required shrinkage implied by this constraint is:
-[
+$$
 S_{\\delta}=\\frac{R^2_{CS}}{R^2_{CS}+\\delta,R^2_{CS,\\max}}.
-]
+$$
 Then:
-[
+$$
 n_2=\\left\\lceil
 \\frac{P}{(S_{\\delta}-1),\\ln!\\left(1-\\frac{R^2_{CS}}{S_{\\delta}}\\right)}
 \\right\\rceil.
-]
+$$
 
 ### Criterion 3 — Precise estimation of the overall outcome risk (intercept)
 
 This targets precision of the **average outcome risk** (p) (baseline risk) within (\\pm d) on the probability scale (default (d=0.05) at 95% CI):
-[
+$$
 n_3=\\left\\lceil
 \\left(\\frac{z_{1-\\alpha/2}}{d}\\right)^2 p(1-p)
 \\right\\rceil,
 \\quad \\text{default } z_{0.975}=1.96,; d=0.05.
-]
+$$
 
 ### Final recommendation
 
-[
+$$
 n_{\\min}=\\max(n_1,n_2,n_3),\\qquad
 E = n_{\\min},p,\\qquad
 EPP=\\frac{E}{P}.
-]
+$$
 
 ---
 
@@ -728,22 +728,22 @@ For each candidate sample size (N), simulate (R) development datasets, fit the p
 Define how predictors (X) and outcomes (Y) are generated.
 
 Typical binary-outcome DGM:
-[
+$$
 Y \mid X \sim \\text{Bernoulli}(\\pi), \\qquad
 \\pi = \\text{logit}^{-1}(\\eta),
-]
-[
+$$
+$$
 \\eta = \\beta_0 + \\sum_{j=1}^{P}\\beta_j f_j(X_j),
-]
+$$
 where:
 
 * (P) is the **number of parameters/df** used in the fitted model,
 * (f_j(\\cdot)) represent coding choices (linear term, spline basis, dummy coding, etc.).
 
 To achieve a target event rate (p), choose (\\beta_0) so that:
-[
+$$
 \\mathbb{E}[\\pi] = p.
-]
+$$
 In practice, (\\beta_0) is found by numerical root-finding using Monte Carlo draws from (X).
 
 ### Step 2 — Generate a development dataset
@@ -756,9 +756,9 @@ For replicate (r):
 ### Step 3 — Fit the development model
 
 Fit the planned logistic regression model:
-[
+$$
 \\widehat{\\eta} = \\widehat{\\beta}*0 + \\sum*{j=1}^{P}\\widehat{\\beta}_j f_j(X_j).
-]
+$$
 **Important:** Simulation must match your intended development strategy (e.g., penalization, pre-specified terms). If separation/non-convergence occurs, a ridge-penalized fallback is often used (and should be counted and reported).
 
 ### Step 4 — Evaluate on new data
@@ -766,20 +766,20 @@ Fit the planned logistic regression model:
 Generate an independent test set (size (N_{\\text{test}}), often large such as 5000–10000) from the same DGM and compute:
 
 **(a) Discrimination (AUC / C-statistic)**
-[
+$$
 \\mathrm{AUC}=\\Pr(\\widehat{\\eta}_1 > \\widehat{\\eta}_0),
-]
+$$
 the probability that a randomly selected case has a higher predicted risk than a non-case.
 
 **(b) Calibration slope**
 Estimate (b) from a calibration model on the test set:
-[
+$$
 \\text{logit}(Y) = a + b \\cdot \\text{logit}(\\widehat{p}),
-]
+$$
 or equivalently using the linear predictor:
-[
+$$
 \\text{logit}(Y) = a + b \\cdot \\widehat{\\eta}.
-]
+$$
 Here, (b\\approx 1) indicates good calibration; (b<1) suggests overfitting (predictions too extreme).
 
 ### Step 5 — Define pass/fail criteria and compute success rates
@@ -787,17 +787,17 @@ Here, (b\\approx 1) indicates good calibration; (b<1) suggests overfitting (pred
 Across (R) simulations for each (N), compute:
 
 * Mean calibration slope:
-  [
+  $$
   \\overline{b} = \\frac{1}{R}\\sum_{r=1}^R b^{(r)}.
-  ]
+  $$
 * Probability slope is within an acceptable range:
-  [
+  $$
   \\widehat{\\Pr}(b \\in [L,U]) = \\frac{1}{R}\\sum_{r=1}^R \\mathbf{1}{b^{(r)}\\in[L,U]}.
-  ]
+  $$
 * Mean AUC:
-  [
+  $$
   \\overline{\\mathrm{AUC}}=\\frac{1}{R}\\sum_{r=1}^R \\mathrm{AUC}^{(r)}.
-  ]
+  $$
 
 A candidate (N) is “acceptable” if all selected criteria are met, e.g.:
 

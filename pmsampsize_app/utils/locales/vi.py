@@ -689,19 +689,19 @@ Không nên chỉ dựa vào C6 khi:
 
 ### Bước 1 — Chọn DGM
 
-[
+$$
 Y \mid X \sim \\text{Bernoulli}(\\pi), \\qquad
 \\pi = \\text{logit}^{-1}(\\eta),
-]
-[
+$$
+$$
 \\eta = \\beta_0 + \\sum_{j=1}^{P}\\beta_j f_j(X_j),
-]
+$$
 trong đó (P) là **df**, còn (f_j(\\cdot)) là cách mã hóa (tuyến tính, spline, dummy…).
 
 Chọn (\\beta_0) để đạt tỷ lệ biến cố mục tiêu (p):
-[
+$$
 \\mathbb{E}[\\pi] = p.
-]
+$$
 (Trong thực hành dùng root-finding dựa trên mô phỏng (X).)
 
 ### Bước 2 — Sinh dữ liệu phát triển
@@ -713,9 +713,9 @@ Với mỗi lần mô phỏng (r):
 
 ### Bước 3 — Fit mô hình phát triển
 
-[
+$$
 \\widehat{\\eta} = \\widehat{\\beta}*0 + \\sum*{j=1}^{P}\\widehat{\\beta}_j f_j(X_j).
-]
+$$
 Nếu xảy ra separation/không hội tụ, thường dùng ridge-penalized fallback và báo cáo tỷ lệ xảy ra.
 
 ### Bước 4 — Đánh giá trên dữ liệu mới
@@ -723,33 +723,33 @@ Nếu xảy ra separation/không hội tụ, thường dùng ridge-penalized fal
 Sinh tập test độc lập (thường (N_{\\text{test}}) lớn 5000–10000) và tính:
 
 **(a) AUC**
-[
+$$
 \\mathrm{AUC}=\\Pr(\\widehat{\\eta}_1 > \\widehat{\\eta}_0).
-]
+$$
 
 **(b) Calibration slope**
 Fit mô hình hiệu chỉnh:
-[
+$$
 \\text{logit}(Y) = a + b \\cdot \\text{logit}(\\widehat{p})
-]
+$$
 hoặc:
-[
+$$
 \\text{logit}(Y) = a + b \\cdot \\widehat{\\eta}.
-]
+$$
 Trong đó (b\\approx 1) là tốt; (b<1) thường gợi ý overfitting.
 
 ### Bước 5 — Tiêu chí đạt/không đạt và chọn (N)
 
 Tóm tắt theo (R) lần mô phỏng:
 
-[
+$$
 \\overline{b} = \\frac{1}{R}\\sum_{r=1}^R b^{(r)},
 \\quad
 \\widehat{\\Pr}(b \\in [L,U]) = \\frac{1}{R}\\sum_{r=1}^R \\mathbf{1}{b^{(r)}\\in[L,U]},
-]
-[
+$$
+$$
 \\overline{\\mathrm{AUC}}=\\frac{1}{R}\\sum_{r=1}^R \\mathrm{AUC}^{(r)}.
-]
+$$
 
 Một (N) đạt yêu cầu nếu thỏa tất cả tiêu chí đã chọn (ví dụ):
 
@@ -788,9 +788,9 @@ Chọn dải đủ rộng để thấy ngưỡng đạt/không đạt (ví dụ 
 * Demo: (R \\approx 200)
 * Final: (R \\ge 1000)
   Sai số Monte Carlo cho xác suất đạt:
-  [
+  $$
   \\mathrm{MCSE}=\\sqrt{\\frac{\\hat{p}(1-\\hat{p})}{R}}.
-  ]
+  $$
 
 ### 6) Tiêu chí Pass/Fail
 
