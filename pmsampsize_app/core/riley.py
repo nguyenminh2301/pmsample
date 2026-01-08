@@ -250,6 +250,7 @@ def generate_scenarios(p_list, params_list, perf_list, perf_type='auc', shrinkag
                 row = {
                     'Prevalence': p,
                     'Parameters': param,
+                    'Shrinkage': shrinkage,
                     'Performance': perf, # AUC or R2 value input
                     'Metric Type': perf_type,
                     'R2_CS': res['r2_cs'],

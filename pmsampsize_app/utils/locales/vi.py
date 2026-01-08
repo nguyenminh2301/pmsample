@@ -999,4 +999,17 @@ Dùng MCSE để đánh giá độ ổn định.
 3) Gelman A, Jakulin A, Pittau MG, Su Y-S. A weakly informative default prior distribution for logistic and other regression models. *The Annals of Applied Statistics.* 2008.  
 4) Sahu SK, Smith TMF. Bayesian methods of sample size determination. *Statistical Methodology / related Bayesian SSD literature.* 2006.
 """,
+        # Email & Reporting
+        "report_header": "Báo cáo & Tải xuống",
+        "btn_download_report": "Tải Báo cáo (Văn bản)",
+        "btn_download_csv": "Tải Kết quả (CSV)",
+        "email_header": "Gửi Kết quả qua Email",
+        "email_to": "Email Người nhận",
+        "email_send_btn": "Gửi Email",
+        "email_success": "Đã gửi email thành công!",
+        "email_error": "Lỗi khi gửi email:",
+        "email_settings": "Cài đặt Email (SMTP)",
+        "email_sender": "Email Của Bạn",
+        "email_password": "Mật khẩu Ứng dụng",
+        "email_subject_default": "Kết quả Tính toán Cỡ mẫu",
 }

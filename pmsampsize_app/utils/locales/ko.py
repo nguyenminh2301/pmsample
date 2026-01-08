@@ -270,54 +270,54 @@ KO = {
 """,
 
         "a2_content_md": """
-### 이것은 무엇입니까
+### 개요
 
-이 모듈은 **원하는 정밀도**(신뢰 구간(CI) 반폭 또는 오차 한계로 표현됨)로 **기본 위험 / 사건 발생률**(p)(즉, 결과의 유병률)을 추정하는 데 필요한 **최소 표본 크기(n)**를 추정합니다.
+이 모듈은 **원하는 정밀도**(신뢰 구간(CI) 반폭 또는 오차 한계로 표현됨)로 **기본 위험 / 사건 발생률** ($p$)(즉, 결과의 유병률)을 추정하는 데 필요한 **최소 표본 크기($n$)**를 추정합니다.
 
 다음과 같은 경우에 유용합니다:
 * 지정된 정밀도로 코호트 내 결과 유병률 설명,
 * 타당성 계획 및 기본 위험 보고,
-* 교정 관련 계획 지원 (예: calibration-in-the-large는 사건 발생률에 의존).
+* 보정(calibration) 관련 계획 지원 (예: calibration-in-the-large는 사건 발생률에 의존).
 
-**중요한 제한 사항:** 이 계산은 예측 모델 성능(AUC, 교정 기울기, 낙관주의)을 **보장하지 않습니다**. 오직 (p) 추정의 정밀도만을 목표로 합니다.
+**중요한 제약 사항:** 이 계산은 예측 모델 성능(AUC, 보정 기울기, 낙관주의)을 **보장하지 않습니다**. 오직 ($p$) 추정의 정밀도만을 목표로 합니다.
 
 ---
 
 ### 입력 값 (의미)
 
-1. **결과 유병률 / 사건 발생률** (p)
+1. **결과 유병률 / 사건 발생률** ($p$)
    대상 모집단에서 예상되는 사건 비율 (예: 0.10).
    * 알 수 없는 경우, 타당한 범위를 고려하여 민감도 분석을 실행하십시오.
-   * 유병률 정밀도에 대해 보수적인 "최악의 경우"를 원한다면 (p=0.50)을 사용하십시오 (분산 최대화).
+   * 유병률 정밀도에 대해 보수적인 "최악의 경우"를 원한다면 ($p=0.50$)을 사용하십시오 (분산 최대화).
 
-2. **목표 반폭 (오차 한계)** (d)
+2. **목표 반폭 (오차 한계)** ($d$)
    CI가 대략 다음과 같도록 하는 원하는 정밀도:
-   $p \pm d$
-   예: (d = 0.01, 0.02, 0.03) (즉, ±1%, ±2%, ±3%).
+   $p \\pm d$
+   예: ($d = 0.01, 0.02, 0.03$) (즉, ±1%, ±2%, ±3%).
 
-3. **신뢰 수준** (1-$\\alpha$)
+3. **신뢰 수준** ($1-\\alpha$)
    일반적인 값: 0.95 또는 0.99.
 
 4. **CI 방법**
-* **Wilson score (권장):** Wald보다 커버리지가 좋으며, 특히 (p)가 0이나 1에 가깝거나 표본 크기가 적당할 때 좋습니다.
-* **Wald (정규 근사):** 간단한 폐쇄형이지만 (n)이 작거나 (p)가 극단적일 때 성능이 떨어질 수 있습니다.
-* **Clopper–Pearson (정확):** 보수적입니다 (종종 더 넓은 CI를 산출하므로 더 큰 (n)이 필요함).
+* **Wilson score (권장):** Wald보다 커버리지가 좋으며, 특히 ($p$)가 0이나 1에 가깝거나 표본 크기가 적당할 때 좋습니다.
+* **Wald (정규 근사):** 간단한 폐쇄형이지만 ($n$)이 작거나 ($p$)가 극단적일 때 성능이 떨어질 수 있습니다.
+* **Clopper–Pearson (정확):** 보수적입니다 (종종 더 넓은 CI를 산출하므로 더 큰 ($n$)이 필요함).
 
 ---
 
 ### 핵심 계산 (원리)
 
-$X \sim \\text{Binomial}(n,p)$, $\hat p = X/n$이라고 합시다. 목표는 선택한 CI 방법이 다음을 산출하도록 하는 가장 작은 (n)을 찾는 것입니다:
+$X \\sim \\text{Binomial}(n,p)$, $\\hat p = X/n$이라고 합시다. 목표는 선택한 CI 방법이 다음을 산출하도록 하는 가장 작은 ($n$)을 찾는 것입니다:
 $$
-\\frac{\\text{Upper}(n) - \\text{Lower}(n)}{2} \le d
+\\frac{\\text{Upper}(n) - \\text{Lower}(n)}{2} \\le d
 $$
 
 #### A) Wald (폐쇄형 근사)
 $$ n \\approx \\frac{z^2 p(1-p)}{d^2} $$
-**참고:** 빠르지만 (n)이 작거나 (p)가 극단적일 때는 권장되지 않습니다.
+**참고:** 빠르지만 ($n$)이 작거나 ($p$)가 극단적일 때는 권장되지 않습니다.
 
 #### B) Wilson score 구간 (권장)
-Wilson score 구간 공식을 사용합니다.
+Wilson score 구간 공식을 사용합니다. 구간이 관측된 빈도 $x$에 따라 달라지므로, 예상되는 결과에 대해 반폭 제약 조건을 만족하는 가장 작은 $n$을 반복적으로 찾습니다.
 
 #### C) Clopper–Pearson “정확” 구간
 Beta 분위수를 사용합니다. 보수적인 방법입니다.
@@ -327,7 +327,7 @@ Beta 분위수를 사용합니다. 보수적인 방법입니다.
 ### 실용적인 기본값
 
 * **신뢰 수준:** 95%가 표준입니다.
-* **반폭 (d):** ±0.01 ~ ±0.03 (1%–3%)이 일반적인 목표입니다.
+* **반폭 ($d$):** ±0.01 ~ ±0.03 (1%–3%)이 일반적인 목표입니다.
 * **방법:** Wilson이 강력한 기본값입니다.
 
 ### 주요 참고 문헌
@@ -336,106 +336,103 @@ Beta 분위수를 사용합니다. 보수적인 방법입니다.
 """,
 
         "b3_content_md": """
-### Purpose (what this method is)
+### 목적 (이 방법의 정의)
 
-This module estimates the **minimum sample size** needed to detect an association between a predictor (X) and a **binary outcome** (Y) using **logistic regression**, targeting a specified **odds ratio (OR)**, **two-sided ($\\alpha$)**, and **power**.
+이 모듈은 **로지스틱 회귀**를 사용하여 예측 변수 ($X$)와 **이분형 결과** ($Y$) 간의 연관성을 탐지하는 데 필요한 **최소 표본 크기**를 추정하며, 지정된 **오즈비(OR)**, **양측 검정 유의수준($\\alpha$)**, 및 **검정력(Power)**을 목표로 합니다.
 
-This is a **prognostic factor / association-focused** power calculation (testing a regression coefficient), **not** a prediction-model performance method. It does **not** guarantee good calibration or discrimination of a multivariable prediction model.
-
----
-
-### When to use
-
-Use B3 when:
-
-* You want power to detect a **clinically meaningful OR** for a **single predictor** (binary or continuous) in logistic regression.
-* Your primary goal is **hypothesis testing** (is the predictor associated with the outcome?), not building a risk prediction model.
-
-### When NOT to use
-
-Do not use B3 as your main approach when:
-
-* Your goal is **prediction model development** (use Riley/pmsampsize or simulation/assurance methods).
-* You plan **data-driven variable selection**, many interactions/splines, or complex machine-learning tuning (power for a single coefficient is not the right target).
-* Data are **clustered** (multicenter/ward-level correlation) or strongly dependent without adjusting the design effect.
-* You have a **case–control** design with fixed case/control sampling (baseline risks ($p_0$) may not represent the source population).
+이것은 **예후 인자 / 연관성 중심**의 검정력 계산(회귀 계수 검정)이며, 예측 모델 성능 방법이 **아닙니다**. 다변량 예측 모델의 좋은 보정이나 판별력을 **보장하지 않습니다**.
 
 ---
 
-## Statistical model and parameters
+### 사용 시점
 
-Logistic regression model:
+B3를 사용할 때:
+
+* **단일 예측 변수** (이분형 또는 연속형)에 대해 로지스틱 회귀에서 **임상적으로 의미 있는 OR**을 탐지할 검정력을 원할 때.
+* 주요 목표가 위험 예측 모델 구축이 아니라 **가설 검정** (예측 변수가 결과와 관련이 있는가?)일 때.
+
+### 사용하지 말아야 할 때
+
+B3를 주된 접근 방식으로 사용하지 마십시오:
+
+* 목표가 **예측 모델 개발**일 때 (Riley/pmsampsize 또는 시뮬레이션/보증 방법 사용).
+* **데이터 기반 변수 선택**, 많은 상호작용/스플라인 또는 복잡한 머신러닝 튜닝을 계획할 때 (단일 계수에 대한 검정력은 올바른 목표가 아닙니다).
+* 데이터가 **군집화**되어 있거나 (다기관/병동 수준 상관관계) 디자인 효과 조정 없이 강하게 의존적인 경우.
+* 고정된 환자/대조군 샘플링을 사용하는 **환자-대조군(case-control)** 디자인인 경우 (기본 위험($p_0$)이 원 모집단을 대표하지 않을 수 있음).
+
+---
+
+### 통계 모델 및 파라미터
+
+로지스틱 회귀 모델:
 $$
 \\text{logit}{P(Y=1\\mid X)}=\\beta_0+\\beta_1 X
 $$
 
-* For **binary** ($X\\in\\{0,1\\}$):
+* **이분형** ($X\\in\\{0,1\\}$)인 경우:
   $$
   \\mathrm{OR}=\\exp(\\beta_1)
   $$
-* For **continuous** ($X$): OR must be defined for a specific change in ($X$), commonly **1 SD increase**.
+* **연속형** ($X$)인 경우: OR은 ($X$)의 특정 변화에 대해 정의되어야 하며, 일반적으로 **1 표준편차(SD) 증가**입니다.
 
-Hypothesis test:
+가설 검정:
 $$
 H_0:\\beta_1=0 \\quad \\text{vs}\\quad H_1:\\beta_1\\neq 0
 $$
 
 ---
 
-## Inputs (what each value means)
+### 입력 값 (의미)
 
-1. **Alpha (two-sided)** ($\\alpha$)
-   Common choices: 0.05 (standard), 0.01 (more stringent).
+1. **알파 (양측)** ($\\alpha$)
+   일반적인 선택: 0.05 (표준), 0.01 (더 엄격함).
 
-2. **Power** ($1-\\beta$)
-   Common choices: 0.80 (standard), 0.90 (more conservative).
+2. **검정력** ($1-\\beta$)
+   일반적인 선택: 0.80 (표준), 0.90 (보수적).
 
-3. **Baseline event rate** ($p_0$)
+3. **기본 사건 발생률** ($p_0$)
 
-   * For **binary predictor**: ($p_0 = P(Y=1\\mid X=0)$) (event rate in the reference group).
-   * For **continuous predictor**: ($p_0$) is typically interpreted as the event rate at the **mean** of ($X$) (after centering).
+   * **이분형 예측 변수**: ($p_0 = P(Y=1\\mid X=0)$) (참조 그룹의 사건 발생률).
+   * **연속형 예측 변수**: ($p_0$)는 일반적으로 ($X$)의 **평균**에서의 사건 발생률로 해석됩니다 (중심화 후).
 
-4. **Target odds ratio** ($\\mathrm{OR}$)
-   The smallest OR that is clinically meaningful and worth detecting.
+4. **목표 오즈비** ($\\mathrm{OR}$)
+   임상적으로 의미 있고 탐지할 가치가 있는 가장 작은 OR입니다.
 
-5. **Predictor type**
+5. **예측 변수 유형**
 
-* **Binary predictor**: requires **prevalence of (X=1)**, denoted ($q=P(X=1)$).
-* **Continuous predictor**: typically requires the OR for a **1 SD increase** (or you must convert using SD).
+* **이분형 예측 변수**: **($X=1$)의 유병률**이 필요하며, ($q=P(X=1)$)로 표시합니다.
+* **연속형 예측 변수**: 일반적으로 **1 SD 증가**에 대한 OR이 필요합니다 (또는 SD를 사용하여 변환해야 함).
 
-6. **($R^2$) with other covariates**
-   ($R^2$) is the squared multiple correlation from regressing ($X$) on other covariates in a multivariable model.
+6. **다른 공변량과의 ($R^2$)**
+   다변량 모델에서 ($X$)를 다른 공변량에 대해 회귀했을 때의 다중 상관 계수 제곱입니다.
 
-   * If ($X$) is correlated with other predictors, the effective information about ($\\beta_1$) decreases, so the required sample size increases.
+   * ($X$)가 다른 예측 변수와 상관관계가 있으면 ($\\beta_1$)에 대한 유효 정보가 감소하므로 필요한 표본 크기가 증가합니다.
 
 ---
 
-# Calculation
+### 계산 방식
 
-## Step 1 — Convert OR and baseline risk to ($p_1$) (binary ($X$))
+#### 1단계 — OR과 기본 위험을 ($p_1$)으로 변환 (이분형 ($X$))
 
-If ($X$) is binary, compute the event rate in the exposed group ($p_1=P(Y=1\\mid X=1)$) from ($p_0$) and OR:
+($X$)가 이분형인 경우, ($p_0$)와 OR로부터 노출 그룹의 사건 발생률 ($p_1=P(Y=1\\mid X=1)$)을 계산합니다:
 
 $$
 \\text{odds}_0=\\frac{p_0}{1-p_0},\\quad \\text{odds}_1=\\mathrm{OR}\\cdot \\text{odds}_0,\\quad
 p_1=\\frac{\\text{odds}_1}{1+\\text{odds}_1}
 $$
 
-Overall event rate:
+전체 사건 발생률:
 $$
 p=(1-q)p_0+q p_1
 $$
 
-## Step 2 — Z-scores
+#### 2단계 — Z-점수
 
-Let:
 $$
 z_{\\alpha}=z_{1-\\alpha/2}, \\qquad z_{\\beta}=z_{1-\\beta}=z_{\\text{power}}
 $$
 
-## A) Binary predictor sample size (Hsieh approach)
-
-With ($q=P(X=1)$), ($p_0=P(Y=1\\mid X=0)$), ($p_1=P(Y=1\\mid X=1)$), and ($p$) as above:
+#### A) 이분형 예측 변수 표본 크기 (Hsieh 접근법)
 
 $$
 n_0=
@@ -449,15 +446,15 @@ z_{\\beta}\\sqrt{\\frac{p_1(1-p_1)}{q}+\\frac{p_0(1-p_0)}{1-q}}
 {(p_1-p_0)^2}
 $$
 
-### Adjustment for correlation with other covariates
+**다른 공변량과의 상관관계 보정:**
 
-If you plan a multivariable model and the predictor of interest ($X$) correlates with other covariates, inflate the sample size using:
+관심 예측 변수 ($X$)가 다른 공변량과 상관관계가 있는 다변량 모델을 계획하는 경우, 다음을 사용하여 표본 크기를 부풀립니다:
 
 $$
 n=\\frac{n_0}{1-R^2}
 $$
 
-### Expected number of events
+**예상 사건 수:**
 
 $$
 E \\approx n\\cdot p
@@ -465,572 +462,569 @@ $$
 
 ---
 
-## B) Continuous predictor sample size (Hsieh approach)
+#### B) 연속형 예측 변수 표본 크기 (Hsieh 접근법)
 
-Assume a logistic model with a continuous predictor ($X$) and define OR for a **1 SD increase** in ($X$), denoted ($\\mathrm{OR}_{SD}$). Let ($p_0$) be the event rate at the mean of ($X$):
+연속형 예측 변수 ($X$)가 있는 로지스틱 모델을 가정하고 ($X$)의 **1 SD 증가**에 대한 OR을 ($\\mathrm{OR}_{SD}$)라고 정의합니다. ($p_0$)를 ($X$)의 평균에서의 사건 발생률이라고 합시다:
 
 $$
 n_0=\\frac{(z_{\\alpha}+z_{\\beta})^2}{p_0(1-p_0) [\\log(\\mathrm{OR}_{SD})]^2}
 $$
 
-If the user has an OR per 1-unit increase, ($\\mathrm{OR}_{unit}$), and SD of ($X$) is ($\\sigma_X$), convert:
+사용자가 1단위 증가당 OR ($\\mathrm{OR}_{unit}$)을 가지고 있고 ($X$)의 SD가 ($\\sigma_X$)인 경우 변환합니다:
 $$
 \\log(\\mathrm{OR}_{SD})=\\log(\\mathrm{OR}_{unit})\\cdot \\sigma_X
 $$
 
-Then apply the same multivariable correlation inflation:
+그런 다음 동일한 다변량 상관관계 팽창을 적용합니다:
 $$
 n=\\frac{n_0}{1-R^2}
 $$
 
 ---
 
-## Practical guidance: what values to choose (common conventions)
+### 실용적인 가이드: 값 선택 (일반적인 관례)
 
-* **($\\alpha$)**: 0.05 (two-sided) is typical; use smaller ($\\alpha$) if multiple testing is expected.
-* **Power**: 0.80 is common; 0.90 is preferred when missing the effect would be costly.
-* **OR**: choose the **minimum clinically meaningful** OR (often in the 1.2–2.0 range depending on context).
-* **Baseline risk ($p_0$)**: use local hospital/cohort data if available; otherwise use literature estimates and run sensitivity analyses.
-* **Binary predictor prevalence ($q$)**: use local prevalence; note ($q$) near 0.5 gives the **largest information** (smaller ($n$)); very small/large ($q$) increases required ($n$).
-* **($R^2$)**: if uncertain, run a sensitivity range (e.g., 0, 0.1, 0.25, 0.5). Even moderate correlation can inflate ($n$) substantially via ($1/(1-R^2)$).
-* **Continuous predictors**: consider standardizing ($X$) to mean 0, SD 1 so ($\\mathrm{OR}_{SD}$) is easy to interpret.
+* **($\\alpha$):** 0.05 (양측)가 일반적입니다. 다중 검정이 예상되면 더 작게 사용하십시오.
+* **검정력(Power):** 0.80이 일반적입니다. 효과를 놓치는 비용이 클 경우 0.90이 선호됩니다.
+* **OR:** **최소한 임상적으로 의미 있는** OR을 선택하십시오 (상황에 따라 주로 1.2–2.0 범위).
+* **기본 위험 ($p_0$):** 가능한 경우 지역 병원/코호트 데이터를 사용하고, 그렇지 않으면 문헌 추정치를 사용하고 민감도 분석을 실행하십시오.
+* **이분형 예측 변수 유병률 ($q$):** 지역 유병률을 사용하십시오. ($q$)가 0.5에 가까울수록 **가장 큰 정보**를 제공합니다 (더 작은 ($n$)); ($q$)가 매우 작거나 크면 필요한 ($n$)이 증가합니다.
+* **($R^2$):** 불확실한 경우 민감도 범위를 실행하십시오 (예: 0, 0.1, 0.25, 0.5). 중간 정도의 상관관계라도 ($1/(1-R^2)$)를 통해 ($n$)을 상당히 증가시킬 수 있습니다.
+* **연속형 예측 변수:** ($\\mathrm{OR}_{SD}$)를 해석하기 쉽도록 ($X$)를 평균 0, SD 1로 표준화하는 것을 고려하십시오.
 
 ---
 
-## Key references (2–5)
-
-1. Hsieh FY, Bloch DA, Larsen MD. *A simple method of sample size calculation for linear and logistic regression.* Statistics in Medicine. 1998;17(14):1623–1634.
-2. Hsieh FY. *Sample size tables for logistic regression.* Statistics in Medicine. 1989;8(7):795–802.
-3. Whittemore AS. *Sample size for logistic regression with small response probability.* Journal of the American Statistical Association. 1981;76:27–32.
+### 주요 참고 문헌
+1. Hsieh FY, et al. *Stat Med.* 1998.
+2. Hsieh FY. *Stat Med.* 1989.
+3. Whittemore AS. *JASA.* 1981.
 """,
-        "c5_content_md": """
-### What this method is
+        "c5_content_md": r"""
+### 이 방법은 무엇입니까
 
-C5 implements the **Riley et al. analytical minimum sample size criteria** for **developing a multivariable clinical prediction model** with a **binary outcome** (logistic regression). The goal is to ensure the development dataset is large enough to:
+C5는 **이분형 결과**(로지스틱 회귀)를 가진 **다변량 임상 예측 모델 개발**을 위한 **Riley 등의 분석적 최소 표본 크기 기준**을 구현합니다. 목표는 개발 데이터 세트가 충분히 커서 다음을 보장하는 것입니다:
 
-1. **Limit overfitting** (via a target global shrinkage / calibration slope),
-2. Achieve **adequate precision** for model performance (via a bound on optimism in $R^2$), and
-3. Estimate the **overall outcome risk** (intercept/baseline risk) with acceptable precision.
+1. **과적합(Overfitting) 제한** (목표하는 전체 수축(shrinkage) / 보정 기울기를 통해),
+2. 모델 성능에 대한 **적절한 정밀도 달성** ($R^2$의 낙관주의에 대한 경계 설정),
+3. **전체 결과 위험**(절편/기본 위험)을 수용 가능한 정밀도로 추정.
 
-This is a **model development** method (not external validation). It is particularly suitable when you plan a **pre-specified model form** (predictors and coding defined in advance) and want a **principled alternative to EPV rules**.
-
----
-
-### When to use
-
-Use C5 when:
-
-* You are **developing** a new prediction model for a **binary outcome**.
-* You can specify (even approximately) the **event rate** and an anticipated **overall model performance** (Cox–Snell $R^2$ or AUC).
-* You want to target **low overfitting** (e.g., shrinkage $S \\ge 0.90$) and reasonable precision.
-
-### When NOT to use (or use with caution)
-
-Do not rely on C5 alone when:
-
-* You will do extensive **data-driven variable selection**, multiple interactions/splines, or heavy ML tuning without adjusting the **effective number of parameters (df)**.
-* Your data are strongly **clustered** (multicenter) without accounting for design effects.
-* The intended modeling approach is not standard logistic regression (e.g., complex ML) unless you map complexity to an appropriate **effective df** or switch to simulation-based sizing.
-* You cannot justify any plausible performance input (AUC/$R^2$); in that case run wide sensitivity analyses and consider simulation-based methods.
+이것은 **모델 개발** 방법입니다 (외부 검증 아님). **미리 지정된 모델 형태**(예측 변수 및 코딩이 미리 정의됨)를 계획하고 **EPV 규칙에 대한 원칙적인 대안**을 원할 때 특히 적합합니다.
 
 ---
 
-## Key inputs (what each means)
+### 사용 시점
 
-1. **Outcome prevalence / event rate** (p)
-   Expected proportion with (Y=1) in the development dataset.
+C5를 사용할 때:
 
-2. **Number of predictor parameters (df)** (P)
-   Total degrees of freedom for all candidate predictors **excluding the intercept**.
-   Include: dummy variables, spline bases, interactions (and any other basis expansions).
+* **이분형 결과**에 대한 새로운 예측 모델을 **개발**하고 있습니다.
+* **사건 발생률**과 예상되는 **전체 모델 성능**(Cox–Snell $R^2$ 또는 AUC)을 (대략적으로라도) 지정할 수 있습니다.
+* **낮은 과적합**(예: 수축 $S \ge 0.90$)과 합리적인 정밀도를 목표로 합니다.
 
-3. **Anticipated performance** (choose one)
+### 사용하지 말아야 할 때 (또는 주의해서 사용)
 
-* **Cox–Snell ($R^2_{CS}$)**: preferred if available from related prior studies (ideally optimism-adjusted).
-* **AUC (C-statistic)**: if $R^2_{CS}$ is unavailable, the tool can approximate $R^2_{CS}$ from AUC and ($p$) using a published approach.
-* **Conservative (15% of max $R^2$)**: a fallback when neither AUC nor $R^2$ is available; use with caution.
+다음의 경우 C5에만 의존하지 마십시오:
 
-4. **Target global shrinkage** (S)
-   A target for **overall overfitting control** (often interpreted similarly to an expected calibration slope after internal validation).
-
-* Common default: $S = 0.90$ ($\\approx$ 10% shrinkage of predictor effects).
-* More conservative: $S = 0.95$ (requires larger sample size).
+* 광범위한 **데이터 기반 변수 선택**, 다중 상호작용/스플라인, 또는 헤비한 머신러닝 튜닝을 **유효 파라미터 수(df)** 조정 없이 수행할 때.
+* 데이터가 강력하게 **군집화**(다기관)되어 있고 디자인 효과를 고려하지 않을 때.
+* 의도한 모델링 접근 방식이 표준 로지스틱 회귀가 아닌 경우 (예: 복잡한 ML), 복잡성을 적절한 **유효 df**로 매핑하거나 시뮬레이션 기반 크기 결정으로 전환해야 합니다.
+* 그럴듯한 성능 입력(AUC/$R^2$)을 정당화할 수 없는 경우; 이 경우 광범위한 민감도 분석을 실행하고 시뮬레이션 기반 방법을 고려하십시오.
 
 ---
 
-## Core concepts and formulas
+### 주요 입력 값 (의미)
 
-### Cox–Snell ($R^2$) and its maximum
+1. **결과 유병률 / 사건 발생률** ($p$)
+   개발 데이터 세트에서 ($Y=1$)인 예상 비율.
 
-Cox–Snell ($R^2$) for a fitted logistic model can be written as:
-$$
-R^2_{CS} = 1-\\exp\\left(\\frac{2}{n}(\\ell_0-\\ell_1)\\right),
-$$
-where $\\ell_0$ is the intercept-only log-likelihood and $\\ell_1$ is the model log-likelihood.
+2. **예측 변수 파라미터 수 (df)** ($P$)
+   **절편을 제외한** 모든 후보 예측 변수의 총 자유도.
+   포함: 더미 변수, 스플라인 기저, 상호작용 (및 기타 기저 확장).
 
-For binary outcomes, $R^2_{CS}$ cannot reach 1. Its maximum depends on the outcome prevalence:
-$$
-\\ell_0 = n\\Big[p\\ln(p) + (1-p)\\ln(1-p)\\Big],
-$$
-$$
-R^2_{CS,\\max}=1-\\exp\\left(\\frac{2\\ell_0}{n}\\right)
-=1-\\exp\\Big(2[p\\ln(p) + (1-p)\\ln(1-p)]\\Big).
-$$
+3. **예상 성능** (하나 선택)
 
-Nagelkerke ($R^2$) rescales Cox–Snell ($R^2$) to ([0,1]):
-$$
-R^2_{Nag}=\\frac{R^2_{CS}}{R^2_{CS,\\max}}.
-$$
+* **Cox–Snell ($R^2_{CS}$)**: 관련 선행 연구에서 이용 가능한 경우 선호됨 (이상적으로는 낙관주의 조정됨).
+* **AUC (C-통계량)**: $R^2_{CS}$를 이용할 수 없는 경우, 도구는 게시된 접근 방식을 사용하여 AUC와 ($p$)로부터 $R^2_{CS}$를 근사할 수 있습니다.
+* **보수적 (최대 $R^2$의 15%)**: AUC나 $R^2$ 모두 이용할 수 없을 때의 대안; 주의해서 사용하십시오.
+
+4. **목표 전체 수축 (S)**
+   **전반적인 과적합 제어**를 위한 목표 (종종 내부 검증 후 예상되는 보정 기울기와 유사하게 해석됨).
+
+* 일반적인 기본값: $S = 0.90$ (예측 효과의 약 10% 수축).
+* 더 보수적: $S = 0.95$ (더 큰 표본 크기 필요).
 
 ---
 
-## The three Riley criteria (binary outcome)
+### 핵심 개념 및 공식
 
-### Criterion 1 — Control overfitting via target shrinkage (S)
+#### Cox–Snell ($R^2$) 및 최대값
 
-Minimum sample size to target global shrinkage (S):
+적합된 로지스틱 모델에 대한 Cox–Snell ($R^2$)는 다음과 같이 쓸 수 있습니다:
 $$
-n_1=\\left\\lceil
-\\frac{P}{(S-1)\\ln\\left(1-\\frac{R^2_{CS}}{S}\\right)}
-\\right\\rceil.
+R^2_{CS} = 1-\exp\left(\frac{2}{n}(\ell_0-\ell_1)\right),
 $$
+여기서 $\ell_0$는 절편만 있는 로그 우도이고 $\ell_1$은 모델 로그 우도입니다.
 
-### Criterion 2 — Limit optimism in ($R^2$) (default absolute difference 0.05)
-
-This criterion targets a small absolute difference (default $\\delta=0.05$) between apparent and adjusted **Nagelkerke** ($R^2$). The required shrinkage implied by this constraint is:
+이분형 결과의 경우, $R^2_{CS}$는 1에 도달할 수 없습니다. 최대값은 결과 유병률에 따라 달라집니다:
 $$
-S_{\\delta}=\\frac{R^2_{CS}}{R^2_{CS}+\\delta R^2_{CS,\\max}}.
+\ell_0 = n\Big[p\ln(p) + (1-p)\ln(1-p)\Big],
 $$
-Then:
 $$
-n_2=\\left\\lceil
-\\frac{P}{(S_{\\delta}-1)\\ln\\left(1-\\frac{R^2_{CS}}{S_{\\delta}}\\right)}
-\\right\\rceil.
+R^2_{CS,\max}=1-\exp\left(\frac{2\ell_0}{n}\right)
+=1-\exp\Big(2[p\ln(p) + (1-p)\ln(1-p)]\Big).
 $$
 
-### Criterion 3 — Precise estimation of the overall outcome risk (intercept)
-
-This targets precision of the **average outcome risk** ($p$) (baseline risk) within ($\\pm d$) on the probability scale (default $d=0.05$ at 95% CI):
+Nagelkerke ($R^2$)는 Cox–Snell ($R^2$)를 ([0,1])로 재조정합니다:
 $$
-n_3=\\left\\lceil
-\\left(\\frac{z_{1-\\alpha/2}}{d}\\right)^2 p(1-p)
-\\right\\rceil,
-\\quad \\text{default } z_{0.975}=1.96,; d=0.05.
-$$
-
-### Final recommendation
-
-$$
-n_{\\min}=\\max(n_1,n_2,n_3),\\qquad
-E = n_{\\min}p,\\qquad
-EPP=\\frac{E}{P}.
+R^2_{Nag}=\frac{R^2_{CS}}{R^2_{CS,\max}}.
 $$
 
 ---
 
-## Practical guidance (typical choices)
+### 세 가지 Riley 기준 (이분형 결과)
 
-* **Shrinkage (S)**: use **0.90** as a standard target; consider **0.95** if you want stronger overfitting control or if the model is complex.
-* **$\\delta=0.05$** for Criterion 2: commonly kept at the default.
-* **Intercept precision (d=0.05)**: default corresponds to estimating baseline risk within ±5%. If baseline risk must be estimated more precisely, you would need a smaller ($d$) (larger ($n$)).
-* **Anticipated ($R^2_{CS}$)**:
+#### 기준 1 — 목표 수축(S)을 통한 과적합 제어
 
-  * Prefer **optimism-adjusted** values from related studies (or apparent values from external validation data).
-  * If only AUC is available, use the published AUC→$R^2_{CS}$ approximation method.
-  * If neither is available, the **15% of $R^2_{CS,\\max}$** option is a conservative fallback for exploratory planning—always run sensitivity analyses.
+목표 전체 수축(S)을 위한 최소 표본 크기:
+$$
+n_1=\left\lceil
+\frac{P}{(S-1)\ln\left(1-\frac{R^2_{CS}}{S}\right)}
+\right\rceil.
+$$
+
+#### 기준 2 — ($R^2$)의 낙관주의 제한 (기본 절대 차이 0.05)
+
+이 기준은 겉보기(apparent)와 조정된(adjusted) **Nagelkerke** ($R^2$) 간의 작은 절대 차이(기본값 $\delta=0.05$)를 목표로 합니다. 이 제약 조건이 암시하는 필요 수축은 다음과 같습니다:
+$$
+S_{\delta}=\frac{R^2_{CS}}{R^2_{CS}+\delta R^2_{CS,\max}}.
+$$
+그러면:
+$$
+n_2=\left\lceil
+\frac{P}{(S_{\delta}-1)\ln\left(1-\frac{R^2_{CS}}{S_{\delta}}\right)}
+\right\rceil.
+$$
+
+#### 기준 3 — 전체 결과 위험(절편)의 정밀한 추정
+
+이것은 확률 척도에서 ($\pm d$) 내의 **평균 결과 위험** ($p$) (기본 위험)의 정밀도를 목표로 합니다 (기본값 95% CI에서 $d=0.05$):
+$$
+n_3=\left\lceil
+\left(\frac{z_{1-\alpha/2}}{d}\right)^2 p(1-p)
+\right\rceil,
+\quad \text{기본값 } z_{0.975}=1.96,; d=0.05.
+$$
+
+#### 최종 권장 사항
+
+$$
+n_{\min}=\max(n_1,n_2,n_3),\qquad
+E = n_{\min}p,\qquad
+EPP=\frac{E}{P}.
+$$
 
 ---
 
-## Key references (2–5)
+### 실용적인 가이드 (일반적인 선택)
 
-1. Riley RD, Snell KIE, Ensor J, et al. *Minimum sample size required for developing a multivariable prediction model: PART II—binary and time-to-event outcomes.* Statistics in Medicine. 2019.
-2. Riley RD, Ensor J, Snell KIE, et al. *Calculating the sample size required for developing a clinical prediction model.* BMJ. 2020.
-3. Riley RD, Van Calster B, Collins GS. *A note on estimating the Cox–Snell ($R^2$) from a reported C statistic (AUROC) to inform sample size calculations for developing a prediction model with a binary outcome.* Statistics in Medicine. 2021.
-4. Harrell FE Jr, Lee KL, Mark DB. *Multivariable prognostic models: issues in developing models, evaluating assumptions and adequacy, and measuring and reducing errors.* Statistics in Medicine. 1996.
+* **수축 (S)**: **0.90**을 표준 목표로 사용하십시오. 더 강력한 과적합 제어를 원하거나 모델이 복잡한 경우 **0.95**를 고려하십시오.
+* **$\delta=0.05$** (기준 2): 일반적으로 기본값으로 유지됩니다.
+* **절편 정밀도 (d=0.05)**: 기본값은 기본 위험을 ±5% 내에서 추정하는 것에 해당합니다. 기본 위험을 더 정밀하게 추정해야 하는 경우 더 작은 ($d$) (더 큰 ($n$))가 필요합니다.
+* **예상 ($R^2_{CS}$)**:
+
+  * 관련 연구의 **낙관주의 조정된** 값(또는 외부 검증 데이터의 겉보기 값)을 선호합니다.
+  * AUC만 이용 가능한 경우, 게시된 AUC→$R^2_{CS}$ 근사 방법을 사용하십시오.
+  * 둘 다 이용할 수 없는 경우, **$R^2_{CS,\max}$의 15%** 옵션은 탐색적 계획을 위한 보수적인 대안입니다—항상 민감도 분석을 실행하십시오.
+
+---
+
+### 주요 참고 문헌
+1. Riley RD, et al. *Stat Med.* 2019.
+2. Riley RD, et al. *BMJ.* 2020.
+3. Riley RD, et al. *Stat Med.* 2021.
+4. Harrell FE Jr, et al. *Stat Med.* 1996.
 """,
-        "c6_content_md": """
-## C6: Development Simulation (Frequentist; custom DGM)
+        "c6_content_md": r"""
+## C6: 개발 시뮬레이션 (빈도주의; 사용자 정의 DGM)
 
-### What this method is
 
-C6 is a **simulation-based sample size planning** approach for **prediction model development** (binary outcome), inspired by the philosophy of **samplesizedev** and broader simulation-based design principles.
+C6는 **예측 모델 개발**(이분형 결과)을 위한 **시뮬레이션 기반 표본 크기 계획** 접근 방식이며, **samplesizedev** 및 더 광범위한 시뮬레이션 기반 설계 원칙의 철학에서 영감을 받았습니다.
 
-Instead of relying on a single analytical formula, C6 asks:
+이것은 단일 분석 공식에 의존하는 대신 다음과 같이 질문합니다:
 
-> “If we repeatedly develop the model using the planned approach on datasets of size (N), how often will the model meet pre-specified performance criteria on new data?”
+> “만약 우리가 계획된 접근 방식을 사용하여 크기 (N)의 데이터 세트에서 모델을 반복적으로 개발한다면, 새로운 데이터에서 모델이 사전 지정된 성능 기준을 얼마나 자주 충족할 것인가?”
 
-It therefore targets **expected performance** (and/or probability of acceptable performance) under a **data-generating mechanism (DGM)** that represents your anticipated clinical population.
-
----
-
-## When to use
-
-Use C6 when:
-
-* You want a planning method aligned with “**simulate what you will do**,” especially when:
-
-  * predictors may be correlated,
-  * you include non-linear terms or interactions,
-  * event rates are modest or uncertain,
-  * you want criteria based on **calibration** and **discrimination**.
-* You can specify a reasonable DGM using local data or the literature.
-* You are comfortable with simulation and want a more flexible alternative to purely analytical sizing.
-
-## When NOT to use (or use with caution)
-
-Avoid relying on C6 alone when:
-
-* You cannot justify a plausible DGM (predictor distribution, correlations, effect sizes).
-* You do not have computational budget (simulation can be expensive).
-* You plan highly data-adaptive ML pipelines (feature selection, complex tuning) without explicitly simulating the full pipeline (C6 must reflect the actual pipeline to be valid).
-* The target population is heterogeneous across hospitals/centers and you are not simulating clustering/case-mix shifts.
+따라서 예상되는 임상 모집단을 나타내는 **데이터 생성 메커니즘(DGM)** 하에서 **기대 성능**(및/또는 수용 가능한 성능의 확률)을 목표로 합니다.
 
 ---
 
-# Overview of the algorithm
+## 사용 시점
 
-For each candidate sample size (N), simulate (R) development datasets, fit the planned model, evaluate it on “new data,” and summarize performance.
+C6를 사용할 때:
 
-### Step 1 — Choose a DGM
+* 다음과 같은 경우 “**수행할 작업을 시뮬레이션**”하는 계획 방법과 일치하기를 원할 때:
 
-Define how predictors (X) and outcomes (Y) are generated.
+  * 예측 변수가 상관관계가 있을 수 있음,
+  * 비선형 항이나 상호작용을 포함함,
+  * 사건 발생률이 적당하거나 불확실함,
+  * **보정(calibration)** 및 **판별력(discrimination)**에 기반한 기준을 원함.
+* 로컬 데이터나 문헌을 사용하여 합리적인 DGM을 지정할 수 있습니다.
+* 시뮬레이션에 익숙하고 순수 분석적 크기 결정에 대한 더 유연한 대안을 원합니다.
 
-Typical binary-outcome DGM:
-[
-Y \mid X \sim \\text{Bernoulli}(\\pi), \\qquad
-\\pi = \\text{logit}^{-1}(\\eta),
-]
-[
-\\eta = \\beta_0 + \\sum_{j=1}^{P}\\beta_j f_j(X_j),
-]
-where:
+## 사용하지 말아야 할 때 (또는 주의해서 사용)
 
-* (P) is the **number of parameters/df** used in the fitted model,
-* (f_j(\\cdot)) represent coding choices (linear term, spline basis, dummy coding, etc.).
+다음의 경우 C6에만 의존하지 마십시오:
 
-To achieve a target event rate (p), choose (\\beta_0) so that:
-[
-\\mathbb{E}[\\pi] = p.
-]
-In practice, (\\beta_0) is found by numerical root-finding using Monte Carlo draws from (X).
-
-### Step 2 — Generate a development dataset
-
-For replicate (r):
-
-* Simulate (X^{(r)}) of size (N) from the chosen predictor distribution (with specified correlations).
-* Simulate (Y^{(r)}) from the Bernoulli model above.
-
-### Step 3 — Fit the development model
-
-Fit the planned logistic regression model:
-[
-\\widehat{\\eta} = \\widehat{\\beta}*0 + \\sum*{j=1}^{P}\\widehat{\\beta}_j f_j(X_j).
-]
-**Important:** Simulation must match your intended development strategy (e.g., penalization, pre-specified terms). If separation/non-convergence occurs, a ridge-penalized fallback is often used (and should be counted and reported).
-
-### Step 4 — Evaluate on new data
-
-Generate an independent test set (size (N_{\\text{test}}), often large such as 5000–10000) from the same DGM and compute:
-
-**(a) Discrimination (AUC / C-statistic)**
-[
-\\mathrm{AUC}=\\Pr(\\widehat{\\eta}_1 > \\widehat{\\eta}_0),
-]
-the probability that a randomly selected case has a higher predicted risk than a non-case.
-
-**(b) Calibration slope**
-Estimate (b) from a calibration model on the test set:
-[
-\\text{logit}(Y) = a + b \\cdot \\text{logit}(\\widehat{p}),
-]
-or equivalently using the linear predictor:
-[
-\\text{logit}(Y) = a + b \\cdot \\widehat{\\eta}.
-]
-Here, (b\\approx 1) indicates good calibration; (b<1) suggests overfitting (predictions too extreme).
-
-### Step 5 — Define pass/fail criteria and compute success rates
-
-Across (R) simulations for each (N), compute:
-
-* Mean calibration slope:
-  [
-  \\overline{b} = \\frac{1}{R}\\sum_{r=1}^R b^{(r)}.
-  ]
-* Probability slope is within an acceptable range:
-  [
-  \\widehat{\\Pr}(b \\in [L,U]) = \\frac{1}{R}\\sum_{r=1}^R \\mathbf{1}{b^{(r)}\\in[L,U]}.
-  ]
-* Mean AUC:
-  [
-  \\overline{\\mathrm{AUC}}=\\frac{1}{R}\\sum_{r=1}^R \\mathrm{AUC}^{(r)}.
-  ]
-
-A candidate (N) is “acceptable” if all selected criteria are met, e.g.:
-
-* (\\overline{b} \\ge 0.90)
-* (\\widehat{\\Pr}(0.9 \\le b \\le 1.1) \\ge 0.80)
-* (\\overline{\\mathrm{AUC}} \\ge \\mathrm{AUC}_{\\text{target}})
-
-Choose the **smallest** (N) that passes.
+* 그럴듯한 DGM(예측 변수 분포, 상관관계, 효과 크기)을 정당화할 수 없을 때.
+* 계산 예산이 없을 때 (시뮬레이션은 비용이 많이 들 수 있음).
+* 전체 파이프라인을 명시적으로 시뮬레이션하지 않고 고도로 데이터 적응적인 ML 파이프라인(특징 선택, 복잡한 튜닝)을 계획할 때 (C6는 유효하려면 실제 파이프라인을 반영해야 함).
+* 대상 모집단이 병원/센터 간에 이질적이며 군집화/케이스 믹스 변화를 시뮬레이션하지 않는 경우.
 
 ---
 
-# Inputs in the app (where to find them, typical values)
+# 알고리즘 개요
 
-### 1) Outcome prevalence / event rate (p)
+각 후보 표본 크기 (N)에 대해, (R)개의 개발 데이터 세트를 시뮬레이션하고, 계획된 모델을 적합하고, “새로운 데이터”에서 평가하고, 성능을 요약합니다.
 
-**What it is:** expected proportion of events in the development cohort.
-**Where to get it:** local hospital incidence/prevalence (best), registry data, or prior studies in similar settings.
-**Typical planning ranges:** 5%–15% are common in many clinical contexts (but vary widely).
-**Tip:** If uncertain, run **sensitivity analysis** over a plausible range.
+### 1단계 — DGM 선택
 
-### 2) Number of predictor parameters (df) (P)
+예측 변수 (X)와 결과 (Y)가 생성되는 방식을 정의합니다.
 
-**What it is:** total degrees of freedom (excluding intercept), including:
+전형적인 이분형 결과 DGM:
+[
+Y \mid X \sim \text{Bernoulli}(\pi), \qquad
+\pi = \text{logit}^{-1}(\eta),
+]
+[
+\eta = \beta_0 + \sum_{j=1}^{P}\beta_j f_j(X_j),
+]
+여기서:
 
-* categorical dummies,
-* spline bases,
-* interactions,
-* any additional engineered terms.
-  **Where to get it:** your *final* planned model specification (TRIPOD-style pre-specification).
-  **Typical values:** 10–30 df are common; higher requires stronger evidence and larger samples.
+* (P)는 적합된 모델에서 사용된 **파라미터 수/df**,
+* (f_j(\cdot))는 코딩 선택(선형 항, 스플라인 기저, 더미 코딩 등)을 나타냅니다.
 
-### 3) Target mean AUC (Mode A)
+목표 사건 발생률 (p)를 달성하기 위해, 다음이 되도록 (\beta_0)를 선택합니다:
+[
+\mathbb{E}[\pi] = p.
+]
+실제로 (\beta_0)는 (X)의 몬테카를로 추출을 사용한 수치적 루트 찾기로 찾습니다.
 
-**What it is:** expected discrimination on new data (optimism-adjusted).
-**Where to get it:** prior models in similar populations, pilot data, or published AUCs (prefer externally validated AUC).
-**Typical values:** 0.70–0.85 are common; >0.90 is unusual and often optimistic.
+### 2단계 — 개발 데이터 세트 생성
 
-### 4) Candidate sample sizes (N)
+반복 (r)에 대해:
 
-Provide a grid (e.g., 1000, 1500, 2000, 3000, 5000).
-**Tip:** include a smaller and larger value to ensure the pass/fail threshold is crossed.
+* 선택한 예측 변수 분포(지정된 상관관계 포함)에서 크기 (N)의 (X^{(r)})을 시뮬레이션합니다.
+* 위의 Bernoulli 모델에서 (Y^{(r)})을 시뮬레이션합니다.
 
-### 5) Number of simulations per (N): (R)
+### 3단계 — 개발 모델 적합
 
-**Interpretation:** Monte Carlo replications.
+계획된 로지스틱 회귀 모델을 적합합니다:
+[
+\widehat{\eta} = \widehat{\beta}_0 + \sum_{j=1}^{P}\widehat{\beta}_j f_j(X_j).
+]
+**중요:** 시뮬레이션은 의도한 개발 전략(예: 불이익(penalization), 사전 지정된 항)과 일치해야 합니다. 분리/비수렴이 발생하는 경우, 릿지 불이익(ridge-penalized) 대안이 종종 사용됩니다(그리고 계산되어 보고되어야 함).
 
-* Demo: (R \\approx 200) (fast, higher Monte Carlo error)
-* Final: (R \\ge 1000) (more stable)
-  Monte Carlo standard error for a pass probability (\\hat{p}) is:
+### 4단계 — 새로운 데이터에서 평가
+
+동일한 DGM에서 독립적인 테스트 세트(크기 (N_{\text{test}}), 종종 5000–10000과 같이 큼)를 생성하고 다음을 계산합니다:
+
+**(a) 판별력 (AUC / C-통계량)**
+[
+\mathrm{AUC}=\Pr(\widehat{\eta}_1 > \widehat{\eta}_0),
+]
+무작위로 선택된 사례(case)가 비사례(non-case)보다 더 높은 예측 위험을 가질 확률입니다.
+
+**(b) 보정 기울기 (Calibration slope)**
+테스트 세트의 보정 모델에서 (b)를 추정합니다:
+[
+\text{logit}(Y) = a + b \cdot \text{logit}(\widehat{p}),
+]
+또는 선형 예측 변수를 사용하여 동등하게:
+[
+\text{logit}(Y) = a + b \cdot \widehat{\eta}.
+]
+여기서 (b\approx 1)은 좋은 보정을 나타내고, (b<1)은 과적합(예측이 너무 극단적임)을 시사합니다.
+
+### 5단계 — 합격/불합격 기준 정의 및 성공률 계산
+
+각 (N)에 대한 (R) 시뮬레이션 전체에서 다음을 계산합니다:
+
+* 평균 보정 기울기:
   [
-  \\mathrm{MCSE}=\\sqrt{\\frac{\\hat{p}(1-\\hat{p})}{R}}.
+  \overline{b} = \frac{1}{R}\sum_{r=1}^R b^{(r)}.
   ]
-  Example: if (\\hat{p}=0.8) and (R=200), MCSE ≈ 0.028.
+* 기울기가 수용 가능한 범위 내에 있을 확률:
+  [
+  \widehat{\Pr}(b \in [L,U]) = \frac{1}{R}\sum_{r=1}^R \mathbf{1}{b^{(r)}\in[L,U]}.
+  ]
+* 평균 AUC:
+  [
+  \overline{\mathrm{AUC}}=\frac{1}{R}\sum_{r=1}^R \mathrm{AUC}^{(r)}.
+  ]
 
-### 6) Performance criteria (Pass/Fail)
+선택한 모든 기준이 충족되면 후보 (N)은 “수용 가능”합니다. 예:
 
-* **Mean calibration slope ≥ 0.9**
-  (typical overfitting control threshold)
+* (\overline{b} \ge 0.90)
+* (\widehat{\Pr}(0.9 \le b \le 1.1) \ge 0.80)
+* (\overline{\mathrm{AUC}} \ge \mathrm{AUC}_{\text{target}})
+
+통과하는 **가장 작은** (N)을 선택하십시오.
+
+---
+
+# 앱의 입력 (찾는 곳, 일반적인 값)
+
+### 1) 결과 유병률 / 사건 발생률 (p)
+
+**의미:** 개발 코호트에서 예상되는 사건 비율.
+**얻는 곳:** 지역 병원 발생률/유병률(최선), 레지스트리 데이터, 또는 유사한 환경의 선행 연구.
+**일반적인 계획 범위:** 5%–15%가 많은 임상 상황에서 일반적입니다 (그러나 매우 다양함).
+**팁:** 불확실한 경우, 타당한 범위에 대해 **민감도 분석**을 실행하십시오.
+
+### 2) 예측 변수 파라미터 수 (df) (P)
+
+**의미:** 다음을 포함한 총 자유도(절편 제외):
+
+* 범주형 더미,
+* 스플라인 기저,
+* 상호작용,
+* 기타 추가 엔지니어링 항.
+  **얻는 곳:** *최종* 계획된 모델 사양 (TRIPOD 스타일 사전 사양).
+  **일반적인 값:** 10–30 df가 일반적입니다; 더 높으면 더 강력한 증거와 더 큰 표본이 필요합니다.
+
+### 3) 목표 평균 AUC (모드 A)
+
+**의미:** 새로운 데이터에서의 예상 판별력 (낙관주의 조정됨).
+**얻는 곳:** 유사한 모집단의 이전 모델, 파일럿 데이터, 또는 게시된 AUC (외부 검증된 AUC 선호).
+**일반적인 값:** 0.70–0.85가 일반적입니다; >0.90은 드물고 종종 낙관적입니다.
+
+### 4) 후보 표본 크기 (N)
+
+그리드를 제공하십시오 (예: 1000, 1500, 2000, 3000, 5000).
+**팁:** 합격/불합격 임계값이 교차되도록 더 작은 값과 더 큰 값을 포함하십시오.
+
+### 5) (N)당 시뮬레이션 수: (R)
+
+**해석:** 몬테카를로 반복.
+
+* 데모: (R \approx 200) (빠름, 더 높은 몬테카를로 오차)
+* 최종: (R \ge 1000) (더 안정적)
+  통과 확률 (\hat{p})에 대한 몬테카를로 표준 오차는 다음과 같습니다:
+  [
+  \mathrm{MCSE}=\sqrt{\frac{\hat{p}(1-\hat{p})}{R}}.
+  ]
+  예: (\hat{p}=0.8)이고 (R=200)이면, MCSE ≈ 0.028.
+
+### 6) 성능 기준 (합격/불합격)
+
+* **평균 보정 기울기 ≥ 0.9**
+  (일반적인 과적합 제어 임계값)
 * **Pr(0.9 ≤ slope ≤ 1.1) ≥ 80%**
-  (typical “acceptable calibration” probability threshold)
-* **Mean AUC ≥ target**
-  (discrimination target)
+  (일반적인 “수용 가능한 보정” 확률 임계값)
+* **평균 AUC ≥ target**
+  (판별력 목표)
 
-**Where to get thresholds:** practice guidelines, prior studies, and what is clinically acceptable.
-**Common conventions:** slope range 0.90–1.10 and assurance 0.80 are frequently used for planning; use 0.90 assurance for higher certainty.
-
----
-
-# Strengths and weaknesses
-
-**Strengths**
-
-* Flexible: accommodates correlations, non-linear terms, and realistic modeling choices.
-* Directly targets new-data performance and calibration behavior.
-* Naturally supports sensitivity analyses.
-
-**Weaknesses**
-
-* Results depend on DGM assumptions (garbage in → garbage out).
-* Computationally intensive.
-* Must simulate the full intended modeling pipeline; otherwise results can be misleading.
+**임계값 얻는 곳:** 진료 지침, 선행 연구, 임상적으로 허용되는 것.
+**일반적인 관례:** 기울기 범위 0.90–1.10 및 보증(assurance) 0.80은 계획에 자주 사용됩니다; 더 높은 확실성을 위해 0.90 보증을 사용하십시오.
 
 ---
 
-## Key references (2–5)
+# 장점과 단점
+
+**장점**
+
+* 유연성: 상관관계, 비선형 항, 현실적인 모델링 선택을 수용합니다.
+* 새로운 데이터 성능 및 보정 동작을 직접 목표로 합니다.
+* 본질적으로 민감도 분석을 지원합니다.
+
+**단점**
+
+* 결과는 DGM 가정에 따라 달라집니다 (쓰레기가 들어가면 쓰레기가 나옴).
+* 계산 집약적입니다.
+* 의도한 모델링 파이프라인 전체를 시뮬레이션해야 합니다. 그렇지 않으면 결과가 오해의 소지가 있을 수 있습니다.
+
+---
+
+## 주요 참고 문헌 (2–5)
 
 1. Pavlou M, Ambler G, Seaman SR, et al. *How to develop a more accurate risk prediction model when there are few events.* BMJ. 2015.
 2. Riley RD, Snell KIE, Ensor J, et al. *Minimum sample size required for developing a multivariable prediction model: Part II—binary and time-to-event outcomes.* Statistics in Medicine. 2019.
 3. Pavlou M, et al. *Methodology and software for simulation-based sample size calculation in prediction modeling* (sampsize development/related work). Statistics in Medicine. 2021.
 4. Steyerberg EW. *Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating.* 2nd ed. Springer. 2019.
 """,
-    "c7_content_md": """
-## C7: Bayesian Assurance (MCMC)
+    "c7_content_md": r"""
+## C7: 베이지안 보증 (MCMC)
 
-### What this method is
-**Bayesian assurance** is a simulation-based approach to sample size planning for **Bayesian model development** (here: Bayesian logistic regression for a binary outcome).  
-Instead of targeting "power" (frequentist), assurance targets the **unconditional probability** that your study will meet **pre-specified success criteria** (e.g., calibration and discrimination thresholds, and/or posterior precision).
+### 이 방법은 무엇입니까
+**베이지안 보증(Bayesian assurance)**은 **베이지안 모델 개발**(여기서는 이분형 결과에 대한 베이지안 로지스틱 회귀)을 위한 표본 크기 계획에 대한 시뮬레이션 기반 접근 방식입니다.
+"검정력(Power)"(빈도주의)을 목표로 하는 대신, 보증은 연구가 **사전 지정된 성공 기준**(예: 보정 및 판별력 임계값, 및/또는 사후 정밀도)을 충족할 **무조건부 확률(unconditional probability)**을 목표로 합니다.
 
-In plain terms:
-> "If we repeat the whole study many times (data generation + Bayesian MCMC fitting), what is the probability that the fitted model will be good enough?"
-
----
-
-### When to use
-Use C7 when:
-- Your final analysis is **Bayesian** and will be estimated by **MCMC**.
-- You want sample size chosen to achieve **a target probability of success** (e.g., ≥80% or ≥90%).
-- You can specify reasonable assumptions for:
-  - event rate in your hospital cohort,
-  - predictor correlation structure and distributions,
-  - plausible effect sizes (from local pilot data or literature),
-  - priors for regression coefficients.
-
-### When NOT to use (or use with caution)
-Avoid relying on C7 alone when:
-- You cannot justify priors or a plausible **data-generating mechanism (DGM)**.
-- You do not have the compute budget (MCMC is slow; results can be sensitive to MCMC settings).
-- Your real development pipeline includes substantial data-adaptive steps (feature selection, heavy tuning) that you are **not** simulating.
-- Data are clustered/multicenter but the DGM ignores clustering (may underestimate required N).
+쉽게 말해:
+> "전체 연구(데이터 생성 + 베이지안 MCMC 적합)를 여러 번 반복한다면, 적합된 모델이 충분히 좋을 확률은 얼마입니까?"
 
 ---
 
-## Core model and DGM
+### 사용 시점
+C7을 사용할 때:
+- 최종 분석이 **베이지안**이고 **MCMC**로 추정될 예정일 때.
+- **성공 목표 확률**(예: ≥80% 또는 ≥90%)을 달성하기 위해 표본 크기를 선택하고 싶을 때.
+- 다음 사항에 대해 합리적인 가정을 지정할 수 있을 때:
+  - 병원 코호트의 사건 발생률,
+  - 예측 변수 상관 구조 및 분포,
+  - 그럴듯한 효과 크기 (로컬 파일럿 데이터 또는 문헌에서),
+  - 회귀 계수에 대한 사전 분포(priors).
 
-### Bayesian logistic regression (analysis model)
-\[
-Y_i \sim \\text{Bernoulli}(\\pi_i), \\qquad
-\\text{logit}(\\pi_i)=\\beta_0 + \\sum_{j=1}^{P}\\beta_j f_j(X_{ij})
-\]
-- \(P\) = number of predictor parameters (degrees of freedom; **exclude intercept**).
-- \(f_j(\\cdot)\) represents your coding choices (linear term, dummies, spline bases, interactions).
-
-**Example priors (typical weakly informative defaults):**
-\[
-\\beta_j \sim \\mathcal{N}(0,\\sigma_\\beta^2),\\quad \\sigma_\\beta \\in [1, 2.5],
-\\qquad \\beta_0 \sim \\mathcal{N}(0, 5^2)
-\]
-(Your app may use fixed priors; users should run sensitivity analyses over plausible priors.)
-
-### DGM for predictors (example equicorrelation)
-If the app uses a single correlation parameter \\(\\rho\\) (equicorrelation):
-\[
-\\mathrm{Corr}(X_j, X_k)=\\rho \\quad (j\\neq k),
-\\qquad
-\\Sigma_{jk}=
-\\begin{cases}
-1,& j=k\\\\
-\\rho,& j\\neq k
-\\end{cases}
-\]
-Predictors are then generated from a correlated mechanism (e.g., Gaussian copula / multivariate normal core), and transformed into continuous/binary predictors as needed.
-
-### Setting the event rate
-The intercept (or a calibration constant) is chosen so that the marginal event rate matches the target prevalence:
-\[
-\\mathbb{E}[\\pi_i]=p
-\]
-This is typically solved numerically using Monte Carlo draws of \(X\).
+### 사용하지 말아야 할 때 (또는 주의해서 사용)
+다음의 경우 C7에만 의존하지 마십시오:
+- 사전 분포(priors)나 그럴듯한 **데이터 생성 메커니즘(DGM)**을 정당화할 수 없을 때.
+- 계산 예산이 없을 때 (MCMC는 느리며; 결과는 MCMC 설정에 민감할 수 있음).
+- 실제 개발 파이프라인에 시뮬레이션하지 않는 상당한 데이터 적응 단계(특징 선택, 헤비 튜닝)가 포함된 경우.
+- 데이터가 군집화/다기관이지만 DGM이 군집화를 무시하는 경우 (필요한 N을 과소평가할 수 있음).
 
 ---
 
-## What "assurance" means (key formula)
-Let:
-- \\(\\theta\\) denote the "true" parameters under the DGM (effect sizes, correlation structure, etc.).
-- \\(y\\) denote the observed dataset of size \\(N\\).
-- \\(S(y)\\) be a **success indicator** that equals 1 if performance/precision criteria are met.
+## 핵심 모델 및 DGM
 
-**Assurance at sample size \\(N\\):**
+### 베이지안 로지스틱 회귀 (분석 모델)
 \[
-\\mathcal{A}(N)=\\Pr(\\text{Success at }N)
-=\\mathbb{E}_{\\theta}\\left[\\mathbb{E}_{y\\mid \\theta,N}\\left\\{S(y)\\right\\}\\right]
+Y_i \sim \text{Bernoulli}(\pi_i), \qquad
+\text{logit}(\pi_i)=\beta_0 + \sum_{j=1}^{P}\beta_j f_j(X_{ij})
 \]
+- \(P\) = 예측 변수 파라미터 수 (자유도; **절편 제외**).
+- \(f_j(\cdot)\)는 코딩 선택(선형 항, 더미, 스플라인 기저, 상호작용)을 나타냅니다.
 
-**Monte Carlo estimate used in the app (for each candidate \\(N\\)):**
+**예시 사전 분포 (일반적인 약한 정보성 기본값):**
 \[
-\\widehat{\\mathcal{A}}(N)=\\frac{1}{R}\\sum_{r=1}^{R} S\\!\\left(y^{(r)}\right)
+\beta_j \sim \mathcal{N}(0,\sigma_\beta^2),\quad \sigma_\beta \in [1, 2.5],
+\qquad \beta_0 \sim \mathcal{N}(0, 5^2)
 \]
-where each replicate \\(r\\) simulates a dataset, fits the Bayesian model with MCMC, and evaluates success criteria.
+(앱은 고정된 사전 분포를 사용할 수 있습니다; 사용자는 그럴듯한 사전 분포에 대해 민감도 분석을 실행해야 합니다.)
 
-Monte Carlo standard error (helpful for interpreting stability):
+### 예측 변수에 대한 DGM (예시 등상관)
+앱이 단일 상관 파라미터 \(\rho\) (등상관)를 사용하는 경우:
 \[
-\\mathrm{MCSE}\\left(\\widehat{\\mathcal{A}}(N)\\right)
-=\\sqrt{\\frac{\\widehat{\\mathcal{A}}(N)\\left[1-\\widehat{\\mathcal{A}}(N)\\right]}{R}}
+\mathrm{Corr}(X_j, X_k)=\rho \quad (j\neq k),
+\qquad
+\Sigma_{jk}=
+\begin{cases}
+1,& j=k\\
+\rho,& j\neq k
+\end{cases}
 \]
+예측 변수는 상관된 메커니즘(예: 가우시안 코풀라 / 다변량 정규 코어)에서 생성된 다음 필요에 따라 연속/이분형 예측 변수로 변환됩니다.
 
-**Decision rule:**
-Choose the smallest \\(N\\) such that:
+### 사건 발생률 설정
+절편(또는 보정 상수)은 한계 사건 발생률이 목표 유병률과 일치하도록 선택됩니다:
 \[
-\\widehat{\\mathcal{A}}(N)\\ge \\mathcal{A}_\\text{target}
+\mathbb{E}[\pi_i]=p
 \]
-(e.g., 0.80 or 0.90).
+이것은 일반적으로 \(X\)의 몬테카를로 추출을 사용하여 수치적으로 해결됩니다.
 
 ---
 
-## Success criteria (typical examples)
-Your app may implement one or more of the following (user-selectable):
-- **Calibration slope** in an acceptable range:
+## "보증(Assurance)"의 의미 (핵심 공식)
+정의:
+- \(\theta\)는 DGM 하의 "참" 파라미터(효과 크기, 상관 구조 등)를 나타냅니다.
+- \(y\)는 크기 \(N\)의 관측된 데이터 세트를 나타냅니다.
+- \(S(y)\)는 성능/정밀도 기준이 충족되면 1인 **성공 지표(success indicator)**입니다.
+
+**표본 크기 \(N\)에서의 보증:**
+\[
+\mathcal{A}(N)=\Pr(\text{Success at }N)
+=\mathbb{E}_{\theta}\left[\mathbb{E}_{y\mid \theta,N}\left\{S(y)\right\}\right]
+\]
+
+**앱에서 사용되는 몬테카를로 추정치 (각 후보 \(N\)에 대해):**
+\[
+\widehat{\mathcal{A}}(N)=\frac{1}{R}\sum_{r=1}^{R} S\!\left(y^{(r)}\right)
+\]
+여기서 각 반복 \(r\)은 데이터 세트를 시뮬레이션하고, MCMC로 베이지안 모델을 적합하고, 성공 기준을 평가합니다.
+
+몬테카를로 표준 오차 (안정성 해석에 도움):
+\[
+\mathrm{MCSE}\left(\widehat{\mathcal{A}}(N)\right)
+=\sqrt{\frac{\widehat{\mathcal{A}}(N)\left[1-\widehat{\mathcal{A}}(N)\right]}{R}}
+\]
+
+**결정 규칙:**
+다음과 같은 가장 작은 \(N\)을 선택하십시오:
+\[
+\widehat{\mathcal{A}}(N)\ge \mathcal{A}_\text{target}
+\]
+(예: 0.80 또는 0.90).
+
+---
+
+## 성공 기준 (일반적인 예)
+앱은 다음 중 하나 이상을 구현할 수 있습니다 (사용자 선택 가능):
+- 수용 가능한 범위 내의 **보정 기울기**:
   \[
   0.90 \le b \le 1.10
   \]
-  where \\(b\\) is estimated from a calibration model on validation/test data:
+  여기서 \(b\)는 검증/테스트 데이터의 보정 모델에서 추정됩니다:
   \[
-  \\text{logit}(Y)=a + b\\cdot \\text{logit}(\\widehat{p})
+  \text{logit}(Y)=a + b\cdot \text{logit}(\widehat{p})
   \]
-- **Discrimination** threshold:
+- **판별력** 임계값:
   \[
-  \\mathrm{AUC} \\ge 0.75 \\;(\\text{or your chosen target})
+  \mathrm{AUC} \ge 0.75 \;(\text{또는 선택한 목표})
   \]
-- **Posterior precision** target, e.g. 95% credible interval width for calibration slope:
+- **사후 정밀도** 목표, 예: 보정 기울기에 대한 95% 신용 구간 너비:
   \[
-  \\mathrm{Width}\\left(\\text{CrI}_{95\\%}(b)\\right) \\le w
-  \\quad (\\text{e.g., } w=0.20)
+  \mathrm{Width}\left(\text{CrI}_{95\%}(b)\right) \le w
+  \quad (\text{예: } w=0.20)
   \]
 
 ---
 
-## Input guide (where to find values; typical choices)
+## 입력 가이드 (값 찾는 곳; 일반적인 선택)
 
-### 1) Outcome prevalence (event rate) \\(p\\)
-**Where to get it:** local hospital cohort/registry; recent retrospective data.  
-**Typical planning ranges:** 0.05–0.15 are common in many clinical settings, but use your disease context.  
-**Tip:** If uncertain, run a sensitivity analysis over a plausible range.
+### 1) 결과 유병률 (사건 발생률) \(p\)
+**얻는 곳:** 지역 병원 코호트/레지스트리; 최근 후향적 데이터.
+**일반적인 계획 범위:** 0.05–0.15가 많은 임상 환경에서 일반적이지만, 질병 상황에 맞게 사용하십시오.
+**팁:** 불확실한 경우, 타당한 범위에 대해 민감도 분석을 실행하십시오.
 
-### 2) Number of predictor parameters (df) \\(P\\)
-**Where to get it:** your finalized model specification (count **parameters**, not variables).  
-Include dummies, spline bases, interactions. Exclude intercept.  
-**Typical range:** 10–30 df is common; larger df demands much larger \\(N\\) and stronger prior justification.
+### 2) 예측 변수 파라미터 수 (df) \(P\)
+**얻는 곳:** 최종 확정된 모델 사양 (**변수**가 아닌 **파라미터** 수).
+더미, 스플라인 기저, 상호작용을 포함하십시오. 절편은 제외하십시오.
+**일반적인 범위:** 10–30 df가 일반적입니다; df가 클수록 훨씬 더 큰 \(N\)과 더 강력한 사전 정당성이 필요합니다.
 
-### 3) Predictor correlation \\(\\rho\\)
-**Where to get it:** estimate from pilot/hospital data (correlation matrix of candidate predictors).  
-If unknown, use sensitivity analysis (e.g., \\(\\rho=0, 0.1, 0.3\\)).  
-**Typical:** mild-to-moderate correlations (0–0.3) are common; higher correlations increase instability and may increase required \\(N\\).
+### 3) 예측 변수 상관관계 \(\rho\)
+**얻는 곳:** 파일럿/병원 데이터에서 추정 (후보 예측 변수의 상관 행렬).
+알려지지 않은 경우, 민감도 분석을 사용하십시오 (예: \(\rho=0, 0.1, 0.3\)).
+**일반적:** 약함~중간 정도의 상관관계(0–0.3)가 일반적입니다; 상관관계가 높으면 불안정성이 증가하고 필요한 \(N\)이 증가할 수 있습니다.
 
-### 4) Candidate sample sizes \\(N\\)
-Choose a grid wide enough to cross the pass/fail boundary (e.g., 500, 1000, 1500, 2000, …).  
-Start from feasibility constraints (available charts/records) and expand upward.
+### 4) 후보 표본 크기 \(N\)
+합격/불합격 경계를 교차할 만큼 충분히 넓은 그리드를 선택하십시오 (예: 500, 1000, 1500, 2000, …).
+타당성 제약 조건(사용 가능한 차트/기록)에서 시작하여 위쪽으로 확장하십시오.
 
-### 5) Number of simulations per \\(N\\) (replicates) \\(R\\)
-- **Demo:** 50–200 (fast; higher MC error)  
-- **Final planning:** ≥500–1000 (more stable assurance estimate)  
-Use MCSE to judge stability.
+### 5) \(N\)당 시뮬레이션 수 (반복) \(R\)
+- **데모:** 50–200 (빠름; 더 높은 MC 오차)
+- **최종 계획:** ≥500–1000 (더 안정적인 보증 추정치)
+MCSE를 사용하여 안정성을 판단하십시오.
 
-### 6) Assurance threshold \\(\\mathcal{A}_\\text{target}\\)
-- **0.80**: common for feasibility-driven planning  
-- **0.90**: preferred when you want higher confidence in meeting criteria
-
----
-
-## Strengths and weaknesses
-**Strengths**
-- Fully aligned with Bayesian workflows; directly targets **posterior** success/precision.
-- Flexible: accommodates complex DGM, correlations, and performance-based criteria.
-- Can incorporate prior knowledge and realistically handle rare events with regularizing priors.
-
-**Weaknesses**
-- Computationally intensive; results can depend on MCMC settings and convergence.
-- Sensitive to DGM and prior assumptions → requires sensitivity analyses.
-- Must simulate the actual planned pipeline to avoid under/over-estimation.
+### 6) 보증 임계값 \(\mathcal{A}_\text{target}\)
+- **0.80**: 타당성 중심 계획에 일반적
+- **0.90**: 기준 충족에 더 높은 확신을 원할 때 선호됨
 
 ---
 
-## Key references (2–5)
-1) O'Hagan A. Assurance in clinical trial design. *Pharmaceutical Statistics.* 2005.  
-2) Pan J, Banerjee S. bayesassurance: An R Package for Calculating Sample Size and Bayesian Assurance. *The R Journal.* 2023.  
-3) Gelman A, Jakulin A, Pittau MG, Su Y-S. A weakly informative default prior distribution for logistic and other regression models. *The Annals of Applied Statistics.* 2008.  
+## 장점과 단점
+**장점**
+- 베이지안 워크플로와 완전히 일치합니다; **사후** 성공/정밀도를 직접 목표로 합니다.
+- 유연성: 복잡한 DGM, 상관관계 및 성능 기반 기준을 수용합니다.
+- 사전 지식을 통합하고 정규화 사전 분포를 통해 드문 사건을 현실적으로 처리할 수 있습니다.
+
+**단점**
+- 계산 집약적입니다; 결과는 MCMC 설정 및 수렴에 따라 달라질 수 있습니다.
+- DGM 및 사전 가정에 민감함 → 민감도 분석이 필요합니다.
+- 과소/과대 평가를 피하기 위해 실제 계획된 파이프라인을 시뮬레이션해야 합니다.
+
+---
+
+## 주요 참고 문헌 (2–5)
+1) O'Hagan A. Assurance in clinical trial design. *Pharmaceutical Statistics.* 2005.
+2) Pan J, Banerjee S. bayesassurance: An R Package for Calculating Sample Size and Bayesian Assurance. *The R Journal.* 2023.
+3) Gelman A, Jakulin A, Pittau MG, Su Y-S. A weakly informative default prior distribution for logistic and other regression models. *The Annals of Applied Statistics.* 2008.
 4) Sahu SK, Smith TMF. Bayesian methods of sample size determination. *Statistical Methodology / related Bayesian SSD literature.* 2006.
 """,
 }

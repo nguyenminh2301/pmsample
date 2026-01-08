@@ -3,10 +3,12 @@ import streamlit as st
 try:
     from pmsampsize_app.core import riley as core_riley
     from pmsampsize_app.utils import parse_input
+    from pmsampsize_app import reporting
 except ImportError:
     # Fallback/Test context
     from core import riley as core_riley
     from utils import parse_input
+    import reporting
 
 def render_ui(T):
     st.header(T["method1_tab"])
@@ -71,8 +73,18 @@ def render_ui(T):
             st.info(f"ℹ️ **{T['sanity']}**: N(180 events) = {180/min(p_list):.0f} | N(250 events) = {250/min(p_list):.0f}")
             st.dataframe(df.style.format({"Prevalence": "{:.3f}", "R2_CS": "{:.3f}", "Performance": "{:.3f}", "EPP": "{:.1f}"}))
             
-            csv = df.to_csv(index=False).encode('utf-8')
-            st.download_button(label=T["download_csv"], data=csv, file_name='riley_results.csv', mime='text/csv')
+            
+            # Reporting & Download UI
+            context = {
+                "method_title": T["method1_tab"],
+                "inputs": {
+                    T["prevalence"]: p_input,
+                    T["parameters"]: param_input,
+                    T["perf_measure"]: f"{perf_mode} = {perf_input_raw}",
+                    T["shrinkage"]: shrinkage
+                }
+            }
+            reporting.render_report_ui(context, df, T)
 
         except Exception as e:
             st.error(f"{T['error_parse']} {e}")
