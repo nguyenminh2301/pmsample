@@ -1002,7 +1002,10 @@ Dùng MCSE để đánh giá độ ổn định.
         # Email & Reporting
         "report_header": "Báo cáo & Tải xuống",
         "btn_download_report": "Tải Báo cáo (Văn bản)",
+        "btn_download_html": "Tải Báo cáo (Định dạng HTML)",
         "btn_download_csv": "Tải Kết quả (CSV)",
+        "report_title": "Báo cáo Tính toán Cỡ mẫu",
+        "footer_text": "Dành cho mục đích nghiên cứu. Vui lòng kiểm tra lại với chuyên gia thống kê.",
         "email_header": "Gửi Kết quả qua Email",
         "email_to": "Email Người nhận",
         "email_send_btn": "Gửi Email",

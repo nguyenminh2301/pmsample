@@ -3,9 +3,11 @@ import streamlit as st
 try:
     from pmsampsize_app.core import precision as core_precision
     from pmsampsize_app.utils import parse_input
+    from pmsampsize_app import reporting
 except ImportError:
     from core import precision as core_precision
     from utils import parse_input
+    import reporting
 
 def render_ui(T):
     st.header(T["quick_mode_risk"])
@@ -28,7 +30,20 @@ def render_ui(T):
             
             df = core_precision.generate_binom_grid(p_list, w_list, c_list, method)
             st.dataframe(df.style.format({"P_expected": "{:.3f}", "Actual_Half_Width": "{:.4f}"}))
-            st.download_button("Download CSV", df.to_csv(index=False).encode('utf-8'), "precision_results.csv")
+            st.dataframe(df.style.format({"P_expected": "{:.3f}", "Actual_Half_Width": "{:.4f}"}))
+            
+            # Reporting & Download UI
+            context = {
+                "method_title": T["quick_mode_risk"],
+                "method_description": T["risk_help"],
+                "inputs": {
+                    T["prevalence"]: p_str,
+                    T["ci_method"]: method,
+                    T["ci_half_width"]: width_str,
+                    T["ci_level"]: conf_str
+                }
+            }
+            reporting.render_report_ui(context, df, T)
         except Exception as e:
             st.error(f"Error: {e}")
 

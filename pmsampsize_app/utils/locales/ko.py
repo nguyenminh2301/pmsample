@@ -1027,4 +1027,20 @@ MCSE를 사용하여 안정성을 판단하십시오.
 3) Gelman A, Jakulin A, Pittau MG, Su Y-S. A weakly informative default prior distribution for logistic and other regression models. *The Annals of Applied Statistics.* 2008.
 4) Sahu SK, Smith TMF. Bayesian methods of sample size determination. *Statistical Methodology / related Bayesian SSD literature.* 2006.
 """,
+        # Email & Reporting
+        "report_header": "보고서 및 다운로드",
+        "btn_download_report": "보고서 다운로드 (텍스트)",
+        "btn_download_html": "보고서 다운로드 (HTML 형식)",
+        "btn_download_csv": "결과 다운로드 (CSV)",
+        "report_title": "표본 크기 계산 보고서",
+        "footer_text": "연구 목적용입니다. 통계 전문가와 확인하십시오.",
+        "email_header": "이메일로 결과 보내기",
+        "email_to": "수신자 이메일",
+        "email_send_btn": "이메일 보내기",
+        "email_success": "이메일 전송 성공!",
+        "email_error": "이메일 전송 오류:",
+        "email_settings": "이메일 설정 (SMTP)",
+        "email_sender": "보내는 사람 이메일",
+        "email_password": "앱 비밀번호",
+        "email_subject_default": "표본 크기 분석 결과",
 }

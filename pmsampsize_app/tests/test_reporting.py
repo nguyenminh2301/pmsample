@@ -37,6 +37,13 @@ class TestReporting(unittest.TestCase):
         self.assertIn("Prevalence", md)
         self.assertIn("|   Col1 |   Col2 |", md) # Table check in markdown
 
+    def test_generate_report_html(self):
+        html = reporting.generate_report_html(self.context, self.df, self.T)
+        self.assertIn("<!DOCTYPE html>", html)
+        self.assertIn("Test Method", html)
+        self.assertIn("Prevalence", html)
+        self.assertIn("<table", html)
+
     def test_generate_report_empty(self):
         md = reporting.generate_report_markdown(self.context, None, self.T)
         self.assertEqual(md, "No results to report.")

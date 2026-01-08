@@ -4,9 +4,11 @@ import streamlit as st
 try:
     from pmsampsize_app.core import epv as core_epv
     from pmsampsize_app.utils import parse_input
+    from pmsampsize_app import reporting
 except ImportError:
     from core import epv as core_epv
     from utils import parse_input
+    import reporting
 
 def render_ui(T):
     st.header(T["quick_mode_epv"])
@@ -27,7 +29,18 @@ def render_ui(T):
             
             df = core_epv.calculate_epv_size(p_list, P_list, epv_list)
             st.dataframe(df)
-            st.download_button("Download CSV", df.to_csv(index=False).encode('utf-8'), "epv_results.csv")
+            
+            # Reporting & Download UI
+            context = {
+                "method_title": T["quick_mode_epv"],
+                "method_description": T["epv_warning_text"],
+                "inputs": {
+                    T["prevalence"]: p_str,
+                    T["parameters"]: P_str,
+                    T["target_epv"]: epv_str
+                }
+            }
+            reporting.render_report_ui(context, df, T)
         except Exception as e:
             st.error(f"Error: {e}")
 

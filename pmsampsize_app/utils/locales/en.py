@@ -1068,7 +1068,10 @@ Use MCSE to judge stability.
         # Email & Reporting
         "report_header": "Report & Downloads",
         "btn_download_report": "Download Report (Text)",
+        "btn_download_html": "Download Report (Formatted HTML)",
         "btn_download_csv": "Download Results (CSV)",
+        "report_title": "Sample Size Calculation Report",
+        "footer_text": "For research purposes only. Please verify with a statistician.",
         "email_header": "Email Results",
         "email_to": "Recipient Email",
         "email_send_btn": "Send Email",

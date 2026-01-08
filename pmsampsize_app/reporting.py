@@ -7,6 +7,52 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 from io import BytesIO
 import markdown
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+import os
+from datetime import datetime
+
+# Setup Jinja2
+TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
+env = Environment(
+    loader=FileSystemLoader(TEMPLATE_DIR),
+    autoescape=select_autoescape(['html', 'xml'])
+)
+
+def generate_report_html(context, df_results, T):
+    """
+    Generates an HTML report using Jinja2 templates.
+    """
+    template = env.get_template('generic_report.html')
+    
+    # Format current time
+    now = datetime.now()
+    date_str = now.strftime("%Y-%m-%d %H:%M:%S")
+    
+    # Convert DF to HTML with styling classes if possible, or just raw HTML
+    if df_results is not None and not df_results.empty:
+        results_html = df_results.to_html(index=False, classes="table table-striped", border=0)
+    else:
+        results_html = None
+        
+    render_ctx = {
+        "lang": "en", # default, could be dynamic
+        "title": T.get('title', 'PMSampSize'),
+        "report_title": T.get('report_title', 'Sample Size Calculation Report'),
+        "app_name": "Prognostic Research Sample Size App",
+        "date_label": "Date",
+        "date": date_str,
+        "footer_text": T.get('footer_text', 'For research purposes only.'),
+        
+        "method_title": context.get('method_title', 'Unknown Method'),
+        "method_description": context.get('method_description', ''),
+        "inputs_title": T.get('riley_inputs', 'Input Parameters'),
+        "inputs": context.get('inputs', {}),
+        "results_title": T.get('results', 'Results'),
+        "results_html": results_html
+    }
+    
+    return template.render(**render_ctx)
+
 
 def generate_report_markdown(context, df_results, T):
     """
@@ -100,7 +146,20 @@ def render_report_ui(context, df_results, T):
         mime="text/plain"
     )
     
-    # 2. Download CSV (Result)
+    
+    # 2. Download HTML (Formatted Report)
+    try:
+        html_content = generate_report_html(context, df_results, T)
+        st.download_button(
+            label=f"🌐 {T.get('btn_download_html', 'Download Report (HTML)')}",
+            data=html_content,
+            file_name="pmsampsize_report.html",
+            mime="text/html"
+        )
+    except Exception as e:
+        st.error(f"Could not generate HTML report: {e}")
+
+    # 3. Download CSV (Result)
     csv = df_results.to_csv(index=False).encode('utf-8')
     st.download_button(
         label=f"📊 {T.get('btn_download_csv', 'Download CSV')}",
@@ -109,7 +168,7 @@ def render_report_ui(context, df_results, T):
         mime='text/csv'
     )
     
-    # 3. Email Section - DISABLED by user request
+    # 4. Email Section - DISABLED by user request
     # with st.expander(f"📧 {T.get('email_header', 'Email Results')}"):
     #     
     #     # User credentials (simple approach: stored in session state for session duration)
