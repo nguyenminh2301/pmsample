@@ -45,6 +45,15 @@ EN = {
         "perf_auc": "AUC (C-statistic)",
         "perf_r2": "Cox-Snell R-squared",
         "perf_cons": "Conservative (15% of Max R2)",
+        "c5_interp_title": "How to read the results",
+        "c5_interp_text": """
+        **The displayed (N) is the minimum required to satisfy Riley's 3 criteria:**
+        1. **Overfitting**: Expected shrinkage $\\ge$ target (e.g., 0.9).
+        2. **Optimism**: Optimism in $R^2$ is small ($\\le 0.05$).
+        3. **Precise Intercept**: Precise estimation of overall event rate (margin $\\le 0.05$).
+        
+        *The final N is the maximum of these three requirements.*
+        """,
         
         # Bayesian specific 
         "perf_cons_help": "Conservative (15% of Max R2)",

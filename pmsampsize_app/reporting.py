@@ -149,6 +149,10 @@ def render_report_ui(context, df_results, T):
 
     col_d1, col_d2 = st.columns(2)
     
+    # Create unique keys based on method title to avoid DuplicateWidgetID
+    # Fallback to a random suffix if not available, though method_title should be present.
+    base_key = context.get('method_title', 'generic').replace(" ", "_").lower()
+    
     # 2. Download HTML (Formatted Report)
     with col_d1:
         try:
@@ -157,7 +161,8 @@ def render_report_ui(context, df_results, T):
                 label=f"🌐 {T.get('btn_download_html', 'Download Report (HTML)')}",
                 data=html_content,
                 file_name="pmsampsize_report.html",
-                mime="text/html"
+                mime="text/html",
+                key=f"btn_dwn_html_{base_key}"
             )
         except Exception as e:
             st.error(f"Could not generate HTML report: {e}")
@@ -169,21 +174,12 @@ def render_report_ui(context, df_results, T):
             label=f"📊 {T.get('btn_download_csv', 'Download CSV')}",
             data=csv,
             file_name='pmsampsize_results.csv',
-            mime='text/csv'
+            mime='text/csv',
+            key=f"btn_dwn_csv_{base_key}"
         )
     
     
-    # 2. Download HTML (Formatted Report)
-    try:
-        html_content = generate_report_html(context, df_results, T)
-        st.download_button(
-            label=f"🌐 {T.get('btn_download_html', 'Download Report (HTML)')}",
-            data=html_content,
-            file_name="pmsampsize_report.html",
-            mime="text/html"
-        )
-    except Exception as e:
-        st.error(f"Could not generate HTML report: {e}")
+
 
     # Downloads handled in columns above
     
