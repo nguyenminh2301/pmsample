@@ -7,9 +7,11 @@ import time
 try:
     from pmsampsize_app.utils import parse_input
     from pmsampsize_app.core.d10_sim import run_d10_simulation, solve_gamma_for_target_p, sim_lp_distribution
+    from pmsampsize_app import reporting
 except ImportError:
     from utils import parse_input
     from core.d10_sim import run_d10_simulation, solve_gamma_for_target_p, sim_lp_distribution
+    import reporting
 
 def render_ui(T):
     st.header(T.get("title_d10", "D10: External Validation Simulation"))
@@ -140,5 +142,20 @@ def render_ui(T):
         # Plot
         st.line_chart(res_df, x="N", y=[c for c in res_df.columns if "Mean" in c])
         
-        csv = res_df.to_csv(index=False).encode('utf-8')
-        st.download_button("Download CSV", csv, "d10_results.csv")
+        st.line_chart(res_df, x="N", y=[c for c in res_df.columns if "Mean" in c])
+        
+        # Reporting
+        context = {
+            "method_title": T.get("title_d10", "D10: Sim Validation"),
+            "method_description": "Simulation for external validation sample size.",
+            "inputs": {
+                "LP Type": dist_type,
+                "LP Params": str(lp_params),
+                "Miscal Mode": miscal_mode,
+                "Gamma": gamma,
+                "Slope": slope,
+                "Targets": f"C={target_c}, S={target_slope}, OE={target_oe}",
+                "Sim": f"R={n_sims}, Seed={seed}"
+            }
+        }
+        reporting.render_report_ui(context, res_df, T)

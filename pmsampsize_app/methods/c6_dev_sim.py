@@ -7,9 +7,11 @@ import matplotlib.pyplot as plt
 try:
     from pmsampsize_app.core import dev_sim as core_dev_sim
     from pmsampsize_app.utils import parse_input
+    from pmsampsize_app import reporting
 except ImportError:
     from core import dev_sim as core_dev_sim
     from utils import parse_input
+    import reporting
 
 def render_ui(T):
     st.header(T["method6_tab"])
@@ -95,9 +97,24 @@ def render_ui(T):
                 "AUC_mean": "{:.3f}", "Slope_mean": "{:.3f}", "fallback_pct": "{:.2%}", "pct_slope_09_11": "{:.1%}"
             }))
             
-            col_d1, col_d2 = st.columns(2)
-            col_d1.download_button("Download CSV", df_res.to_csv(index=False).encode('utf-8'), "dev_sim_results.csv", "text/csv")
-            col_d2.download_button(T["audit_trail"], json.dumps({"audit": audit}, default=str), "dev_sim_audit.json", "application/json")
+            # Reporting
+            context = {
+                "method_title": T.get("method6_tab", "Method C6: Simulation"),
+                "method_description": T.get("dev_sim_intro", "Simulation-based sample size calculation."),
+                "inputs": {
+                    T["prevalence"]: p_true,
+                    T["parameters"]: P,
+                    T["target_auc"]: target_auc,
+                    T["correlation"]: rho,
+                    T["n_candidates"]: n_candidates_str,
+                    T["n_sims"]: n_sims,
+                    "Global Seed": start_seed
+                }
+            }
+            reporting.render_report_ui(context, df_res, T)
+            
+            # Extra Audit Download
+            st.download_button(T["audit_trail"], json.dumps({"audit": audit}, default=str), "dev_sim_audit.json", "application/json")
             
         except Exception as e:
             st.error(f"Error: {e}")

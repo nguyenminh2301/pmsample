@@ -7,8 +7,13 @@ try:
     from pmsampsize_app.utils import parse_input
     from pmsampsize_app.core.d8_auc import prec_auc
 except ImportError:
+    from core.d8_auc import prec_auc
+    from utils import parse_input
+    import reporting
+except ImportError:
     from utils import parse_input
     from core.d8_auc import prec_auc
+    import reporting
 
 def render_ui(T):
     st.header(T["title_d8"])
@@ -149,7 +154,21 @@ def render_ui(T):
                 }))
                 
                 csv = df.to_csv(index=False).encode('utf-8')
-                st.download_button(T["download_csv"], csv, "d8_auc_presize.csv")
+                
+                # Reporting
+                context = {
+                    "method_title": T.get("title_d8", "Method D8: AUC Precision"),
+                    "method_description": T.get("d8_desc", "Sample size for AUC precision."),
+                    "inputs": {
+                        T["auc_expected"]: auc_str,
+                        T["prevalence"]: p_str,
+                        T["d8_width_input" if is_finding_n else "d8_n_input"]: target_str,
+                        T["ci_level"]: conf_str,
+                        "Opt Upper": opt_upper,
+                        "Opt Tol": opt_tol
+                    }
+                }
+                reporting.render_report_ui(context, df, T)
                 
         except Exception as e:
             st.error(f"{T['error_parse']} {e}")

@@ -3,6 +3,10 @@ import numpy as np
 import scipy.stats
 import streamlit as st
 import pandas as pd
+try:
+    from pmsampsize_app import reporting
+except ImportError:
+    import reporting
 
 def calculate_n_schoenfeld(alpha, power, hr, predictor_type, q=0.5, sd=1.0, f_event=0.20):
     """
@@ -82,3 +86,27 @@ def render_ui(T):
         To detect a Hazard Ratio of {hr} with {int(power*100)}% power at alpha={alpha}, 
         you need {d_req} events. Given the event rate of {f_event}, this requires {n_req} total subjects.
         """)
+        
+        # Reporting
+        df = pd.DataFrame({
+            "Required_Events": [d_req],
+            "Required_Total_N": [n_req],
+            "Alpha": [alpha],
+            "Power": [power],
+            "HR_Target": [hr],
+            "Event_Rate": [f_event]
+        })
+        
+        context = {
+            "method_title": T.get("title_b4", "Method B4: Schoenfeld (Cox)"),
+            "method_description": f"Schoenfeld (1983) calculation for {pred_type} predictor in Cox model.",
+            "inputs": {
+                "Alpha": alpha,
+                "Power": power,
+                "Hazard Ratio": hr,
+                "Predictor Type": pred_type,
+                "X Prevalence (q)" if pred_type == "Binary" else "SD": q if pred_type == "Binary" else sd,
+                "Event Rate": f_event
+            }
+        }
+        reporting.render_report_ui(context, df, T)

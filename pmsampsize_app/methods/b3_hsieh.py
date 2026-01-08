@@ -3,7 +3,10 @@ import numpy as np
 import scipy.stats
 import streamlit as st
 import pandas as pd
-# from pmsampsize_app.registry import MethodSpec, MethodStatus, registry # Cyclic import if not careful, better to register in __init__ or app
+try:
+    from pmsampsize_app import reporting
+except ImportError:
+    import reporting
 
 def calculate_n_hsieh(alpha, power, p0, odds_ratio, predictor_type, q=0.5, sd=1.0, r2=0.0):
     """
@@ -140,11 +143,36 @@ def render_ui(T):
         
         # Provide interpretation
         st.markdown(f"""
-        **{T['interpretation']}**:
+        **{T.get('interpretation', 'Interpretation')}**:
         To detect an OR of {or_target} with {int(power*100)}% power at alpha={alpha}, 
         assuming baseline rate {p0} and predictor properties defined, 
         you need {n_req} subjects.
         """)
+        
+        # Reporting
+        df = pd.DataFrame({
+            "Required_N": [n_req],
+            "Expected_Events": [ev_req],
+            "Alpha": [alpha],
+            "Power": [power],
+            "OR_Target": [or_target],
+            "Baseline_P0": [p0]
+        })
+        
+        context = {
+            "method_title": T.get("title_b3", "Method B3: Hsieh (Logistic)"),
+            "method_description": f"Hsieh et al. (1998) calculation for {pred_type} predictor.",
+            "inputs": {
+                "Alpha": alpha,
+                "Power": power,
+                "Baseline Rate (p0)": p0,
+                "Target OR": or_target,
+                "Predictor Type": pred_type,
+                "X Prevalence (q)" if pred_type == "Binary" else "SD": q if pred_type == "Binary" else sd,
+                "R-squared": r2
+            }
+        }
+        reporting.render_report_ui(context, df, T)
 
     st.markdown("---")
     with st.expander(T.get("formulas_header", "Formulas & Technical Details")):

@@ -3,8 +3,10 @@ import streamlit as st
 import json
 try:
     from pmsampsize_app.utils import parse_input
+    from pmsampsize_app import reporting
 except ImportError:
     from utils import parse_input
+    import reporting
 
 def render_ui(T):
     st.header(T["method2_tab"])
@@ -62,6 +64,23 @@ def render_ui(T):
             st.line_chart(df_res, x="N", y="assurance")
             
             # Export
+            # Export
+            # Reporting
+            context = {
+                "method_title": T.get("method2_tab", "Method C7: Bayesian Assurance"),
+                "method_description": "Bayesian assurance simulation for sample size.",
+                "inputs": {
+                    T["prevalence"]: p_true,
+                    T["parameters"]: P,
+                    T["correlation"]: rho,
+                    T["n_candidates"]: n_candidates_str,
+                    T["n_sims"]: n_sims,
+                    T.get("assurance_threshold", "Assurance Target"): assurance_target,
+                    "Global Seed": start_seed
+                }
+            }
+            reporting.render_report_ui(context, df_res, T)
+            
             res_json = json.dumps({"results": df_res.to_dict(orient="records"), "audit": audit}, indent=2)
             st.download_button("Download JSON Report (with Audit)", res_json, "bayes_assurance_results.json", "application/json")
             

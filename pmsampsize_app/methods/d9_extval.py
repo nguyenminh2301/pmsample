@@ -8,8 +8,10 @@ import math
 
 try:
     from pmsampsize_app.utils import parse_input
+    from pmsampsize_app import reporting
 except ImportError:
     from utils import parse_input
+    import reporting
 
 # -----------------------------------------------------------------------------
 # HELPER FUNCTIONS (PMVALSAMPSIZE)
@@ -362,6 +364,18 @@ def render_ui(T):
             st.table(res_df)
             
             st.caption(f"Based on simulated LP (Normal): mu={res['lp_mu']:.3f}, sigma={res['lp_sigma']:.3f}")
+            
+            # Reporting Tab 1
+            context1 = {
+                "method_title": "D9: External Validation (Riley/Archer)",
+                "method_description": "Targeting CI Widths for O/E, Slope, C.",
+                "inputs": {
+                    "Prevalence": p_str, "C-Stat": c_str,
+                    "O/E Width": oe_w, "Slope Width": slope_w, "C Width": c_w,
+                    "Seed": seed
+                }
+            }
+            reporting.render_report_ui(context1, res_df, T)
 
     # TAB 2: SAMPSIZEVAL
     with tab2:
@@ -387,6 +401,17 @@ def render_ui(T):
                 {"Criterion": "3. Large (SE)", "Target": se_large, "N Required": res["n_large"]},
             ])
             st.table(res_df)
+            
+            # Reporting Tab 2
+            context2 = {
+                "method_title": "D9: External Validation (Pavlou)",
+                "method_description": "Targeting SE Limits for C, Slope, Large.",
+                "inputs": {
+                    "Prevalence": p_str, "C-Stat": c_str,
+                    "SE(C)": se_c, "SE(Slope)": se_slope, "SE(Large)": se_large
+                }
+            }
+            reporting.render_report_ui(context2, res_df, T)
 
     # TAB 3: COMBINED
     with tab3:
@@ -413,3 +438,15 @@ def render_ui(T):
                 "Implied Events": [res1['events_recom'], res2['events_recom']]
             })
             st.table(comp_df)
+            
+            # Reporting Tab 3
+            context3 = {
+                "method_title": "D9: External Validation (Combined)",
+                "method_description": "Comparison of Riley/Archer and Pavlou methods.",
+                "inputs": {
+                    "Prevalence": p_str, "C-Stat": c_str,
+                    "Riley Inputs": f"OE_w={st.session_state.d9_oe_w}, Slope_w={st.session_state.d9_slope_w}",
+                    "Pavlou Inputs": f"SE_c={st.session_state.d9_se_c}, SE_slope={st.session_state.d9_se_slope}"
+                }
+            }
+            reporting.render_report_ui(context3, comp_df, T)
