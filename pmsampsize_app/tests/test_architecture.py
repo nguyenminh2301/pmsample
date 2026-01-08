@@ -20,9 +20,9 @@ class TestArchitecture(unittest.TestCase):
         available_methods = [m for m in methods if m.status == MethodStatus.AVAILABLE]
         self.assertTrue(len(available_methods) >= 10, f"Expected >=10 methods, found {len(available_methods)}")
         
-        b3 = registry._methods["b3"]
-        self.assertEqual(b3.title_en, "B3: Logistic OR Power (Hsieh)")
-        self.assertEqual(b3.status, MethodStatus.AVAILABLE)
+        a2_1 = registry._methods["a2_1"]
+        self.assertEqual(a2_1.title_en, "A2.1: Logistic Power (Hsieh)")
+        self.assertEqual(a2_1.status, MethodStatus.AVAILABLE)
         
     def test_b3_hsieh(self):
         """Test B3 Hsieh implementation against example"""
