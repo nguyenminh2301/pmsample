@@ -57,6 +57,7 @@ def render_ui(T):
                 start_seed=start_seed
             )
             
+            
             with st.spinner(T["simulation_running"]):
                 df_res, audit = sim.run()
                 
@@ -70,54 +71,71 @@ def render_ui(T):
             
             df_res["MEETS_CRITERIA"] = df_res.apply(check_row, axis=1)
             
-            st.success("Simulation Complete")
-            
-            # Plot
-            fig, ax = plt.subplots(1, 2, figsize=(10, 4))
-            ax[0].errorbar(df_res["N"], df_res["Slope_mean"], yerr=df_res["Slope_sd"], fmt='-o')
-            ax[0].set_title("Mean Calibration Slope (+/- SD)")
-            ax[0].axhline(1.0, color='gray', linestyle='--')
-            ax[0].axhline(0.9, color='r', linestyle=':')
-            
-            ax[1].plot(df_res["N"], df_res["pct_slope_09_11"], '-o')
-            ax[1].set_title("% Slope within [0.9, 1.1]")
-            ax[1].axhline(0.8, color='r', linestyle='--')
-            
-            st.pyplot(fig)
-            
-            # Highlight N*
-            passed = df_res[df_res["MEETS_CRITERIA"]]
-            if not passed.empty:
-                n_star = passed["N"].min()
-                st.info(f"✅ **Recommended N = {n_star}** (First size meeting all active criteria)")
-            else:
-                st.warning("⚠️ No sample size met all criteria. Consider increasing N.")
-                
-            st.dataframe(df_res.style.format({
-                "AUC_mean": "{:.3f}", "Slope_mean": "{:.3f}", "fallback_pct": "{:.2%}", "pct_slope_09_11": "{:.1%}"
-            }))
-            
-            # Reporting
-            context = {
-                "method_title": T.get("method6_tab", "Method C6: Simulation"),
-                "method_description": T.get("dev_sim_intro", "Simulation-based sample size calculation."),
+            st.session_state["c6_data"] = {
+                "df_res": df_res,
+                "audit": audit,
                 "inputs": {
-                    T["prevalence"]: p_true,
-                    T["parameters"]: P,
-                    T["target_auc"]: target_auc,
-                    T["correlation"]: rho,
-                    T["n_candidates"]: n_candidates_str,
-                    T["n_sims"]: n_sims,
-                    "Global Seed": start_seed
+                    "p_true": p_true, "P": P, "target_auc": target_auc, "rho": rho,
+                    "n_candidates": n_candidates_str, "n_sims": n_sims, "seed": start_seed
                 }
             }
-            reporting.render_report_ui(context, df_res, T)
-            
-            # Extra Audit Download
-            st.download_button(T["audit_trail"], json.dumps({"audit": audit}, default=str), "dev_sim_audit.json", "application/json")
-            
+
         except Exception as e:
             st.error(f"Error: {e}")
+
+    if "c6_data" in st.session_state:
+        data = st.session_state["c6_data"]
+        df_res = data["df_res"]
+        audit = data["audit"]
+        inp = data["inputs"]
+        
+        st.success("Simulation Complete")
+        
+        # Plot
+        fig, ax = plt.subplots(1, 2, figsize=(10, 4))
+        ax[0].errorbar(df_res["N"], df_res["Slope_mean"], yerr=df_res["Slope_sd"], fmt='-o')
+        ax[0].set_title("Mean Calibration Slope (+/- SD)")
+        ax[0].axhline(1.0, color='gray', linestyle='--')
+        ax[0].axhline(0.9, color='r', linestyle=':')
+        
+        ax[1].plot(df_res["N"], df_res["pct_slope_09_11"], '-o')
+        ax[1].set_title("% Slope within [0.9, 1.1]")
+        ax[1].axhline(0.8, color='r', linestyle='--')
+        
+        st.pyplot(fig)
+        
+        # Highlight N*
+        passed = df_res[df_res["MEETS_CRITERIA"]]
+        if not passed.empty:
+            n_star = passed["N"].min()
+            st.info(f"✅ **Recommended N = {n_star}** (First size meeting all active criteria)")
+        else:
+            st.warning("⚠️ No sample size met all criteria. Consider increasing N.")
+            
+        st.dataframe(df_res.style.format({
+            "AUC_mean": "{:.3f}", "Slope_mean": "{:.3f}", "fallback_pct": "{:.2%}", "pct_slope_09_11": "{:.1%}"
+        }))
+        
+        # Reporting
+        context = {
+            "method_title": T.get("method6_tab", "Method C6: Simulation"),
+            "method_description": T.get("dev_sim_intro", "Simulation-based sample size calculation."),
+            "inputs": {
+                T["prevalence"]: inp["p_true"],
+                T["parameters"]: inp["P"],
+                T["target_auc"]: inp["target_auc"],
+                T["correlation"]: inp["rho"],
+                T["n_candidates"]: inp["n_candidates"],
+                T["n_sims"]: inp["n_sims"],
+                "Global Seed": inp["seed"]
+            },
+            "refresh_key": ["c6_data"]
+        }
+        reporting.render_report_ui(context, df_res, T)
+        
+        # Extra Audit Download
+        st.download_button(T["audit_trail"], json.dumps({"audit": audit}, default=str), "dev_sim_audit.json", "application/json")
+            
 
     st.markdown("---")
     with st.expander(T.get("formulas_header", "Formulas & Technical Details")):

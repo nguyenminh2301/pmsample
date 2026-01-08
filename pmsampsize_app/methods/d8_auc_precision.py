@@ -118,6 +118,7 @@ def render_ui(T):
                             except Exception as e_inner:
                                 st.error(f"Error for (AUC={auc}, Prev={p}): {e_inner}")
 
+
             if results:
                 df = pd.DataFrame(results)
                 
@@ -136,42 +137,55 @@ def render_ui(T):
                 final_cols = [c for c in cols if c in df.columns]
                 df = df[final_cols]
 
-                st.success(f"Calculated {len(df)} scenarios.")
-                
-                # Format for display
-                st.dataframe(df.style.format({
-                    "AUC": "{:.2f}",
-                    "Prev": "{:.2f}",
-                    "Conf.Level": "{:.2f}",
-                    "N (Float)": "{:.2f}",
-                    "Target Width": "{:.3f}",
-                    "Achieved Width": "{:.4f}",
-                    "Lwr": "{:.3f}",
-                    "Upr": "{:.3f}",
-                    "N (Pract)": "{:.0f}",
-                    "Width (Pract)": "{:.4f}",
-                    "N": "{:.2f}"
-                }))
-                
-                csv = df.to_csv(index=False).encode('utf-8')
-                
-                # Reporting
-                context = {
-                    "method_title": T.get("title_d8", "Method D8: AUC Precision"),
-                    "method_description": T.get("d8_desc", "Sample size for AUC precision."),
-                    "inputs": {
-                        T["auc_expected"]: auc_str,
-                        T["prevalence"]: p_str,
-                        T["d8_width_input" if is_finding_n else "d8_n_input"]: target_str,
-                        T["ci_level"]: conf_str,
-                        "Opt Upper": opt_upper,
-                        "Opt Tol": opt_tol
-                    }
+                st.session_state["d8_result"] = df
+                st.session_state["d8_inputs"] = {
+                    "auc_str": auc_str, "p_str": p_str, "target_str": target_str,
+                    "conf_str": conf_str, "opt_upper": opt_upper, "opt_tol": opt_tol,
+                    "is_finding_n": is_finding_n
                 }
-                reporting.render_report_ui(context, df, T)
-                
+
         except Exception as e:
             st.error(f"{T['error_parse']} {e}")
+            
+    if "d8_result" in st.session_state:
+        df = st.session_state["d8_result"]
+        inp = st.session_state["d8_inputs"]
+        is_fn = inp["is_finding_n"]
+        
+        st.success(f"Calculated {len(df)} scenarios.")
+        
+        # Format for display
+        st.dataframe(df.style.format({
+            "AUC": "{:.2f}",
+            "Prev": "{:.2f}",
+            "Conf.Level": "{:.2f}",
+            "N (Float)": "{:.2f}",
+            "Target Width": "{:.3f}",
+            "Achieved Width": "{:.4f}",
+            "Lwr": "{:.3f}",
+            "Upr": "{:.3f}",
+            "N (Pract)": "{:.0f}",
+            "Width (Pract)": "{:.4f}",
+            "N": "{:.2f}"
+        }))
+        
+        csv = df.to_csv(index=False).encode('utf-8')
+        
+        # Reporting
+        context = {
+            "method_title": T.get("title_d8", "Method D8: AUC Precision"),
+            "method_description": T.get("d8_desc", "Sample size for AUC precision."),
+            "inputs": {
+                T["auc_expected"]: inp["auc_str"],
+                T["prevalence"]: inp["p_str"],
+                T["d8_width_input" if is_fn else "d8_n_input"]: inp["target_str"],
+                T["ci_level"]: inp["conf_str"],
+                "Opt Upper": inp["opt_upper"],
+                "Opt Tol": inp["opt_tol"]
+            },
+            "refresh_key": ["d8_result", "d8_inputs"]
+        }
+        reporting.render_report_ui(context, df, T)
             
     st.markdown("---")
     with st.expander(T["formulas_header"]):

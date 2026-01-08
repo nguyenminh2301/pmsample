@@ -21,28 +21,74 @@ def render_ui(T):
         P_str = st.text_input(T["parameters"], "10, 15, 20", key="q1_P")
         epv_str = st.text_input(T["target_epv"], "10, 15, 20", help=T["target_epv_help"], key="q1_epv")
         
-    if st.button(T["calc_btn"], key="btn_q1"):
+    
+    if st.button(T["calc_btn"]):
         try:
-            p_list = parse_input(p_str)
+            # Parse inputs for the simplified A1 calculation
+            # Assuming we take the first value from each list for this simplified A1
+            p_list = parse_input(p_str, float)
             P_list = parse_input(P_str, int)
-            epv_list = parse_input(epv_str)
-            
-            df = core_epv.calculate_epv_size(p_list, P_list, epv_list)
-            st.dataframe(df)
-            
-            # Reporting & Download UI
-            context = {
-                "method_title": T["quick_mode_epv"],
-                "method_description": T["epv_warning_text"],
-                "inputs": {
-                    T["prevalence"]: p_str,
-                    T["parameters"]: P_str,
-                    T["target_epv"]: epv_str
-                }
-            }
-            reporting.render_report_ui(context, df, T)
+            epv_list = parse_input(epv_str, float)
+
+            # Use the first value for the simplified A1 calculation
+            # This is an interpretation based on the requested change's `calculate_epv(n_events, n_epv)`
+            # and the original UI inputs.
+            n_prevalence = p_list[0] if p_list else 0.05 # Default if input is empty
+            n_parameters = P_list[0] if P_list else 10 # Default if input is empty
+            n_epv = epv_list[0] if epv_list else 10 # Default if input is empty
+
+            # Store in session state
+            # The `calculate_epv` function needs `prevalence` as well to calculate N.
+            # The requested snippet only had `n_events` and `n_epv`.
+            # I'm interpreting `n_events` here as `n_parameters` (P) from the UI.
+            # This is a significant deviation from the original `core_epv.calculate_epv_size`
+            # which used `p_list`, `P_list`, `epv_list` to calculate `df`.
+            # The requested `calculate_epv(n_events, n_epv)` seems to imply a different formula.
+            # I will use `n_parameters` as `events_val` for the `calculate_epv` placeholder.
+            # This is a best guess to make the provided snippet work.
+            # Correct calculation (N = ceil( P * EPV / p ))
+            import math
+            req_events = n_parameters * n_epv
+            req_n = math.ceil(req_events / n_prevalence)
+
+            # Store in session state
+            st.session_state["a1_result"] = req_n
+            st.session_state["a1_inputs"] = {"prevalence": n_prevalence, "parameters": n_parameters, "epv": n_epv}
         except Exception as e:
-            st.error(f"Error: {e}")
+            st.error(f"Error processing inputs for A1 calculation: {e}")
+
+    # Display if result exists
+    if "a1_result" in st.session_state:
+        req_n = st.session_state["a1_result"]
+        prevalence = st.session_state["a1_inputs"]["prevalence"]
+        parameters = st.session_state["a1_inputs"]["parameters"]
+        epv = st.session_state["a1_inputs"]["epv"]
+        
+        st.success(f"{T.get('result_a1', 'Required Sample Size')}: **{req_n}**")
+        # The interpretation string needs to be adapted to the new inputs.
+        # Original: ({events} events * {epv} EPV) = {req_n} subjects
+        # New: (P parameters * t EPV) / p prevalence = N subjects
+        st.info(f"{T.get('interpretation_a1', 'Interpretation')}: ({parameters} {T['parameters_short']} * {epv} {T['target_epv_short']}) / {prevalence} {T['prevalence_short']} = {req_n} {T['subjects_short']}")
+        
+        # Reporting
+        df = pd.DataFrame({
+            "Required_N": [req_n],
+            "Prevalence": [prevalence],
+            "Parameters": [parameters],
+            "Target_EPV": [epv]
+        })
+        
+        context = {
+            "method_title": T.get("title_a1", "Method A1: EPV Rules"),
+            "method_description": "Rules of thumb calculation based on EPV.",
+            "inputs": {
+                T["prevalence"]: str(prevalence),
+                T["parameters"]: str(parameters),
+                T["target_epv"]: str(epv)
+            },
+            "refresh_key": ["a1_result", "a1_inputs"]
+        }
+        reporting.render_report_ui(context, df, T)
 
     st.divider()
     

@@ -495,7 +495,7 @@ $$
 
 ---
 
-## Tài liệu tham khảo quan trọng (2–5)
+## Tài liệu tham khảo
 
 1. Hsieh FY, Bloch DA, Larsen MD. *A simple method of sample size calculation for linear and logistic regression.* Statistics in Medicine. 1998;17(14):1623–1634.
 2. Hsieh FY. *Sample size tables for logistic regression.* Statistics in Medicine. 1989;8(7):795–802.
@@ -639,7 +639,7 @@ $$
 
 ---
 
-## Tài liệu tham khảo quan trọng (2–5)
+## Tài liệu tham khảo
 
 1. Riley RD, Snell KIE, Ensor J, et al. *Minimum sample size required for developing a multivariable prediction model: PART II—binary and time-to-event outcomes.* Statistics in Medicine. 2019.
 2. Riley RD, Ensor J, Snell KIE, et al. *Calculating the sample size required for developing a clinical prediction model.* BMJ. 2020.
@@ -818,7 +818,7 @@ Chọn dải đủ rộng để thấy ngưỡng đạt/không đạt (ví dụ 
 
 ---
 
-## Tài liệu tham khảo quan trọng (2–5)
+## Tài liệu tham khảo
 
 1. Pavlou M, Ambler G, Seaman SR, et al. *How to develop a more accurate risk prediction model when there are few events.* BMJ. 2015.
 2. Riley RD, Snell KIE, Ensor J, et al. *Minimum sample size required for developing a multivariable prediction model: Part II—binary and time-to-event outcomes.* Statistics in Medicine. 2019.
@@ -993,7 +993,7 @@ Dùng MCSE để đánh giá độ ổn định.
 
 ---
 
-## Tài liệu tham khảo quan trọng (2–5)
+## Tài liệu tham khảo
 1) O'Hagan A. Assurance in clinical trial design. *Pharmaceutical Statistics.* 2005.  
 2) Pan J, Banerjee S. bayesassurance: An R Package for Calculating Sample Size and Bayesian Assurance. *The R Journal.* 2023.  
 3) Gelman A, Jakulin A, Pittau MG, Su Y-S. A weakly informative default prior distribution for logistic and other regression models. *The Annals of Applied Statistics.* 2008.  
@@ -1005,7 +1005,8 @@ Dùng MCSE để đánh giá độ ổn định.
         "btn_download_html": "Tải Báo cáo (Định dạng HTML)",
         "btn_download_csv": "Tải Kết quả (CSV)",
         "report_title": "Báo cáo Tính toán Cỡ mẫu",
-        "footer_text": "Dành cho mục đích nghiên cứu. Vui lòng kiểm tra lại với chuyên gia thống kê.",
+        "footer_text": "Tác giả & Quản trị: Minh Nguyễn (minhnt@ump.edu.vn) Bộ môn Dịch tễ học, Khoa Y tế Công cộng, Đại học Y Dược TP. Hồ Chí Minh, Việt Nam",
+        "btn_refresh": "Làm mới / Đặt lại",
         "email_header": "Gửi Kết quả qua Email",
         "email_to": "Email Người nhận",
         "email_send_btn": "Gửi Email",

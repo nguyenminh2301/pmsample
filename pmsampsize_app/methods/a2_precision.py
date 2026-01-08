@@ -29,24 +29,37 @@ def render_ui(T):
             c_list = parse_input(conf_str)
             
             df = core_precision.generate_binom_grid(p_list, w_list, c_list, method)
-            st.dataframe(df.style.format({"P_expected": "{:.3f}", "Actual_Half_Width": "{:.4f}"}))
-            st.dataframe(df.style.format({"P_expected": "{:.3f}", "Actual_Half_Width": "{:.4f}"}))
-            
-            # Reporting & Download UI
-            context = {
-                "method_title": T["quick_mode_risk"],
-                "method_description": T["risk_help"],
-                "inputs": {
-                    T["prevalence"]: p_str,
-                    T["ci_method"]: method,
-                    T["ci_half_width"]: width_str,
-                    T["ci_level"]: conf_str
-                }
+            st.session_state["q2_result_df"] = df
+            st.session_state["q2_inputs"] = {
+                "p_str": p_str,
+                "method": method,
+                "width_str": width_str,
+                "conf_str": conf_str
             }
-            reporting.render_report_ui(context, df, T)
         except Exception as e:
             st.error(f"Error: {e}")
+
+    if "q2_result_df" in st.session_state:
+        df = st.session_state["q2_result_df"]
+        inputs = st.session_state["q2_inputs"]
+
+        st.dataframe(df.style.format({"P_expected": "{:.3f}", "Actual_Half_Width": "{:.4f}"}))
+        
+        # Reporting & Download UI
+        context = {
+            "method_title": T["quick_mode_risk"],
+            "method_description": T["risk_help"],
+            "inputs": {
+                T["prevalence"]: inputs["p_str"],
+                T["ci_method"]: inputs["method"],
+                T["ci_half_width"]: inputs["width_str"],
+                T["ci_level"]: inputs["conf_str"]
+            },
+            "refresh_key": ["q2_result_df", "q2_inputs"]
+        }
+        reporting.render_report_ui(context, df, T)
 
     st.markdown("---")
     with st.expander(T["formulas_header"]):
         st.markdown(T["a2_content_md"])
+

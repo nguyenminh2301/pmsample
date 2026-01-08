@@ -351,16 +351,33 @@ def render_ui(T):
             p_val = parse_input(p_str)[0] # Take first for simplicity in demo
             c_val = parse_input(c_str)[0]
             
+            
             with st.spinner("Simulating..."):
                 res = calculate_pmvalsampsize(p_val, c_val, oe_w, slope_w, c_w, seed=seed)
             
-            st.success(f"**Recommended N: {res['n_recom']}** (Events: {res['events_recom']})")
-            
+            # Form DF
             res_df = pd.DataFrame([
                 {"Criterion": "1. O/E (width)", "Target": oe_w, "N Required": res["n_oe"]},
                 {"Criterion": "2. Slope (width)", "Target": slope_w, "N Required": res["n_slope"]},
                 {"Criterion": "3. C-stat (width)", "Target": c_w, "N Required": res["n_c"]},
             ])
+
+            st.session_state["d9_tab1_data"] = {
+                "res": res,
+                "res_df": res_df,
+                "inputs": {
+                    "p_str": p_str, "c_str": c_str,
+                    "oe_w": oe_w, "slope_w": slope_w, "c_w": c_w, "seed": seed
+                }
+            }
+
+        if "d9_tab1_data" in st.session_state:
+            data = st.session_state["d9_tab1_data"]
+            res = data["res"]
+            res_df = data["res_df"]
+            inp = data["inputs"]
+            
+            st.success(f"**Recommended N: {res['n_recom']}** (Events: {res['events_recom']})")
             st.table(res_df)
             
             st.caption(f"Based on simulated LP (Normal): mu={res['lp_mu']:.3f}, sigma={res['lp_sigma']:.3f}")
@@ -370,10 +387,11 @@ def render_ui(T):
                 "method_title": "D9: External Validation (Riley/Archer)",
                 "method_description": "Targeting CI Widths for O/E, Slope, C.",
                 "inputs": {
-                    "Prevalence": p_str, "C-Stat": c_str,
-                    "O/E Width": oe_w, "Slope Width": slope_w, "C Width": c_w,
-                    "Seed": seed
-                }
+                    "Prevalence": inp["p_str"], "C-Stat": inp["c_str"],
+                    "O/E Width": inp["oe_w"], "Slope Width": inp["slope_w"], "C Width": inp["c_w"],
+                    "Seed": inp["seed"]
+                },
+                "refresh_key": ["d9_tab1_data"]
             }
             reporting.render_report_ui(context1, res_df, T)
 
@@ -391,15 +409,31 @@ def render_ui(T):
             p_val = parse_input(p_str)[0]
             c_val = parse_input(c_str)[0]
             
-            res = calculate_sampsizeval(p_val, c_val, se_c, se_slope, se_large)
             
-            st.success(f"**Recommended N: {res['n_recom']}** (Events: {res['events_recom']})")
+            res = calculate_sampsizeval(p_val, c_val, se_c, se_slope, se_large)
             
             res_df = pd.DataFrame([
                 {"Criterion": "1. C-stat (SE)", "Target": se_c, "N Required": res["n_c"]},
                 {"Criterion": "2. Slope (SE)", "Target": se_slope, "N Required": res["n_slope"]},
                 {"Criterion": "3. Large (SE)", "Target": se_large, "N Required": res["n_large"]},
             ])
+
+            st.session_state["d9_tab2_data"] = {
+                "res": res,
+                "res_df": res_df,
+                "inputs": {
+                    "p_str": p_str, "c_str": c_str,
+                    "se_c": se_c, "se_slope": se_slope, "se_large": se_large
+                }
+            }
+            
+        if "d9_tab2_data" in st.session_state:
+            data = st.session_state["d9_tab2_data"]
+            res = data["res"]
+            res_df = data["res_df"]
+            inp = data["inputs"]
+            
+            st.success(f"**Recommended N: {res['n_recom']}** (Events: {res['events_recom']})")
             st.table(res_df)
             
             # Reporting Tab 2
@@ -407,9 +441,10 @@ def render_ui(T):
                 "method_title": "D9: External Validation (Pavlou)",
                 "method_description": "Targeting SE Limits for C, Slope, Large.",
                 "inputs": {
-                    "Prevalence": p_str, "C-Stat": c_str,
-                    "SE(C)": se_c, "SE(Slope)": se_slope, "SE(Large)": se_large
-                }
+                    "Prevalence": inp["p_str"], "C-Stat": inp["c_str"],
+                    "SE(C)": inp["se_c"], "SE(Slope)": inp["se_slope"], "SE(Large)": inp["se_large"]
+                },
+                "refresh_key": ["d9_tab2_data"]
             }
             reporting.render_report_ui(context2, res_df, T)
 
@@ -425,6 +460,28 @@ def render_ui(T):
             # 2. Pavlou
             res2 = calculate_sampsizeval(p_val, c_val, st.session_state.d9_se_c, st.session_state.d9_se_slope, st.session_state.d9_se_large)
             
+            comp_df = pd.DataFrame({
+                "Method": ["Riley/Archer (CI Widths)", "Pavlou (SE Targets)"],
+                "N Recommended": [res1['n_recom'], res2['n_recom']],
+                "Implied Events": [res1['events_recom'], res2['events_recom']]
+            })
+
+            st.session_state["d9_tab3_data"] = {
+                "res1": res1, "res2": res2, "comp_df": comp_df,
+                "inputs": {
+                    "p_str": p_str, "c_str": c_str,
+                    "oe_w": st.session_state.d9_oe_w, "slope_w": st.session_state.d9_slope_w,
+                    "se_c": st.session_state.d9_se_c, "se_slope": st.session_state.d9_se_slope
+                }
+            }
+            
+        if "d9_tab3_data" in st.session_state:
+            data = st.session_state["d9_tab3_data"]
+            res1 = data["res1"]
+            res2 = data["res2"]
+            comp_df = data["comp_df"]
+            inp = data["inputs"]
+            
             st.markdown("### 1. Riley/Archer (pmvalsampsize)")
             st.write(f"N Recommended: **{res1['n_recom']}**")
             
@@ -432,11 +489,6 @@ def render_ui(T):
             st.write(f"N Recommended: **{res2['n_recom']}**")
             
             st.markdown("### Comparison")
-            comp_df = pd.DataFrame({
-                "Method": ["Riley/Archer (CI Widths)", "Pavlou (SE Targets)"],
-                "N Recommended": [res1['n_recom'], res2['n_recom']],
-                "Implied Events": [res1['events_recom'], res2['events_recom']]
-            })
             st.table(comp_df)
             
             # Reporting Tab 3
@@ -444,9 +496,10 @@ def render_ui(T):
                 "method_title": "D9: External Validation (Combined)",
                 "method_description": "Comparison of Riley/Archer and Pavlou methods.",
                 "inputs": {
-                    "Prevalence": p_str, "C-Stat": c_str,
-                    "Riley Inputs": f"OE_w={st.session_state.d9_oe_w}, Slope_w={st.session_state.d9_slope_w}",
-                    "Pavlou Inputs": f"SE_c={st.session_state.d9_se_c}, SE_slope={st.session_state.d9_se_slope}"
-                }
+                    "Prevalence": inp["p_str"], "C-Stat": inp["c_str"],
+                    "Riley Inputs": f"OE_w={inp['oe_w']}, Slope_w={inp['slope_w']}",
+                    "Pavlou Inputs": f"SE_c={inp['se_c']}, SE_slope={inp['se_slope']}"
+                },
+                "refresh_key": ["d9_tab3_data"]
             }
             reporting.render_report_ui(context3, comp_df, T)

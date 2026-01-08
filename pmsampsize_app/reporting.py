@@ -137,14 +137,40 @@ def render_report_ui(context, df_results, T):
     st.markdown("---")
     st.header(T.get("report_header", "Report & Downloads"))
     
-    # 1. Download Report (Text)
-    report_md = generate_report_markdown(context, df_results, T)
-    st.download_button(
-        label=f"📄 {T.get('btn_download_report', 'Download Report')}",
-        data=report_md,
-        file_name="pmsampsize_report.txt",
-        mime="text/plain"
-    )
+    # 1. Refresh / Reset Button
+    # This button allows the user to clear the current calculation state to start over
+    if "refresh_key" in context and context["refresh_key"]:
+        if st.button(f"🔄 {T.get('btn_refresh', 'Refresh')}", key="btn_refresh_res"):
+            # Clear specific session state results
+            for k in context["refresh_key"]:
+                if k in st.session_state:
+                    del st.session_state[k]
+            st.rerun()
+
+    col_d1, col_d2 = st.columns(2)
+    
+    # 2. Download HTML (Formatted Report)
+    with col_d1:
+        try:
+            html_content = generate_report_html(context, df_results, T)
+            st.download_button(
+                label=f"🌐 {T.get('btn_download_html', 'Download Report (HTML)')}",
+                data=html_content,
+                file_name="pmsampsize_report.html",
+                mime="text/html"
+            )
+        except Exception as e:
+            st.error(f"Could not generate HTML report: {e}")
+
+    # 3. Download CSV (Result)
+    with col_d2:
+        csv = df_results.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label=f"📊 {T.get('btn_download_csv', 'Download CSV')}",
+            data=csv,
+            file_name='pmsampsize_results.csv',
+            mime='text/csv'
+        )
     
     
     # 2. Download HTML (Formatted Report)
@@ -159,14 +185,7 @@ def render_report_ui(context, df_results, T):
     except Exception as e:
         st.error(f"Could not generate HTML report: {e}")
 
-    # 3. Download CSV (Result)
-    csv = df_results.to_csv(index=False).encode('utf-8')
-    st.download_button(
-        label=f"📊 {T.get('btn_download_csv', 'Download CSV')}",
-        data=csv,
-        file_name='pmsampsize_results.csv',
-        mime='text/csv'
-    )
+    # Downloads handled in columns above
     
     # 4. Email Section - DISABLED by user request
     # with st.expander(f"📧 {T.get('email_header', 'Email Results')}"):

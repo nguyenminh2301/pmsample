@@ -74,39 +74,53 @@ def render_ui(T):
             
         f_event = st.number_input("Expected Event Fraction (Prob(Event))", 0.01, 1.0, 0.20, help="Overall probability of observing an event during follow-up", key="b4_f")
     
+    
     if st.button("Calculate B4", key="b4_btn"):
         d_req, n_req = calculate_n_schoenfeld(alpha, power, hr, pred_type.lower(), q, sd, f_event)
+        st.session_state["b4_result"] = {"d_req": d_req, "n_req": n_req}
+        st.session_state["b4_inputs"] = {
+            "alpha": alpha, "power": power, "hr": hr, "pred_type": pred_type,
+            "q": q, "sd": sd, "f_event": f_event
+        }
+
+    if "b4_result" in st.session_state:
+        res = st.session_state["b4_result"]
+        inp = st.session_state["b4_inputs"]
+        
+        d_req = res["d_req"]
+        n_req = res["n_req"]
         
         st.success(f"Required Events: **{d_req}**")
-        st.info(f"Required Total N: **{n_req}** (assuming {f_event*100:.1f}% event rate)")
+        st.info(f"Required Total N: **{n_req}** (assuming {inp['f_event']*100:.1f}% event rate)")
         
         # Provide interpretation
         st.markdown(f"""
         **interpretation**:
-        To detect a Hazard Ratio of {hr} with {int(power*100)}% power at alpha={alpha}, 
-        you need {d_req} events. Given the event rate of {f_event}, this requires {n_req} total subjects.
+        To detect a Hazard Ratio of {inp['hr']} with {int(inp['power']*100)}% power at alpha={inp['alpha']}, 
+        you need {d_req} events. Given the event rate of {inp['f_event']}, this requires {n_req} total subjects.
         """)
         
         # Reporting
         df = pd.DataFrame({
             "Required_Events": [d_req],
             "Required_Total_N": [n_req],
-            "Alpha": [alpha],
-            "Power": [power],
-            "HR_Target": [hr],
-            "Event_Rate": [f_event]
+            "Alpha": [inp['alpha']],
+            "Power": [inp['power']],
+            "HR_Target": [inp['hr']],
+            "Event_Rate": [inp['f_event']]
         })
         
         context = {
             "method_title": T.get("title_b4", "Method B4: Schoenfeld (Cox)"),
-            "method_description": f"Schoenfeld (1983) calculation for {pred_type} predictor in Cox model.",
+            "method_description": f"Schoenfeld (1983) calculation for {inp['pred_type']} predictor in Cox model.",
             "inputs": {
-                "Alpha": alpha,
-                "Power": power,
-                "Hazard Ratio": hr,
-                "Predictor Type": pred_type,
-                "X Prevalence (q)" if pred_type == "Binary" else "SD": q if pred_type == "Binary" else sd,
-                "Event Rate": f_event
-            }
+                "Alpha": inp['alpha'],
+                "Power": inp['power'],
+                "Hazard Ratio": inp['hr'],
+                "Predictor Type": inp['pred_type'],
+                "X Prevalence (q)" if inp['pred_type'] == "Binary" else "SD": inp['q'] if inp['pred_type'] == "Binary" else inp['sd'],
+                "Event Rate": inp['f_event']
+            },
+            "refresh_key": ["b4_result", "b4_inputs"]
         }
         reporting.render_report_ui(context, df, T)

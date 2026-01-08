@@ -119,15 +119,30 @@ def render_ui(T):
         )
         t1 = time.time()
         
+        
         st.success(f"Simulation completed in {t1-t0:.2f}s")
         
-        # Analysis
-        # Check pass
+        # Checking pass again to store in state if needed or just storing DF
+        # Re-calc pass columns for DF
         res_df["Pass_C"] = (res_df["Mean_C_Width"] <= target_c) if "c_stat" in metrics else True
         res_df["Pass_Slope"] = (res_df["Mean_Slope_Width"] <= target_slope) if "slope" in metrics else True
         res_df["Pass_OE"] = (res_df["Mean_OE_Width"] <= target_oe) if "ln_oe" in metrics else True
-        
         res_df["ALL_PASS"] = res_df["Pass_C"] & res_df["Pass_Slope"] & res_df["Pass_OE"]
+
+        st.session_state["d10_data"] = {
+            "res_df": res_df,
+            "inputs": {
+                "dist_type": dist_type, "lp_params": lp_params,
+                "miscal_mode": miscal_mode, "gamma": gamma, "slope": slope,
+                "target_c": target_c, "target_slope": target_slope, "target_oe": target_oe,
+                "n_sims": n_sims, "seed": seed
+            }
+        }
+        
+    if "d10_data" in st.session_state:
+        data = st.session_state["d10_data"]
+        res_df = data["res_df"]
+        inp = data["inputs"]
         
         # Find first pass
         pass_df = res_df[res_df["ALL_PASS"]]
@@ -140,22 +155,25 @@ def render_ui(T):
         st.dataframe(res_df.style.format("{:.3f}", subset=[c for c in res_df.columns if "Width" in c]))
         
         # Plot
-        st.line_chart(res_df, x="N", y=[c for c in res_df.columns if "Mean" in c])
+        st.write("Mean Metric Values vs N")
+        st.line_chart(res_df, x="N", y=[c for c in res_df.columns if "Mean" in c and "Width" not in c])
         
-        st.line_chart(res_df, x="N", y=[c for c in res_df.columns if "Mean" in c])
+        st.write("Mean Widths vs N")
+        st.line_chart(res_df, x="N", y=[c for c in res_df.columns if "Width" in c])
         
         # Reporting
         context = {
             "method_title": T.get("title_d10", "D10: Sim Validation"),
             "method_description": "Simulation for external validation sample size.",
             "inputs": {
-                "LP Type": dist_type,
-                "LP Params": str(lp_params),
-                "Miscal Mode": miscal_mode,
-                "Gamma": gamma,
-                "Slope": slope,
-                "Targets": f"C={target_c}, S={target_slope}, OE={target_oe}",
-                "Sim": f"R={n_sims}, Seed={seed}"
-            }
+                "LP Type": inp["dist_type"],
+                "LP Params": str(inp["lp_params"]),
+                "Miscal Mode": inp["miscal_mode"],
+                "Gamma": inp["gamma"],
+                "Slope": inp["slope"],
+                "Targets": f"C={inp['target_c']}, S={inp['target_slope']}, OE={inp['target_oe']}",
+                "Sim": f"R={inp['n_sims']}, Seed={inp['seed']}"
+            },
+            "refresh_key": ["d10_data"]
         }
         reporting.render_report_ui(context, res_df, T)

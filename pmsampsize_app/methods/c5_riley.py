@@ -65,29 +65,41 @@ def render_ui(T):
                 st.error(T["error_auc"])
                 return
             
+            
             perf_type_map = {"AUC": "auc", "R2": "r2", "Conservative": "conservative"}
             df = core_riley.generate_scenarios(p_list, param_list, perf_list, perf_type_map[perf_mode], shrinkage)
-            
-            st.divider()
-            st.subheader(T["results"])
-            st.info(f"ℹ️ **{T['sanity']}**: N(180 events) = {180/min(p_list):.0f} | N(250 events) = {250/min(p_list):.0f}")
-            st.dataframe(df.style.format({"Prevalence": "{:.3f}", "R2_CS": "{:.3f}", "Performance": "{:.3f}", "EPP": "{:.1f}"}))
-            
-            
-            # Reporting & Download UI
-            context = {
-                "method_title": T["method1_tab"],
-                "inputs": {
-                    T["prevalence"]: p_input,
-                    T["parameters"]: param_input,
-                    T["perf_measure"]: f"{perf_mode} = {perf_input_raw}",
-                    T["shrinkage"]: shrinkage
-                }
+            st.session_state["c5_result"] = df
+            st.session_state["c5_inputs"] = {
+                "p_list": p_list, "p_input": p_input, "param_input": param_input,
+                "perf_mode": perf_mode, "perf_input_raw": perf_input_raw, "shrinkage": shrinkage
             }
-            reporting.render_report_ui(context, df, T)
 
         except Exception as e:
             st.error(f"{T['error_parse']} {e}")
+            
+    if "c5_result" in st.session_state:
+        df = st.session_state["c5_result"]
+        inp = st.session_state["c5_inputs"]
+        p_list = inp["p_list"]
+        
+        st.divider()
+        st.subheader(T["results"])
+        st.info(f"ℹ️ **{T['sanity']}**: N(180 events) = {180/min(p_list):.0f} | N(250 events) = {250/min(p_list):.0f}")
+        st.dataframe(df.style.format({"Prevalence": "{:.3f}", "R2_CS": "{:.3f}", "Performance": "{:.3f}", "EPP": "{:.1f}"}))
+        
+        
+        # Reporting & Download UI
+        context = {
+            "method_title": T["method1_tab"],
+            "inputs": {
+                T["prevalence"]: inp["p_input"],
+                T["parameters"]: inp["param_input"],
+                T["perf_measure"]: f"{inp['perf_mode']} = {inp['perf_input_raw']}",
+                T["shrinkage"]: inp["shrinkage"]
+            },
+            "refresh_key": ["c5_result", "c5_inputs"]
+        }
+        reporting.render_report_ui(context, df, T)
 
     st.markdown("---")
     with st.expander(T.get("formulas_header", "Formulas & Technical Details")):

@@ -135,8 +135,21 @@ def render_ui(T):
         
     r2 = st.number_input("R-squared with other covariates", 0.0, 0.9, 0.0, help="Variance Inflation Factor adjustment: N_adj = N / (1-R2)")
     
+    
     if st.button("Calculate B3"):
         n_req, ev_req = calculate_n_hsieh(alpha, power, p0, or_target, pred_type.lower(), q, sd, r2)
+        st.session_state["b3_result"] = {"n_req": n_req, "ev_req": ev_req}
+        st.session_state["b3_inputs"] = {
+            "alpha": alpha, "power": power, "p0": p0, "or_target": or_target,
+            "pred_type": pred_type, "q": q, "sd": sd, "r2": r2
+        }
+
+    if "b3_result" in st.session_state:
+        res = st.session_state["b3_result"]
+        inp = st.session_state["b3_inputs"]
+        
+        n_req = res["n_req"]
+        ev_req = res["ev_req"]
         
         st.success(f"Required Sample Size: **{n_req}**")
         st.info(f"Expected Events: ~{ev_req}")
@@ -144,8 +157,8 @@ def render_ui(T):
         # Provide interpretation
         st.markdown(f"""
         **{T.get('interpretation', 'Interpretation')}**:
-        To detect an OR of {or_target} with {int(power*100)}% power at alpha={alpha}, 
-        assuming baseline rate {p0} and predictor properties defined, 
+        To detect an OR of {inp['or_target']} with {int(inp['power']*100)}% power at alpha={inp['alpha']}, 
+        assuming baseline rate {inp['p0']} and predictor properties defined, 
         you need {n_req} subjects.
         """)
         
@@ -153,24 +166,25 @@ def render_ui(T):
         df = pd.DataFrame({
             "Required_N": [n_req],
             "Expected_Events": [ev_req],
-            "Alpha": [alpha],
-            "Power": [power],
-            "OR_Target": [or_target],
-            "Baseline_P0": [p0]
+            "Alpha": [inp['alpha']],
+            "Power": [inp['power']],
+            "OR_Target": [inp['or_target']],
+            "Baseline_P0": [inp['p0']]
         })
         
         context = {
             "method_title": T.get("title_b3", "Method B3: Hsieh (Logistic)"),
-            "method_description": f"Hsieh et al. (1998) calculation for {pred_type} predictor.",
+            "method_description": f"Hsieh et al. (1998) calculation for {inp['pred_type']} predictor.",
             "inputs": {
-                "Alpha": alpha,
-                "Power": power,
-                "Baseline Rate (p0)": p0,
-                "Target OR": or_target,
-                "Predictor Type": pred_type,
-                "X Prevalence (q)" if pred_type == "Binary" else "SD": q if pred_type == "Binary" else sd,
-                "R-squared": r2
-            }
+                "Alpha": inp['alpha'],
+                "Power": inp['power'],
+                "Baseline Rate (p0)": inp['p0'],
+                "Target OR": inp['or_target'],
+                "Predictor Type": inp['pred_type'],
+                "X Prevalence (q)" if inp['pred_type'] == "Binary" else "SD": inp['q'] if inp['pred_type'] == "Binary" else inp['sd'],
+                "R-squared": inp['r2']
+            },
+            "refresh_key": ["b3_result", "b3_inputs"]
         }
         reporting.render_report_ui(context, df, T)
 

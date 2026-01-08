@@ -54,36 +54,55 @@ def render_ui(T):
                 n_candidates=n_cands, n_sims=n_sims, start_seed=start_seed, assurance_threshold=assurance_target
             )
             
+            
             with st.spinner(T["simulation_running"]):
                 df_res, audit = sim.run()
                 
-            st.success("Analysis Complete!")
-            st.dataframe(df_res)
-            
-            # Plot
-            st.line_chart(df_res, x="N", y="assurance")
-            
-            # Export
-            # Export
-            # Reporting
-            context = {
-                "method_title": T.get("method2_tab", "Method C7: Bayesian Assurance"),
-                "method_description": "Bayesian assurance simulation for sample size.",
+            st.session_state["c7_data"] = {
+                "df_res": df_res,
+                "audit": audit,
                 "inputs": {
-                    T["prevalence"]: p_true,
-                    T["parameters"]: P,
-                    T["correlation"]: rho,
-                    T["n_candidates"]: n_candidates_str,
-                    T["n_sims"]: n_sims,
-                    T.get("assurance_threshold", "Assurance Target"): assurance_target,
-                    "Global Seed": start_seed
+                    "p_true": p_true, "P": P, "rho": rho,
+                    "n_candidates": n_candidates_str, "n_sims": n_sims, 
+                    "assurance_target": assurance_target, "seed": start_seed
                 }
             }
-            reporting.render_report_ui(context, df_res, T)
-            
-            res_json = json.dumps({"results": df_res.to_dict(orient="records"), "audit": audit}, indent=2)
-            st.download_button("Download JSON Report (with Audit)", res_json, "bayes_assurance_results.json", "application/json")
-            
+
         except Exception as e:
             st.error(f"Simulation Failed: {e}")
-            raise e
+            # raise e # Don't raise in UI
+
+    if "c7_data" in st.session_state:
+        data = st.session_state["c7_data"]
+        df_res = data["df_res"]
+        audit = data["audit"]
+        inp = data["inputs"]
+        
+        st.success("Analysis Complete!")
+        st.dataframe(df_res)
+        
+        # Plot
+        st.line_chart(df_res, x="N", y="assurance")
+        
+        # Reporting
+        context = {
+            "method_title": T.get("method2_tab", "Method C7: Bayesian Assurance"),
+            "method_description": "Bayesian assurance simulation for sample size.",
+            "inputs": {
+                T["prevalence"]: inp["p_true"],
+                T["parameters"]: inp["P"],
+                T["correlation"]: inp["rho"],
+                T["n_candidates"]: inp["n_candidates"],
+                T["n_sims"]: inp["n_sims"],
+                T.get("assurance_threshold", "Assurance Target"): inp["assurance_target"],
+                "Global Seed": inp["seed"]
+            },
+            "refresh_key": ["c7_data"]
+        }
+        reporting.render_report_ui(context, df_res, T)
+        
+        # Extra JSON Download
+        res_json = json.dumps({"results": df_res.to_dict(orient="records"), "audit": audit}, indent=2)
+        st.download_button("Download JSON Report (with Audit)", res_json, "bayes_assurance_results.json", "application/json")
+            
+

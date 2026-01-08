@@ -529,7 +529,7 @@ $$
 
 ---
 
-## Key references (2–5)
+## Key references
 
 1. Hsieh FY, Bloch DA, Larsen MD. *A simple method of sample size calculation for linear and logistic regression.* Statistics in Medicine. 1998;17(14):1623–1634.
 2. Hsieh FY. *Sample size tables for logistic regression.* Statistics in Medicine. 1989;8(7):795–802.
@@ -673,7 +673,7 @@ $$
 
 ---
 
-## Key references (2–5)
+## Key references
 
 1. Riley RD, Snell KIE, Ensor J, et al. *Minimum sample size required for developing a multivariable prediction model: PART II—binary and time-to-event outcomes.* Statistics in Medicine. 2019.
 2. Riley RD, Ensor J, Snell KIE, et al. *Calculating the sample size required for developing a clinical prediction model.* BMJ. 2020.
@@ -882,7 +882,7 @@ Provide a grid (e.g., 1000, 1500, 2000, 3000, 5000).
 
 ---
 
-## Key references (2–5)
+## Key references
 
 1. Pavlou M, Ambler G, Seaman SR, et al. *How to develop a more accurate risk prediction model when there are few events.* BMJ. 2015.
 2. Riley RD, Snell KIE, Ensor J, et al. *Minimum sample size required for developing a multivariable prediction model: Part II—binary and time-to-event outcomes.* Statistics in Medicine. 2019.
@@ -1059,7 +1059,7 @@ Use MCSE to judge stability.
 
 ---
 
-## Key references (2–5)
+## Key references
 1) O'Hagan A. Assurance in clinical trial design. *Pharmaceutical Statistics.* 2005.  
 2) Pan J, Banerjee S. bayesassurance: An R Package for Calculating Sample Size and Bayesian Assurance. *The R Journal.* 2023.  
 3) Gelman A, Jakulin A, Pittau MG, Su Y-S. A weakly informative default prior distribution for logistic and other regression models. *The Annals of Applied Statistics.* 2008.  
@@ -1071,7 +1071,8 @@ Use MCSE to judge stability.
         "btn_download_html": "Download Report (Formatted HTML)",
         "btn_download_csv": "Download Results (CSV)",
         "report_title": "Sample Size Calculation Report",
-        "footer_text": "For research purposes only. Please verify with a statistician.",
+        "footer_text": "Author & Maintainer: Minh Nguyen (minhnt@ump.edu.vn) Department of Epidemiology, Faculty of Public Health, University of Medicine and Pharmacy at Ho Chi Minh City, Vietnam",
+        "btn_refresh": "Refresh / Reset",
         "email_header": "Email Results",
         "email_to": "Recipient Email",
         "email_send_btn": "Send Email",
