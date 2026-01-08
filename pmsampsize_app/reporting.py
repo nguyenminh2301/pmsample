@@ -137,10 +137,14 @@ def render_report_ui(context, df_results, T):
     st.markdown("---")
     st.header(T.get("report_header", "Report & Downloads"))
     
+    # Create unique keys based on method title to avoid DuplicateWidgetID
+    # Fallback to a random suffix if not available, though method_title should be present.
+    base_key = context.get('method_title', 'generic').replace(" ", "_").lower()
+    
     # 1. Refresh / Reset Button
     # This button allows the user to clear the current calculation state to start over
     if "refresh_key" in context and context["refresh_key"]:
-        if st.button(f"🔄 {T.get('btn_refresh', 'Refresh')}", key="btn_refresh_res"):
+        if st.button(f"🔄 {T.get('btn_refresh', 'Refresh')}", key=f"btn_refresh_res_{base_key}"):
             # Clear specific session state results
             for k in context["refresh_key"]:
                 if k in st.session_state:
@@ -149,9 +153,7 @@ def render_report_ui(context, df_results, T):
 
     col_d1, col_d2 = st.columns(2)
     
-    # Create unique keys based on method title to avoid DuplicateWidgetID
-    # Fallback to a random suffix if not available, though method_title should be present.
-    base_key = context.get('method_title', 'generic').replace(" ", "_").lower()
+    # base_key is already calculated above
     
     # 2. Download HTML (Formatted Report)
     with col_d1:

@@ -3,7 +3,23 @@ VI = {
         "sidebar_title": "Cấu hình",
         "language": "Ngôn ngữ / Language",
         "mode": "Chọn Phương pháp",
-        "mode_riley": "Phương pháp 1: Riley et al. (Công thức)",
+        
+        # New Hierarchy Titles
+        "title_a1_1": "A1.1: Quy tắc Ngón tay cái (EPV)",
+        "title_a1_2": "A1.2: Độ chính xác Tỷ lệ nền",
+        "title_a2_1": "A2.1: Cỡ mẫu Logistic (Hsieh)",
+        "title_a2_2": "A2.2: Cỡ mẫu Cox (Schoenfeld)",
+        "title_a3_1": "A3.1: Phương pháp Riley (Giải tích)",
+        "title_a3_2": "A3.2: Mô phỏng Phát triển",
+        "title_a3_3": "A3.3: Đảm bảo Bayesian",
+        "title_a4_1": "A4.1: Độ chính xác AUC (Hanley-McNeil)",
+        "title_a4_2": "A4.2: Thẩm định ngoài (Tailored)",
+        "title_a4_3": "A4.3: Thẩm định ngoài (Mô phỏng)",
+        "title_b1": "B1: Quy tắc Green",
+        "title_b2": "B2: Riley et al. (Liên tục)",
+        "title_c1": "C1: Riley et al. (Sống còn)",
+
+        "mode_riley": "Phương pháp A3.1: Riley et al. (Giải tích)",
         "mode_bayes": "Phương pháp 2: Bayesian Assurance (Mô phỏng)",
         "mode_single": "Kịch bản đơn (Single)",
         "mode_batch": "Phân tích độ nhạy (Nhiều giá trị)",
@@ -196,7 +212,7 @@ Cần dùng số tham số (df), không chỉ "số biến". Quy tắc cơ bản
 
 #### A. Quick / Basic (nhanh, xấp xỉ)
 
-**A1 — Quy tắc kinh nghiệm (EPV/EPP) (heuristic)**
+**A1.1 — Quy tắc kinh nghiệm (EPV/EPP) (heuristic)**
 * **Dùng khi:** cần kiểm tra sơ bộ "số biến cố có đủ tương đối không" theo độ phức tạp mô hình.
 * **Không dùng khi:** có spline/tương tác/chọn biến/biến cố hiếm—EPV/EPP không đảm bảo calibration hoặc ít optimism.
 * **Đầu vào:** tỷ lệ biến cố $p$, số tham số $P$ (df), EPP mục tiêu (10/15/20)
@@ -204,7 +220,7 @@ Cần dùng số tham số (df), không chỉ "số biến". Quy tắc cơ bản
 * **Mạnh:** rất đơn giản, nhanh
 * **Yếu:** dễ gây lạc quan, không dựa trên hiệu năng
 
-**A2 — Độ chính xác nguy cơ nền (KTC cho tỷ lệ)**
+**A1.2 — Độ chính xác nguy cơ nền (KTC cho tỷ lệ)**
 * **Dùng khi:** mục tiêu là ước tính tỷ lệ biến cố $p$ với KTC đủ hẹp (±d).
 * **Không dùng khi:** muốn đảm bảo hiệu năng mô hình dự báo.
 * **Đầu vào:** $p$, phương pháp KTC (Wilson khuyến nghị), mức tin cậy, nửa độ rộng $d$
@@ -214,7 +230,7 @@ Cần dùng số tham số (df), không chỉ "số biến". Quy tắc cơ bản
 
 #### B. Prognostic factor (power) (tập trung liên quan, không phải sizing cho mô hình dự báo)
 
-**B3 — Logistic OR Power (Hsieh)**
+**A2.1 — Logistic OR Power (Hsieh)**
 * **Dùng khi:** cần power để phát hiện OR mục tiêu của một yếu tố tiên lượng trong logistic regression.
 * **Không dùng khi:** mục tiêu chính là xây dựng mô hình dự báo.
 * **Đầu vào:** $p_0$, OR mục tiêu, alpha, power, tỷ lệ phơi nhiễm (nếu nhị phân) hoặc SD (nếu liên tục), tùy chọn $R^2$ với đồng biến
@@ -222,7 +238,7 @@ Cần dùng số tham số (df), không chỉ "số biến". Quy tắc cơ bản
 * **Mạnh:** khung power kinh điển
 * **Yếu:** không nhắm calibration/discrimination
 
-**B4 — Cox HR Power (Schoenfeld)**
+**A2.2 — Cox HR Power (Schoenfeld)**
 * **Dùng khi:** kết cục sống còn, cần phát hiện HR mục tiêu theo Cox PH.
 * **Không dùng khi:** khó ước lượng tỷ lệ biến cố theo dõi hoặc PH không hợp lý.
 * **Đầu vào:** HR, alpha, power, tỷ lệ phân bổ (nhị phân) hoặc SD (liên tục), tỷ lệ biến cố kỳ vọng trong thời gian theo dõi
@@ -232,7 +248,7 @@ Cần dùng số tham số (df), không chỉ "số biến". Quy tắc cơ bản
 
 #### C. Prediction model development (khuyến nghị cho xây dựng mô hình dự báo)
 
-**C5 — Riley et al. (phân tích; pmsampsize-like)**
+**A3.1 — Riley et al. (phân tích; pmsampsize-like)**
 * **Dùng khi:** phát triển mô hình dự báo, cần hạn chế overfitting và bảo đảm độ chính xác.
 * **Không dùng khi:** không có giả định hợp lý về $p$ và hiệu năng dự kiến (AUC hoặc $R^2$); khi đó dùng độ nhạy/mô phỏng.
 * **Đầu vào:** $p$, $P$ (df), shrinkage mục tiêu (ví dụ 0,90), hiệu năng dự kiến (AUC hoặc Cox–Snell $R^2$)
@@ -240,7 +256,7 @@ Cần dùng số tham số (df), không chỉ "số biến". Quy tắc cơ bản
 * **Mạnh:** có cơ sở, dựa trên hiệu năng
 * **Yếu:** phụ thuộc giả định; cần đếm df chuẩn
 
-**C6 — Development Simulation (Frequentist; samplesizedev/custom DGM)**
+**A3.2 — Mô phỏng Phát triển (Frequentist; samplesizedev/custom DGM)**
 * **Dùng khi:** muốn mô phỏng theo đúng cách bạn dự kiến xây dựng mô hình (phi tuyến/tương tác).
 * **Không dùng khi:** không mô tả được DGM hợp lý hoặc cần kết quả tức thì.
 * **Đầu vào:** danh sách $N$, giả định DGM, tiêu chí hiệu năng, số mô phỏng, seed
@@ -248,7 +264,7 @@ Cần dùng số tham số (df), không chỉ "số biến". Quy tắc cơ bản
 * **Mạnh:** linh hoạt, phù hợp mô hình phức tạp
 * **Yếu:** tốn tính toán, nhạy giả định
 
-**C7 — Bayesian Assurance (MCMC)**
+**A3.3 — Đảm bảo Bayesian (MCMC)**
 * **Dùng khi:** mô hình cuối cùng ước lượng bằng Bayes/MCMC và muốn sizing theo assurance.
 * **Không dùng khi:** không xác định được prior hợp lý hoặc hạn chế compute.
 * **Đầu vào:** DGM, prior, $N$, tiêu chí assurance, cài đặt MCMC
@@ -258,7 +274,7 @@ Cần dùng số tham số (df), không chỉ "số biến". Quy tắc cơ bản
 
 #### D. Validation / Updating (cho mô hình có sẵn)
 
-**D8 — Độ chính xác AUC (Hanley–McNeil / presize)**
+**A4.1 — Độ chính xác AUC (Hanley–McNeil / presize)**
 * **Dùng khi:** mục tiêu ngoại kiểm là KTC AUC đủ hẹp.
 * **Không dùng khi:** calibration là trọng tâm.
 * **Đầu vào:** AUC kỳ vọng, $p$ hoặc tỷ lệ case-control, mức tin cậy, độ rộng KTC mục tiêu
@@ -266,7 +282,7 @@ Cần dùng số tham số (df), không chỉ "số biến". Quy tắc cơ bản
 * **Mạnh:** nhanh, dễ dùng
 * **Yếu:** chỉ AUC, xấp xỉ
 
-**D9 — External Validation (Tailored; pmvalsampsize / sampsizeval)**
+**A4.2 — External Validation (Tailored; pmvalsampsize / sampsizeval)**
 * **Dùng khi:** sizing ngoại kiểm theo nhiều thước đo (calibration + discrimination), thường cần giả định phân bố LP.
 * **Không dùng khi:** không biện minh được giả định LP/case-mix.
 * **Đầu vào:** $p$, AUC kỳ vọng, mục tiêu slope/CITL, độ rộng KTC/SE, giả định phân bố LP
@@ -274,7 +290,7 @@ Cần dùng số tham số (df), không chỉ "số biến". Quy tắc cơ bản
 * **Mạnh:** "tailored", chú trọng calibration
 * **Yếu:** phức tạp, phụ thuộc giả định
 
-**D10 — External Validation (Simulation; LP-based)**
+**A4.3 — Thẩm định ngoài (Simulation; LP-based)**
 * **Dùng khi:** có thể mô tả/ước lượng phân bố LP ở quần thể ngoại kiểm và muốn mô phỏng độ chính xác.
 * **Không dùng khi:** không ước lượng được LP distribution.
 * **Đầu vào:** phân bố LP, tham số miscalibration, mục tiêu độ rộng KTC, số mô phỏng, seed
@@ -517,7 +533,7 @@ $$
 3. Whittemore AS. *Sample size for logistic regression with small response probability.* Journal of the American Statistical Association. 1981;76:27–32.
 """,
         "c5_content_md": """
-### C5: Riley et al. (Phân tích)
+### A3.1: Riley et al. (Phân tích)
 
 ### Phương pháp này là gì?
 
@@ -662,7 +678,7 @@ $$
 4. Harrell FE Jr, Lee KL, Mark DB. *Multivariable prognostic models: issues in developing models, evaluating assumptions and adequacy, and measuring and reducing errors.* Statistics in Medicine. 1996.
 """,
         "c6_content_md": """
-## C6: Mô phỏng phát triển mô hình (Frequentist; DGM tùy biến) 
+## A3.2: Mô phỏng phát triển mô hình (Frequentist; DGM tùy biến) 
 
 ### Phương pháp này là gì?
 

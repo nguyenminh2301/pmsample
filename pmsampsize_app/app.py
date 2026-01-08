@@ -93,35 +93,73 @@ def render_sidebar(lang):
     #     st.session_state["selected_method"] = "intro"
 
     # Categories
-    categories = ["A", "B", "C", "D"]
+    categories = ["A", "B", "C"]
     methods = registry.get_all()
     
     for cat in categories:
         cat_name = registry.get_category_name(cat, lang)
+        
         # Filter methods in this category
         cat_methods = [m for m in methods if m.category == cat]
         
-        # Apply Search Filter
+        # Apply Search Filter (if query exists)
         if search_query:
             cat_methods = [m for m in cat_methods if search_query.lower() in (m.title_en + m.title_vi + m.title_zh + m.title_jp + m.title_fr + m.title_de).lower()]
             if not cat_methods:
-                continue # Skip empty categories during search
+                continue # Skip empty categories during search (unless we want to show headers?)
         
-        with st.sidebar.expander(cat_name, expanded=(search_query!="")):
+        # Sort methods by ID to ensure A1.1 comes before A1.2
+        cat_methods.sort(key=lambda x: x.id)
+
+        # Show Category Expander
+        # Force expand if searching, or if it's the A category (default focus)
+        is_expanded = (search_query != "") or (cat == "A")
+        
+        with st.sidebar.expander(cat_name, expanded=is_expanded):
+            # Group by Subgroup
+            # We use a dictionary to group
+            grouped = {}
             for m in cat_methods:
-                title = m.title_en
-                if lang == "VI": title = m.title_vi
-                elif lang == "ZH": title = m.title_zh
-                elif lang == "JP": title = m.title_jp
-                elif lang == "FR": title = m.title_fr
-                elif lang == "DE": title = m.title_de
+                sg = m.subgroup if m.subgroup else "Other"
+                if sg not in grouped: grouped[sg] = []
+                grouped[sg].append(m)
+            
+            # Sort subgroups? A1..., A2... - They should naturally sort if we keyed them well
+            # But dict order isn't guaranteed in all py versions (though 3.7+ yes).
+            # Let's simple sort keys
+            sorted_sgs = sorted(grouped.keys())
+            
+            for sg in sorted_sgs:
+                # Render Subgroup Header if distinct and not "Other"
+                # If searching, maybe suppress headers to save space? Keep checks simple for now.
+                if sg != "Other":
+                    # Basic markdown header
+                    st.markdown(f"**{sg}**")
                 
-                icon = "✨" if m.status == MethodStatus.AVAILABLE else "🚧"
-                if m.status == MethodStatus.BETA: icon = "🧪"
-                
-                # Button for each method
-                if st.button(f"{icon} {title}", key=f"nav_{m.id}", use_container_width=True):
-                    st.session_state["selected_method"] = m.id
+                for m in grouped[sg]:
+                    title = m.title_en
+                    if lang == "VI": title = m.title_vi
+                    elif lang == "ZH": title = m.title_zh
+                    elif lang == "JP": title = m.title_jp
+                    elif lang == "FR": title = m.title_fr
+                    elif lang == "DE": title = m.title_de
+                    
+                    # Fallback if specific lang title is missing
+                    if not title: title = m.title_en
+                    
+                    icon = "✨" if m.status == MethodStatus.AVAILABLE else "🚧"
+                    if m.status == MethodStatus.BETA: icon = "🧪"
+                    if m.status == MethodStatus.COMING_SOON: icon = "⏳"
+                    
+                    # Button for each method
+                    # Use ID to check if selected?
+                    # Streamlit buttons don't hold state easily, so we just check click
+                    btn_label = f"{icon} {title}"
+                    if m.id == st.session_state.get("selected_method"):
+                        btn_label = f"👉 {btn_label}"
+                        
+                    if st.button(btn_label, key=f"nav_{m.id}", use_container_width=True):
+                        st.session_state["selected_method"] = m.id
 
     st.sidebar.divider()
     
@@ -262,8 +300,11 @@ def render_method_page(method_id, lang):
         return
 
     # Render Method UI (Delegate)
+    # Render Method UI (Delegate)
     if m.render_ui_fn:
         m.render_ui_fn(T)
+    elif m.status == MethodStatus.COMING_SOON:
+        st.info(f"⏳ {T.get('future_methods', 'Coming soon...')}")
     else:
         st.error("UI Module not linked.")
         

@@ -235,19 +235,19 @@ def calculate_pmvalsampsize(p, c, oe_width, slope_width, c_width, n_sim=100000, 
 # -----------------------------------------------------------------------------
 
 def sampsizeval_c(p, c, se_target):
-    # Pavlou 2021 Closed form eq 14
-    # Var(C) approx ...
-    # Uses n1, n0 scaling.
-    # N approx ... 
-    # Let's use the definition from the paper or just reverse Hanley McNeil (which is what they often cite)
-    # The package `sampsizeval` uses a specific normal approximation for SE(C).
-    # Var(C) = [ c(1-c) + (n1-1)(q1-c^2) + ... ] / n1n0
-    # Iteratively solve this is safer than complex closed form.
-    # Reuse D8 logic or calc_se_c
+    """
+    Sample size for C-statistic precision.
+    Based on Pavlou et al. (2021).
+    Equation (9) in the paper provides a closed-form approximation, 
+    but numerically solving for N using Hanley-McNeil variance (which the paper references) 
+    is robust and consistent with common practice.
     
+    Target: SE(C) <= se_target
+    """
     if se_target <= 0: return 0
     
     # Binary search for N
+    # We search for the minimum N where SE(C) <= se_target
     low = 50
     high = 1000000
     ans = high
@@ -264,25 +264,23 @@ def sampsizeval_c(p, c, se_target):
     return ans
 
 def sampsizeval_slope(p, c, se_target):
-    # Pavlou (2021) derivation for slope SE assuming normal LP.
-    # SE(S) = sqrt( 1 / (N * p * (1-p) * var(LP)) ) approx?
-    # paper says Var(S) approx 2 / (N * p * sigma^2) ??
-    # Let's look at the asymptotic variance under marginal normality.
-    # sigma_LP = norm.ppf(C) * sqrt(2)
+    """
+    Sample size for Calibration Slope precision.
+    Based on Pavlou et al. (2021), Equation (12).
     
+    Approximate variance of slope:
+    Var(Slope) approx 1 / (N * p * (1-p) * sigma^2)
+    where sigma^2 is the variance of the Linear Predictor (LP).
+    
+    Relationship between C and sigma (assuming normal LP):
+    sigma = sqrt(2) * inv_norm(C)
+    """
     sigma = scipy.stats.norm.ppf(c) * np.sqrt(2)
     
-    # Var(Slope) approx 1 / (N * sigma^2 * p * (1-p) ) ?
-    # Let's try to verify with simulation result `calc_se_slope`.
-    # Analytical approx is faster.
-    # For now, use the derived formula commonly cited:
-    # N = 1 / (p(1-p) * sigma^2 * SE^2)
-    
-    # Let's check sampsizeval source code approximation if possible.
-    # Assuming the simple fisher info inversion leads to something like the above.
-    
     if se_target <= 0: return 0
-    val = 1 / (p * (1-p) * sigma**2 * se_target**2)
+    
+    # Formula: N = 1 / (p * (1-p) * sigma^2 * SE^2)
+    val = 1 / (p * (1 - p) * sigma**2 * se_target**2)
     return int(np.ceil(val))
 
 def calculate_sampsizeval(p, c, se_c, se_slope, se_large):
@@ -321,10 +319,11 @@ def render_ui(T):
     st.header(T.get("title_d9", "D9: External Validation (pmvalsampsize / sampsizeval)"))
     
     # Tabs
-    tab1, tab2, tab3 = st.tabs([
+    tab1, tab2, tab3, tab4 = st.tabs([
         "Riley/Archer (pmvalsampsize)",
         "Pavlou (sampsizeval)",
-        "Combined Report"
+        "Combined Report",
+        "Sensitivity Analysis"
     ])
     
     # Common Inputs (Prevalence, C)
@@ -450,30 +449,43 @@ def render_ui(T):
 
     # TAB 3: COMBINED
     with tab3:
+        # Note: We can reuse inputs if the user already entered them in tabs 1 & 2?
+        # Or we should re-ask? Re-asking or verifying existing session state is better.
+        # For simplicity, we assume user might visit here first or wants to re-run with current displayed inputs.
+        # But wait, tab1 inputs (oe_w) are inside tab1. Can we access them?
+        # Yes, st.session_state["d9_oe_w"] etc. should exist if the widget was rendered.
+        
+        st.markdown("Run both methods with the parameters set in **Tab 1** and **Tab 2**.")
+        
         if st.button("Run Combined Analysis", key="btn_d9_all"):
              # Get ALL inputs
             p_val = parse_input(p_str)[0]
             c_val = parse_input(c_str)[0]
             
-            # 1. Riley
-            res1 = calculate_pmvalsampsize(p_val, c_val, st.session_state.d9_oe_w, st.session_state.d9_slope_w, st.session_state.d9_c_w, seed=seed)
-            # 2. Pavlou
-            res2 = calculate_sampsizeval(p_val, c_val, st.session_state.d9_se_c, st.session_state.d9_se_slope, st.session_state.d9_se_large)
-            
-            comp_df = pd.DataFrame({
-                "Method": ["Riley/Archer (CI Widths)", "Pavlou (SE Targets)"],
-                "N Recommended": [res1['n_recom'], res2['n_recom']],
-                "Implied Events": [res1['events_recom'], res2['events_recom']]
-            })
+            # Check availability of other inputs
+            # Defaults if not initialized (though Streamlit usually inits on render)
+            if "d9_oe_w" not in st.session_state:
+                st.error("Please visit Tab 1 and Tab 2 to initialize settings.")
+            else:
+                # 1. Riley
+                res1 = calculate_pmvalsampsize(p_val, c_val, st.session_state.d9_oe_w, st.session_state.d9_slope_w, st.session_state.d9_c_w, seed=seed)
+                # 2. Pavlou
+                res2 = calculate_sampsizeval(p_val, c_val, st.session_state.d9_se_c, st.session_state.d9_se_slope, st.session_state.d9_se_large)
+                
+                comp_df = pd.DataFrame({
+                    "Method": ["Riley/Archer (CI Widths)", "Pavlou (SE Targets)"],
+                    "N Recommended": [res1['n_recom'], res2['n_recom']],
+                    "Implied Events": [res1['events_recom'], res2['events_recom']]
+                })
 
-            st.session_state["d9_tab3_data"] = {
-                "res1": res1, "res2": res2, "comp_df": comp_df,
-                "inputs": {
-                    "p_str": p_str, "c_str": c_str,
-                    "oe_w": st.session_state.d9_oe_w, "slope_w": st.session_state.d9_slope_w,
-                    "se_c": st.session_state.d9_se_c, "se_slope": st.session_state.d9_se_slope
+                st.session_state["d9_tab3_data"] = {
+                    "res1": res1, "res2": res2, "comp_df": comp_df,
+                    "inputs": {
+                        "p_str": p_str, "c_str": c_str,
+                        "oe_w": st.session_state.d9_oe_w, "slope_w": st.session_state.d9_slope_w,
+                        "se_c": st.session_state.d9_se_c, "se_slope": st.session_state.d9_se_slope
+                    }
                 }
-            }
             
         if "d9_tab3_data" in st.session_state:
             data = st.session_state["d9_tab3_data"]
@@ -503,3 +515,100 @@ def render_ui(T):
                 "refresh_key": ["d9_tab3_data"]
             }
             reporting.render_report_ui(context3, comp_df, T)
+
+    # TAB 4: SENSITIVITY
+    with tab4:
+        st.info("📊 **Sensitivity Analysis**: Vary one parameter to see impact on Sample Size (Riley/Archer method).")
+        
+        sens_param = st.radio("Parameter to vary:", ["Prevalence (p)", "C-statistic (AUC)"], horizontal=True, key="d9_sens_param")
+        
+        c1, c2 = st.columns(2)
+        if sens_param == "Prevalence (p)":
+            with c1:
+                sens_range = st.text_input("Range (min-max) or List (p1, p2, ...)", "0.05-0.20", key="d9_sens_p_rng")
+            val_fixed = parse_input(c_str)[0]
+            label_fixed = "C-statistic (fixed)"
+        else:
+            with c1:
+                sens_range = st.text_input("Range (min-max) or List (c1, c2, ...)", "0.70-0.90", key="d9_sens_c_rng")
+            val_fixed = parse_input(p_str)[0]
+            label_fixed = "Prevalence (fixed)"
+            
+        with c2:
+             st.write(f"**{label_fixed}**: {val_fixed}")
+             steps = st.number_input("Steps (if range)", 2, 20, 5, key="d9_sens_steps")
+             
+        if st.button("Run Sensitivity Analysis", key="btn_d9_sens"):
+             # Generate range
+             try:
+                 if "-" in sens_range:
+                     mn, mx = map(float, sens_range.split("-"))
+                     values = np.linspace(mn, mx, steps)
+                 else:
+                     values = parse_input(sens_range)
+                     values.sort()
+             except:
+                 st.error("Invalid range format.")
+                 values = []
+                 
+             if len(values) > 0:
+                 sens_results = []
+                 prog_bar = st.progress(0)
+                 
+                 # Inputs for Riley
+                 oe_w_val = st.session_state.get("d9_oe_w", 0.2)
+                 slope_w_val = st.session_state.get("d9_slope_w", 0.2)
+                 c_w_val = st.session_state.get("d9_c_w", 0.1)
+                 
+                 for i, val in enumerate(values):
+                     if sens_param == "Prevalence (p)":
+                         p_i = val
+                         c_i = val_fixed
+                     else:
+                         p_i = val_fixed
+                         c_i = val
+                         
+                     # Run calc
+                     r = calculate_pmvalsampsize(p_i, c_i, oe_w_val, slope_w_val, c_w_val, seed=seed)
+                     sens_results.append({
+                         "Parameter": val,
+                         "N Recommended": r["n_recom"],
+                         "Events": r["events_recom"],
+                         "Criterion Used": "Combined"
+                     })
+                     prog_bar.progress((i + 1) / len(values))
+                     
+                 sens_df = pd.DataFrame(sens_results)
+                 st.session_state["d9_sens_data"] = {
+                     "df": sens_df,
+                     "param_name": sens_param,
+                     "fixed_label": label_fixed,
+                     "fixed_val": val_fixed
+                 }
+                 
+        if "d9_sens_data" in st.session_state:
+            data = st.session_state["d9_sens_data"]
+            df = data["df"]
+            param = data["param_name"]
+            
+            st.divider()
+            st.markdown(f"### Sensitivity Results: Varying {param}")
+            
+            # Chart
+            st.line_chart(df, x="Parameter", y="N Recommended")
+            
+            # Table
+            st.dataframe(df)
+            
+            # Report
+            context4 = {
+                "method_title": f"D9 Sensitivity Analysis ({param})",
+                "method_description": f"Varying {param} while keeping {data['fixed_label']}={data['fixed_val']}.",
+                "inputs": {
+                    "Varying": param,
+                    "Range": f"{df['Parameter'].min()} - {df['Parameter'].max()}",
+                    "Fixed": f"{data['fixed_label']} = {data['fixed_val']}"
+                },
+                "refresh_key": ["d9_sens_data"]
+            }
+            reporting.render_report_ui(context4, df, T)

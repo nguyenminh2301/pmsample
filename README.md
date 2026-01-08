@@ -18,7 +18,7 @@ This application provides a suite of tools to address the complex requirements o
 
 ### Key Capabilities
 
-* **Methodological Rigor**: Implements algorithms strictly adhering to peer-reviewed statistical literature (Riley et al., Hanley & McNeil, Hsieh, et al.).
+* **Methodological**: Implements algorithms strictly adhering to peer-reviewed statistical literature (Riley et al., Hanley & McNeil, Hsieh, et al.).
 * **Validation**: Core calculations have been verified against established R packages (`pmsampsize`, `presize`, `pmvalsampsize`, `sampsizeval`) to ensure accuracy.
 * **Bilingual Ecosystem**: Fully localized for English and Vietnamese, facilitating international collaboration.
 * **Sensitivity Analysis**: Integrated batch processing allows researchers to evaluate how sample size requirements vary across a range of assumptions (e.g., varying prevalence or anticipated $R^2$).

@@ -3,7 +3,23 @@ EN = {
         "sidebar_title": "Configuration",
         "language": "Language / Ngôn ngữ",
         "mode": "Method Selection",
-        "mode_riley": "Method C5: Riley et al. (Analytical)",
+        
+        # New Hierarchy Titles
+        "title_a1_1": "A1.1: Rules of Thumb (EPV)",
+        "title_a1_2": "A1.2: Baseline Risk Precision",
+        "title_a2_1": "A2.1: Logistic Power (Hsieh)",
+        "title_a2_2": "A2.2: Cox Power (Schoenfeld)",
+        "title_a3_1": "A3.1: Riley et al. (Analytical)",
+        "title_a3_2": "A3.2: Development Simulation",
+        "title_a3_3": "A3.3: Bayesian Assurance",
+        "title_a4_1": "A4.1: AUC Precision (Hanley-McNeil)",
+        "title_a4_2": "A4.2: External Validation (Tailored)",
+        "title_a4_3": "A4.3: Ext. Validation (Simulation)",
+        "title_b1": "B1: Green's Rule",
+        "title_b2": "B2: Riley et al. (Continuous)",
+        "title_c1": "C1: Riley et al. (Survival)",
+
+        "mode_riley": "Method A3.1: Riley et al. (Analytical)",
         "mode_bayes": "Method C6: Bayesian Assurance (Simulation)",
         "mode_single": "Single Scenario",
         "mode_batch": "Sensitivity Analysis (Ranges)",
@@ -15,8 +31,8 @@ EN = {
         "nav_calc": "Sample Size Calculator",
         "intro_heading": "Welcome",
         "intro_text": "This tool helps researchers calculate the minimum sample size required for developing a clinical prediction model with a binary outcome.",
-        "formula_heading": "Mathematical Framework (Method C5)",
-        "formula_intro": "Method C5 uses the closed-form solutions provided by Riley et al., while Method C6 uses Bayesian MCMC simulation.",
+        "formula_heading": "Mathematical Framework (Method A3.1)",
+        "formula_intro": "Method A3.1 uses the closed-form solutions provided by Riley et al., while Method A3.3 uses Bayesian MCMC simulation.",
         "sens_guide_title": "💡 How to use Sensitivity Analysis (Batch Mode)",
         "sens_guide_text": """
         - **Ranges**: Enter `min-max` (e.g., `0.05-0.10`). The app will generate steps automatically.
@@ -211,7 +227,7 @@ Use parameters (degrees of freedom), not just "number of variables."
 
 #### A. Quick / Basic (fast, approximate)
 
-**A1 — Rules of Thumb (EPV/EPP) (heuristic)**
+**A1.1 — Rules of Thumb (EPV/EPP) (heuristic)**
 * **Use when:** you need a quick sanity check on whether events are "roughly sufficient" for a planned model size.
 * **Do not use when:** model includes splines/interactions/variable selection, or event rate is low—EPV/EPP does not guarantee good calibration or low optimism.
 * **Key inputs:** event rate $p$, number of parameters $P$ (df), target EPP (e.g., 10/15/20)
@@ -219,7 +235,7 @@ Use parameters (degrees of freedom), not just "number of variables."
 * **Strengths:** extremely simple; good for early feasibility
 * **Weaknesses:** can be misleading; not performance-based
 
-**A2 — Baseline Risk Precision (CI width for prevalence)**
+**A1.2 — Baseline Risk Precision (CI width for prevalence)**
 * **Use when:** your goal is to estimate the event rate $p$ with a desired CI half-width (e.g., ±2%).
 * **Do not use when:** you want prediction model performance guarantees (AUC/calibration slope).
 * **Key inputs:** expected $p$, CI method (Wilson recommended), confidence level, target half-width $d$
@@ -229,7 +245,7 @@ Use parameters (degrees of freedom), not just "number of variables."
 
 #### B. Prognostic factor (power) (association-focused, not prediction model sizing)
 
-**B3 — Logistic OR Power (Hsieh)**
+**A2.1 — Logistic OR Power (Hsieh)**
 * **Use when:** you want power to detect a target odds ratio (OR) for a prognostic factor in logistic regression.
 * **Do not use when:** your primary goal is prediction model development (calibration/discrimination), not hypothesis testing.
 * **Key inputs:** baseline risk $p_0$, target OR, alpha, power, exposure prevalence (binary) or SD (continuous), optional $R^2$ with covariates
@@ -237,7 +253,7 @@ Use parameters (degrees of freedom), not just "number of variables."
 * **Strengths:** classic power framework for association
 * **Weaknesses:** does not address prediction model performance; sensitive to input assumptions
 
-**B4 — Cox HR Power (Schoenfeld)**
+**A2.2 — Cox HR Power (Schoenfeld)**
 * **Use when:** time-to-event outcome; you want power to detect a hazard ratio (HR) under Cox PH.
 * **Do not use when:** PH assumption likely violated, or event fraction is highly uncertain and cannot be reasonably estimated.
 * **Key inputs:** HR, alpha, power, allocation proportion (binary) or SD (continuous), expected event fraction during follow-up
@@ -247,7 +263,7 @@ Use parameters (degrees of freedom), not just "number of variables."
 
 #### C. Prediction model development (recommended for risk model building)
 
-**C5 — Riley et al. (Analytical; pmsampsize-like)**
+**A3.1 — Riley et al. (Analytical; pmsampsize-like)**
 * **Use when:** developing a multivariable prediction model; you want to control overfitting and ensure adequate precision.
 * **Do not use when:** you cannot provide reasonable assumptions for prevalence and anticipated model performance (AUC or $R^2$); in that case, use sensitivity analysis or simulation.
 * **Key inputs:** event rate $p$, parameters $P$ (df), target shrinkage (e.g., 0.90), anticipated model performance (AUC or Cox–Snell $R^2$)
@@ -255,7 +271,7 @@ Use parameters (degrees of freedom), not just "number of variables."
 * **Strengths:** principled, performance-aware, widely cited
 * **Weaknesses:** depends on performance assumptions; requires careful df counting
 
-**C6 — Development Simulation (Frequentist; samplesizedev/custom DGM)**
+**A3.2 — Development Simulation (Frequentist; samplesizedev/custom DGM)**
 * **Use when:** you prefer "simulate what you will do," especially with nonlinearity/interactions and custom data structures.
 * **Do not use when:** you cannot specify a plausible data-generating mechanism (DGM) or you need results instantly (compute-intensive).
 * **Key inputs:** candidate $N$ grid, DGM assumptions (predictor distributions/correlations/effects), performance targets (e.g., calibration slope range, AUC threshold), simulation replicates, seed
@@ -263,7 +279,7 @@ Use parameters (degrees of freedom), not just "number of variables."
 * **Strengths:** flexible; aligns with complex modeling
 * **Weaknesses:** assumptions-heavy; computational cost
 
-**C7 — Bayesian Assurance (MCMC)**
+**A3.3 — Bayesian Assurance (MCMC)**
 * **Use when:** the final model will be estimated with Bayesian MCMC, and you want sample size based on assurance (probability of meeting posterior performance/precision targets).
 * **Do not use when:** priors cannot be justified or computation budget is limited.
 * **Key inputs:** DGM, priors, candidate $N$, MCMC settings, assurance threshold (e.g., 80%/90%), performance/precision targets
@@ -273,7 +289,7 @@ Use parameters (degrees of freedom), not just "number of variables."
 
 #### D. Validation / Updating (for existing models)
 
-**D8 — AUC Precision (Hanley–McNeil / presize)**
+**A4.1 — AUC Precision (Hanley–McNeil / presize)**
 * **Use when:** your validation goal is precision of AUC (CI width).
 * **Do not use when:** calibration (slope/CITL) is the primary concern—this method targets AUC only.
 * **Key inputs:** expected AUC, prevalence or case-control ratio, confidence level, target CI width
@@ -281,7 +297,7 @@ Use parameters (degrees of freedom), not just "number of variables."
 * **Strengths:** simple; quick planning for discrimination precision
 * **Weaknesses:** approximate variance; ignores calibration
 
-**D9 — External Validation (Tailored; pmvalsampsize / sampsizeval)**
+**A4.2 — External Validation (Tailored; pmvalsampsize / sampsizeval)**
 * **Use when:** you want validation sizing targeting multiple performance measures (calibration + discrimination), often requiring assumptions about the LP distribution.
 * **Do not use when:** you cannot justify LP distribution assumptions or expected performance.
 * **Key inputs:** prevalence, expected AUC, calibration slope/CITL targets, CI widths or SE targets, LP distribution assumptions
@@ -696,7 +712,7 @@ $$
 4. Harrell FE Jr, Lee KL, Mark DB. *Multivariable prognostic models: issues in developing models, evaluating assumptions and adequacy, and measuring and reducing errors.* Statistics in Medicine. 1996.
 """,
         "c6_content_md": """
-## C6: Development Simulation (Frequentist; custom DGM)
+## A3.2: Development Simulation (Frequentist; custom DGM)
 
 ### What this method is
 

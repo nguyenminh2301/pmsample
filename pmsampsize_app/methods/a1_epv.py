@@ -1,5 +1,6 @@
 
 import streamlit as st
+import pandas as pd
 
 try:
     from pmsampsize_app.core import epv as core_epv
