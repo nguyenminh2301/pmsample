@@ -84,7 +84,11 @@ def render_ui(T):
         
         st.divider()
         st.subheader(T["results"])
-        st.info(f"ℹ️ **{T['sanity']}**: N(180 events) = {180/min(p_list):.0f} | N(250 events) = {250/min(p_list):.0f}")
+        
+        # Interpretation
+        with st.expander(f"ℹ️ {T.get('c5_interp_title', 'How to read the results')}"):
+            st.markdown(T.get('c5_interp_text', ''))
+            
         st.dataframe(df.style.format({"Prevalence": "{:.3f}", "R2_CS": "{:.3f}", "Performance": "{:.3f}", "EPP": "{:.1f}"}))
         
         

@@ -45,6 +45,15 @@ VI = {
         "perf_auc": "AUC (C-statistic)",
         "perf_r2": "Cox-Snell R-squared",
         "perf_cons": "Thận trọng (Conservative)",
+        "c5_interp_title": "Cách đọc kết quả",
+        "c5_interp_text": """
+        **Kết quả hiển thị (N) tối thiểu cần thiết thỏa mãn 3 tiêu chí của Riley:**
+        1. **Overfitting**: Đảm bảo hệ số co rút (Shrinkage) $\\ge$ mức mục tiêu (VD: 0.9).
+        2. **Optimism**: Đảm bảo hiệu năng không bị lạc quan quá mức ($\\Delta R^2 \\le 0.05$).
+        3. **Precise Intercept**: Ước lượng tỷ lệ biến cố chung chính xác (sai số $\\le 0.05$).
+        
+        *Giá trị N cuối cùng là giá trị lớn nhất (Max) của 3 tiêu chí trên.*
+        """,
         
         # Bayesian specific
         "bayes_inputs": "Cài đặt Mô phỏng (Bayesian Assurance)",
