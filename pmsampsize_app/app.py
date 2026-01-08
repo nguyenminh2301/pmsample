@@ -188,19 +188,20 @@ def render_readme_page(lang):
     
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     
+    
     filename = "README.md"
     if lang == "VI":
-        filename = "README_VI.md"
+        filename = os.path.join("docs", "locales", "README_VI.md")
     elif lang == "KO":
-        filename = "README_KO.md"
+        filename = os.path.join("docs", "locales", "README_KO.md")
     elif lang == "ZH":
-        filename = "README_ZH.md"
+        filename = os.path.join("docs", "locales", "README_ZH.md")
     elif lang == "JP":
-        filename = "README_JP.md"
+        filename = os.path.join("docs", "locales", "README_JP.md")
     elif lang == "FR":
-        filename = "README_FR.md"
+        filename = os.path.join("docs", "locales", "README_FR.md")
     elif lang == "DE":
-        filename = "README_DE.md"
+        filename = os.path.join("docs", "locales", "README_DE.md")
         
     file_path = os.path.join(root_dir, filename)
     
