@@ -10,11 +10,58 @@ venv/
 *.egg-info/
 dist/
 build/
+develop-eggs/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
 
 # Jupyter
 .ipynb_checkpoints
+*-checkpoint.ipynb
 
-# OS
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.directory
 .DS_Store
 Thumbs.db
 
@@ -22,3 +69,7 @@ Thumbs.db
 pmsampsize_app/archive/
 *.log
 debug_*.py
+temp_*.txt
+temp_*.csv
+output/
+__MACOSX/
