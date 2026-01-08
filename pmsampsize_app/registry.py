@@ -14,11 +14,11 @@ class MethodSpec:
     category: str # A, B, C, D
     title_en: str
     title_vi: str
+    status: MethodStatus
     title_zh: str = "" # Default empty if not provided immediately, but we will provide it
     title_jp: str = ""
     title_fr: str = ""
     title_de: str = ""
-    status: MethodStatus
     ref_badges: List[str] = field(default_factory=list) # e.g. ["PubMed (+1)", "CRAN"]
     description_en: str = ""
     description_vi: str = ""
