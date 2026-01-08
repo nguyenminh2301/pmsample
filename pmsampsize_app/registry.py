@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from typing import List, Dict, Callable, Optional, Any
 import enum
 
+# Method Registry Definition
 class MethodStatus(enum.Enum):
     AVAILABLE = "available"
     COMING_SOON = "coming_soon"

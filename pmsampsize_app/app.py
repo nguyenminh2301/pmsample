@@ -120,7 +120,10 @@ def render_sidebar(lang):
             # We use a dictionary to group
             grouped = {}
             for m in cat_methods:
-                sg = m.subgroup if m.subgroup else "Other"
+                # Use getattr to avoid AttributeError if registry is stale
+                val = getattr(m, "subgroup", None)
+                sg = val if val else "Other"
+                
                 if sg not in grouped: grouped[sg] = []
                 grouped[sg].append(m)
             
