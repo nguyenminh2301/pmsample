@@ -24,77 +24,145 @@ st.set_page_config(
 
 # --- THEME MANAGEMENT ---
 def apply_theme():
-    # Retrieve theme from session state or default
-    theme = st.session_state.get("theme", "Light")
+    # Dark Theme Only - Comprehensive Coverage
+    css = """
+    <style>
+    /* Base Application */
+    .stApp { 
+        background-color: #0e1117; 
+        color: #FAFAFA !important; 
+    }
     
-    css = ""
-    if theme == "Dark":
-        # Strict Dark Theme: Off-white text, Dark Grey Bg
-        css = """
-        <style>
-        .stApp { 
-            background-color: #0e1117; 
-            color: #FAFAFA !important; 
-        }
-        h1, h2, h3, h4, h5, h6 {
-            color: #FFFFFF !important;
-        }
-        div[data-baseweb="input"] > div, div[data-baseweb="select"] > div {
-            background-color: #262730 !important;
-            color: #FAFAFA !important;
-            border-color: #4A4A4A !important;
-        }
-        input, .stSelectbox [data-baseweb="select"] {
-            color: #FAFAFA !important;
-        }
-        .stTextArea textarea {
-            color: #FAFAFA !important;
-        }
-        p, li, span {
-            color: #FAFAFA !important;
-        }
-        </style>
-        """
-    else: # Light
-        # Strict Light Theme: High Contrast
-        css = """
-        <style>
-        .stApp { 
-            background-color: #ffffff; 
-            color: #31333F !important; 
-        }
-        
-        /* Headers - Pure Black */
-        h1, h2, h3, h4, h5, h6 {
-            color: #000000 !important;
-        }
-        
-        /* Inputs */
-        div[data-baseweb="input"] > div {
-            background-color: #ffffff !important;
-            border-color: #666 !important;
-        }
-        input {
-            color: #000000 !important;
-            font-weight: 500 !important;
-        }
-        
-        /* Metrics */
-        .stMetricValue {
-            color: #000000 !important;
-        }
-        
-        /* General Text */
-        p, li, label {
-            color: #31333F !important;
-        }
-        
-        /* Dataframes */
-        .stDataFrame {
-            border: 1px solid #ddd;
-        }
-        </style>
-        """
+    /* Headers */
+    h1, h2, h3, h4, h5, h6 {
+        color: #FFFFFF !important;
+    }
+    
+    /* Text Elements */
+    p, li, span, label, div {
+        color: #FAFAFA !important;
+    }
+    
+    /* Links */
+    a {
+        color: #58A6FF !important;
+    }
+    a:hover {
+        color: #79C0FF !important;
+    }
+    
+    /* Sidebar */
+    section[data-testid="stSidebar"] {
+        background-color: #1a1d24 !important;
+        color: #FAFAFA !important;
+    }
+    section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] span {
+        color: #FAFAFA !important;
+    }
+    
+    /* Input Fields */
+    div[data-baseweb="input"] > div {
+        background-color: #262730 !important;
+        color: #FAFAFA !important;
+        border-color: #4A4A4A !important;
+    }
+    
+    input, textarea {
+        color: #FAFAFA !important;
+        background-color: #262730 !important;
+    }
+    
+    /* Select Boxes */
+    div[data-baseweb="select"] > div {
+        background-color: #262730 !important;
+        color: #FAFAFA !important;
+        border-color: #4A4A4A !important;
+    }
+    
+    /* Text Areas */
+    .stTextArea textarea {
+        color: #FAFAFA !important;
+        background-color: #262730 !important;
+    }
+    
+    /* Buttons */
+    .stButton > button {
+        background-color: #238636 !important;
+        color: #FFFFFF !important;
+        border: none !important;
+    }
+    .stButton > button:hover {
+        background-color: #2ea043 !important;
+    }
+    
+    /* Info/Warning/Success/Error Boxes */
+    .stAlert {
+        color: #FAFAFA !important;
+    }
+    
+    /* DataFrames and Tables */
+    .stDataFrame {
+        border: 1px solid #30363d;
+    }
+    .stDataFrame table {
+        color: #FAFAFA !important;
+    }
+    .stDataFrame th {
+        background-color: #21262d !important;
+        color: #FFFFFF !important;
+        border-color: #30363d !important;
+    }
+    .stDataFrame td {
+        color: #FAFAFA !important;
+        border-color: #30363d !important;
+    }
+    
+    /* Metrics */
+    .stMetric {
+        color: #FAFAFA !important;
+    }
+    .stMetricLabel {
+        color: #8b949e !important;
+    }
+    .stMetricValue {
+        color: #FFFFFF !important;
+    }
+    
+    /* Expanders */
+    .streamlit-expanderHeader {
+        background-color: #21262d !important;
+        color: #FAFAFA !important;
+    }
+    
+    /* Radio Buttons and Checkboxes */
+    .stRadio label, .stCheckbox label {
+        color: #FAFAFA !important;
+    }
+    
+    /* Number Input */
+    .stNumberInput label {
+        color: #FAFAFA !important;
+    }
+    
+    /* Markdown */
+    .stMarkdown {
+        color: #FAFAFA !important;
+    }
+    
+    /* Code Blocks */
+    code {
+        color: #79C0FF !important;
+        background-color: #161b22 !important;
+    }
+    
+    /* Divider */
+    hr {
+        border-color: #30363d !important;
+    }
+    </style>
+    """
     
     st.markdown(css, unsafe_allow_html=True)
 
@@ -250,34 +318,8 @@ def render_sidebar(lang):
         st.session_state["lang"] = selected_lang
         st.rerun()
 
-    # Theme
-    current_theme = st.session_state.get("theme", "Light")
-    lbl_theme = T_loc.get('lbl_theme', "Theme")
-    lbl_light = T_loc.get('lbl_theme_light', "Light")
-    lbl_dark = T_loc.get('lbl_theme_dark', "Dark")
-    
-    # We need to map display names back to internal keys
-    theme_map_display = {
-        "Light": lbl_light, "Dark": lbl_dark
-    }
-    # And reverse map for selection
-    theme_map_internal = {
-        lbl_light: "Light", lbl_dark: "Dark"
-    }
-    
-    current_display = theme_map_display.get(current_theme, current_theme)
-    theme_opts = [lbl_light, lbl_dark]
-    try:
-        idx = theme_opts.index(current_display)
-    except ValueError:
-        idx = 0
-        
-    selected_theme_display = st.sidebar.selectbox(lbl_theme, theme_opts, index=idx)
-    selected_theme_internal = theme_map_internal.get(selected_theme_display, "Light")
-    
-    if selected_theme_internal != current_theme:
-        st.session_state["theme"] = selected_theme_internal
-        st.rerun()
+
+
 
 
 
