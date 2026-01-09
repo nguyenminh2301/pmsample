@@ -1,4 +1,4 @@
-# Minimum Sample Size Estimation for Prognostic Research
+# Prognostic Research Sample Size Tool
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://pmsample.streamlit.app/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
@@ -32,41 +32,47 @@ The application is structured into four primary modules, each targeting a specif
 ### A. Binary Outcomes
 
 #### Subgroup A1: Quick Checks
-| Method | Description |
-| :--- | :--- |
-| **A1.1: Rules of Thumb (EPV)** | Heuristic check (events per variable). |
+
+| Method                                  | Description                                       |
+| :-------------------------------------- | :------------------------------------------------ |
+| **A1.1: Rules of Thumb (EPV)**    | Heuristic check (events per variable).            |
 | **A1.2: Baseline Risk Precision** | Sample size for estimating prevalence (CI width). |
 
 #### Subgroup A2: Prognostic Factors
-| Method | Description |
-| :--- | :--- |
+
+| Method                                 | Description                                   |
+| :------------------------------------- | :-------------------------------------------- |
 | **A2.1: Logistic Power (Hsieh)** | Power to detect an OR for a single predictor. |
-| **A2.2: Cox Power (Schoenfeld)** | Power to detect a HR for a single predictor. |
+| **A2.2: Cox Power (Schoenfeld)** | Power to detect a HR for a single predictor.  |
 
 #### Subgroup A3: Model Development (Prediction)
-| Method | Description |
-| :--- | :--- |
+
+| Method                                    | Description                                                                   |
+| :---------------------------------------- | :---------------------------------------------------------------------------- |
 | **A3.1: Riley et al. (Analytical)** | **Gold Standard.** Development sample size for overfitting & precision. |
-| **A3.2: Development Simulation** | Simulation-based planning for complex models (DGM). |
-| **A3.3: Bayesian Assurance** | MCMC-based assurance for Bayesian models. |
+| **A3.2: Development Simulation**    | Simulation-based planning for complex models (DGM).                           |
+| **A3.3: Bayesian Assurance**        | MCMC-based assurance for Bayesian models.                                     |
 
 #### Subgroup A4: Validation / Updating
-| Method | Description |
-| :--- | :--- |
-| **A4.1: AUC Precision** | Sample size for AUC CI width (Hanley-McNeil). |
+
+| Method                                         | Description                                                    |
+| :--------------------------------------------- | :------------------------------------------------------------- |
+| **A4.1: AUC Precision**                  | Sample size for AUC CI width (Hanley-McNeil).                  |
 | **A4.2: External Validation (Tailored)** | Target calibration and discrimination precision (Riley/Snell). |
-| **A4.3: Ext. Validation (Simulation)** | Simulation-based validation planning (LP distribution). |
-| **A4.4: Model Updating** | Sample size for recalibrating intercept/slope. |
+| **A4.3: Ext. Validation (Simulation)**   | Simulation-based validation planning (LP distribution).        |
+| **A4.4: Model Updating**                 | Sample size for recalibrating intercept/slope.                 |
 
 ### B. Continuous Outcomes
-| Method | Description |
-| :--- | :--- |
-| **B1: Green's Rule** | Heuristic for linear regression (50 + 8k). |
+
+| Method                                  | Description                                          |
+| :-------------------------------------- | :--------------------------------------------------- |
+| **B1: Green's Rule**              | Heuristic for linear regression (50 + 8k).           |
 | **B2: Riley et al. (Continuous)** | Analytical method for linear regression (residuals). |
 
 ### C. Survival Outcomes
-| Method | Description |
-| :--- | :--- |
+
+| Method                                | Description                                       |
+| :------------------------------------ | :------------------------------------------------ |
 | **C1: Riley et al. (Survival)** | Analytical method for Cox models (time-to-event). |
 
 ---
@@ -126,7 +132,7 @@ This software is an implementation of statistical methods published in peer-revi
 
 If you use this tool in your research, please cite it as follows:
 
-> Nguyen, M. (2025). Prognostic Research Sample Size Tool (Version 1.0) [Software]. Available at https://pmsample.streamlit.app/
+> Nguyen, Minh. (2025). Prognostic Research Sample Size Tool (Version 1.0) [Software]. Available at https://pmsample.streamlit.app/
 
 Or use the BibTeX entry:
 
@@ -143,5 +149,6 @@ Or use the BibTeX entry:
 ---
 
 **Author & Maintainer:**
-Minh Nguyen (minhnt@ump.edu.vn)
+Minh Nguyen MPH (Mr/ He/ him)
+email: minhnt@ump.edu.vn
 Department of Epidemiology, Faculty of Public Health, University of Medicine and Pharmacy at Ho Chi Minh City, Vietnam

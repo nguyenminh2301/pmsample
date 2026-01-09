@@ -23,42 +23,152 @@ st.set_page_config(
 )
 
 # --- THEME MANAGEMENT ---
+# --- THEME MANAGEMENT ---
 def apply_theme():
     # Retrieve theme from session state or default
-    theme = st.session_state.get("theme", "Light")
+    theme = st.session_state.get("theme", "Coder")
     
     css = ""
     if theme == "Dark":
-        # Streamlit handles Dark mode mostly natively if configured, but we can force some css
+        # Strict Dark Theme: Off-white text, Dark Grey Bg
         css = """
         <style>
-        .stApp { background-color: #0e1117; color: #fafafa; }
+        .stApp { 
+            background-color: #0e1117; 
+            color: #FAFAFA !important; 
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #FFFFFF !important;
+        }
+        div[data-baseweb="input"] > div, div[data-baseweb="select"] > div {
+            background-color: #262730 !important;
+            color: #FAFAFA !important;
+            border-color: #4A4A4A !important;
+        }
+        input, .stSelectbox [data-baseweb="select"] {
+            color: #FAFAFA !important;
+        }
+        .stTextArea textarea {
+            color: #FAFAFA !important;
+        }
+        p, li, span {
+            color: #FAFAFA !important;
+        }
         </style>
         """
     elif theme == "Coder":
+        # Coder Theme: VS Code Style
         css = """
         <style>
-        .stApp { background-color: #1e1e1e; color: #d4d4d4; font-family: 'Courier New', monospace; }
-        .stButton>button { color: #d4d4d4; border-color: #444; }
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
+        
+        .stApp { 
+            background-color: #1e1e1e; 
+            color: #D4D4D4 !important; 
+            font-family: 'Consolas', 'Courier New', monospace !important; 
+        }
+        
+        /* Headers - VS Code Blue */
+        h1, h2, h3, h4, h5, h6 {
+            color: #569CD6 !important;
+            font-family: 'Consolas', 'Courier New', monospace !important;
+        }
+        
+        /* Sidebar */
+        section[data-testid="stSidebar"] {
+            background-color: #252526;
+            color: #D4D4D4 ;
+        }
+        
+        /* Inputs - VS Code Input Style */
+        div[data-baseweb="input"] > div, div[data-baseweb="select"] > div, .stTextArea > div {
+            background-color: #3C3C3C !important;
+            color: #D4D4D4 !important;
+            border: 1px solid #3C3C3C !important;
+            border-radius: 0px !important;
+        }
+        
+        /* Active Input Border */
+        div[data-baseweb="input"] > div:focus-within {
+             border: 1px solid #007FD4 !important;
+        }
+        
+        input {
+            color: #D4D4D4 !important;
+            font-family: 'Consolas', 'Courier New', monospace !important;
+        }
+        
+        /* Buttons */
+        .stButton > button {
+            color: #D4D4D4 !important;
+            background-color: #0E639C !important;
+            border: none !important;
+            border-radius: 0px !important;
+            font-family: 'Consolas', 'Courier New', monospace !important;
+        }
+        .stButton > button:hover {
+            background-color: #1177BB !important;
+        }
+        
+        /* Dataframes */
+        .stDataFrame {
+            border: 1px solid #444;
+        }
+        th {
+            background-color: #2D2D2D !important;
+            color: #569CD6 !important; 
+        }
+        td {
+            color: #D4D4D4 !important;
+        }
+        
+        p, li, label, span {
+            color: #D4D4D4 !important;
+            font-family: 'Consolas', 'Courier New', monospace !important;
+        }
+        
+        /* Expander */
+        .streamlit-expanderHeader {
+            background-color: #2D2D2D !important;
+            color: #D4D4D4 !important;
+            border-radius: 0px !important;
+        }
         </style>
         """
     else: # Light
+        # Strict Light Theme: High Contrast
         css = """
         <style>
-        .stApp { background-color: #ffffff; color: #000000; }
+        .stApp { 
+            background-color: #ffffff; 
+            color: #31333F !important; 
+        }
         
-        /* Enhance contrast for inputs and numbers */
+        /* Headers - Pure Black */
+        h1, h2, h3, h4, h5, h6 {
+            color: #000000 !important;
+        }
+        
+        /* Inputs */
         div[data-baseweb="input"] > div {
+            background-color: #ffffff !important;
             border-color: #666 !important;
         }
         input {
             color: #000000 !important;
-            font-weight: 600 !important;
+            font-weight: 500 !important;
         }
+        
         /* Metrics */
         .stMetricValue {
             color: #000000 !important;
         }
+        
+        /* General Text */
+        p, li, label {
+            color: #31333F !important;
+        }
+        
         /* Dataframes */
         .stDataFrame {
             border: 1px solid #ddd;
