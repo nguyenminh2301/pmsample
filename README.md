@@ -81,6 +81,10 @@ The application is structured into four primary modules, each targeting a specif
 
 To deploy this application within your own infrastructure:
 
+**Repositories:**
+*   **GitLab (Primary)**: [`gitlab.com/minhthiennguyen/pmsample`](https://gitlab.com/minhthiennguyen/pmsample.git)
+*   **GitHub (Mirror)**: [`github.com/nguyenminh2301/pmsample`](https://github.com/nguyenminh2301/pmsample.git)
+
 ### Prerequisites
 
 * Python 3.9+
