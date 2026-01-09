@@ -25,7 +25,7 @@ st.set_page_config(
 # --- THEME MANAGEMENT ---
 def apply_theme():
     # Retrieve theme from session state or default
-    theme = st.session_state.get("theme", "Coder")
+    theme = st.session_state.get("theme", "Light")
     
     css = ""
     if theme == "Dark":
@@ -52,85 +52,6 @@ def apply_theme():
         }
         p, li, span {
             color: #FAFAFA !important;
-        }
-        </style>
-        """
-    elif theme == "Coder":
-        # Coder Theme: VS Code Style
-        css = """
-        <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
-        
-        .stApp { 
-            background-color: #1e1e1e; 
-            color: #D4D4D4 !important; 
-            font-family: 'Consolas', 'Courier New', monospace !important; 
-        }
-        
-        /* Headers - VS Code Blue */
-        h1, h2, h3, h4, h5, h6 {
-            color: #569CD6 !important;
-            font-family: 'Consolas', 'Courier New', monospace !important;
-        }
-        
-        /* Sidebar */
-        section[data-testid="stSidebar"] {
-            background-color: #252526;
-            color: #D4D4D4 ;
-        }
-        
-        /* Inputs - VS Code Input Style */
-        div[data-baseweb="input"] > div, div[data-baseweb="select"] > div, .stTextArea > div {
-            background-color: #3C3C3C !important;
-            color: #D4D4D4 !important;
-            border: 1px solid #3C3C3C !important;
-            border-radius: 0px !important;
-        }
-        
-        /* Active Input Border */
-        div[data-baseweb="input"] > div:focus-within {
-             border: 1px solid #007FD4 !important;
-        }
-        
-        input {
-            color: #D4D4D4 !important;
-            font-family: 'Consolas', 'Courier New', monospace !important;
-        }
-        
-        /* Buttons */
-        .stButton > button {
-            color: #D4D4D4 !important;
-            background-color: #0E639C !important;
-            border: none !important;
-            border-radius: 0px !important;
-            font-family: 'Consolas', 'Courier New', monospace !important;
-        }
-        .stButton > button:hover {
-            background-color: #1177BB !important;
-        }
-        
-        /* Dataframes */
-        .stDataFrame {
-            border: 1px solid #444;
-        }
-        th {
-            background-color: #2D2D2D !important;
-            color: #569CD6 !important; 
-        }
-        td {
-            color: #D4D4D4 !important;
-        }
-        
-        p, li, label, span {
-            color: #D4D4D4 !important;
-            font-family: 'Consolas', 'Courier New', monospace !important;
-        }
-        
-        /* Expander */
-        .streamlit-expanderHeader {
-            background-color: #2D2D2D !important;
-            color: #D4D4D4 !important;
-            border-radius: 0px !important;
         }
         </style>
         """
@@ -334,19 +255,18 @@ def render_sidebar(lang):
     lbl_theme = T_loc.get('lbl_theme', "Theme")
     lbl_light = T_loc.get('lbl_theme_light', "Light")
     lbl_dark = T_loc.get('lbl_theme_dark', "Dark")
-    lbl_coder = T_loc.get('lbl_theme_coder', "Coder")
     
     # We need to map display names back to internal keys
     theme_map_display = {
-        "Light": lbl_light, "Dark": lbl_dark, "Coder": lbl_coder
+        "Light": lbl_light, "Dark": lbl_dark
     }
     # And reverse map for selection
     theme_map_internal = {
-        lbl_light: "Light", lbl_dark: "Dark", lbl_coder: "Coder"
+        lbl_light: "Light", lbl_dark: "Dark"
     }
     
     current_display = theme_map_display.get(current_theme, current_theme)
-    theme_opts = [lbl_light, lbl_dark, lbl_coder]
+    theme_opts = [lbl_light, lbl_dark]
     try:
         idx = theme_opts.index(current_display)
     except ValueError:
