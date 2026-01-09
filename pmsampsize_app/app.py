@@ -134,10 +134,26 @@ def render_sidebar(lang):
             
             for sg in sorted_sgs:
                 # Render Subgroup Header if distinct and not "Other"
-                # If searching, maybe suppress headers to save space? Keep checks simple for now.
                 if sg != "Other":
-                    # Basic markdown header
-                    st.markdown(f"**{sg}**")
+                    # Translate Subgroup
+                    # registry now stores keys like 'sg_a1' in .subgroup
+                    # T is generic, we need T dict from arguments... wait, render_sidebar gets 'lang' but not 'T' directly?
+                    # We need to import the locale dicts or use a helper. 
+                    # app.py usually gets T at the start of main, but render_sidebar receives just 'lang'.
+                    # We need to look up the translation.
+                    from utils.locales.en import EN
+                    from utils.locales.vi import VI
+                    from utils.locales.zh import ZH
+                    from utils.locales.jp import JP
+                    from utils.locales.fr import FR
+                    from utils.locales.de import DE
+                    from utils.locales.ko import KO
+                    
+                    locales = {"EN": EN, "VI": VI, "ZH": ZH, "JP": JP, "FR": FR, "DE": DE, "KO": KO}
+                    T_loc = locales.get(lang, EN)
+                    
+                    sg_label = T_loc.get(sg, sg) # Fallback to key if not found
+                    st.markdown(f"**{sg_label}**")
                 
                 for m in grouped[sg]:
                     title = m.title_en
@@ -146,6 +162,7 @@ def render_sidebar(lang):
                     elif lang == "JP": title = m.title_jp
                     elif lang == "FR": title = m.title_fr
                     elif lang == "DE": title = m.title_de
+                    elif lang == "KO": title = getattr(m, "title_ko", m.title_en) # generic fallback
                     
                     # Fallback if specific lang title is missing
                     if not title: title = m.title_en
@@ -155,8 +172,6 @@ def render_sidebar(lang):
                     if m.status == MethodStatus.COMING_SOON: icon = "⏳"
                     
                     # Button for each method
-                    # Use ID to check if selected?
-                    # Streamlit buttons don't hold state easily, so we just check click
                     btn_label = f"{icon} {title}"
                     if m.id == st.session_state.get("selected_method"):
                         btn_label = f"👉 {btn_label}"
@@ -167,7 +182,17 @@ def render_sidebar(lang):
     st.sidebar.divider()
     
     # 3. Settings
-    st.sidebar.markdown("### Settings")
+    from utils.locales.en import EN
+    from utils.locales.vi import VI
+    from utils.locales.zh import ZH
+    from utils.locales.jp import JP
+    from utils.locales.fr import FR
+    from utils.locales.de import DE
+    from utils.locales.ko import KO
+    locales = {"EN": EN, "VI": VI, "ZH": ZH, "JP": JP, "FR": FR, "DE": DE, "KO": KO}
+    T_loc = locales.get(lang, EN)
+    
+    st.sidebar.markdown(f"### {T_loc.get('lbl_settings', 'Settings')}")
     
     # Language
     lang_idx = 0
@@ -178,7 +203,7 @@ def render_sidebar(lang):
     elif lang == "FR": lang_idx = 5
     elif lang == "DE": lang_idx = 6
     
-    new_lang = st.sidebar.selectbox("Language / Ngôn ngữ / 语言 / 言語 / Langue / Sprache", ["English (EN)", "Tiếng Việt (VI)", "한국어 (KO)", "中文 (ZH)", "日本語 (JP)", "Français (FR)", "Deutsch (DE)"], index=lang_idx)
+    new_lang = st.sidebar.selectbox(T_loc.get('language', "Language"), ["English (EN)", "Tiếng Việt (VI)", "한국어 (KO)", "中文 (ZH)", "日本語 (JP)", "Français (FR)", "Deutsch (DE)"], index=lang_idx)
     
     if "English" in new_lang: selected_lang = "EN"
     elif "Tiếng Việt" in new_lang: selected_lang = "VI"
@@ -188,7 +213,7 @@ def render_sidebar(lang):
     elif "Français" in new_lang: selected_lang = "FR"
     elif "Deutsch" in new_lang: selected_lang = "DE"
     else:
-        st.sidebar.info("Coming soon / Sắp ra mắt")
+        st.sidebar.info("Coming soon")
         selected_lang = lang # Keep current
         
     if selected_lang != st.session_state.get("lang", "EN"):
@@ -197,13 +222,32 @@ def render_sidebar(lang):
 
     # Theme
     current_theme = st.session_state.get("theme", "Light")
-    theme_opts = ["Light", "Dark", "Coder"]
+    lbl_theme = T_loc.get('lbl_theme', "Theme")
+    lbl_light = T_loc.get('lbl_theme_light', "Light")
+    lbl_dark = T_loc.get('lbl_theme_dark', "Dark")
+    lbl_coder = T_loc.get('lbl_theme_coder', "Coder")
+    
+    # We need to map display names back to internal keys
+    theme_map_display = {
+        "Light": lbl_light, "Dark": lbl_dark, "Coder": lbl_coder
+    }
+    # And reverse map for selection
+    theme_map_internal = {
+        lbl_light: "Light", lbl_dark: "Dark", lbl_coder: "Coder"
+    }
+    
+    current_display = theme_map_display.get(current_theme, current_theme)
+    theme_opts = [lbl_light, lbl_dark, lbl_coder]
     try:
-        idx = theme_opts.index(current_theme)
-    except: idx = 0
-    new_theme = st.sidebar.selectbox("Theme", theme_opts, index=idx)
-    if new_theme != current_theme:
-        st.session_state["theme"] = new_theme
+        idx = theme_opts.index(current_display)
+    except ValueError:
+        idx = 0
+        
+    selected_theme_display = st.sidebar.selectbox(lbl_theme, theme_opts, index=idx)
+    selected_theme_internal = theme_map_internal.get(selected_theme_display, "Light")
+    
+    if selected_theme_internal != current_theme:
+        st.session_state["theme"] = selected_theme_internal
         st.rerun()
 
 

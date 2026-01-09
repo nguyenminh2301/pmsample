@@ -116,14 +116,21 @@ def calculate_n_hsieh(alpha, power, p0, odds_ratio, predictor_type, q=0.5, sd=1.
 def render_ui(T):
     st.header(T["title_b3"])
     
+    # Import parser
+    try:
+        from pmsampsize_app.utils import parse_input
+    except ImportError:
+        from utils import parse_input
+
     col1, col2 = st.columns(2)
     with col1:
         alpha = st.number_input("Alpha (2-sided)", 0.001, 0.20, 0.05, step=0.005)
-        power = st.number_input("Power", 0.1, 0.99, 0.80, step=0.05)
-        p0 = st.number_input("Baseline Event Rate (p0)", 0.01, 0.99, 0.10, help="Event rate when X=mean (continuous) or X=0 (binary)")
+        # Multi-value inputs
+        power_str = st.text_input("Power", "0.8, 0.9", help=T.get("input_help_multivalue"), key="b3_power")
+        p0_str = st.text_input("Baseline Event Rate (p0)", "0.1, 0.2", help="Event rate when X=mean (continuous) or X=0 (binary). " + T.get("input_help_multivalue"), key="b3_p0")
         
     with col2:
-        or_target = st.number_input("Target Odds Ratio (OR)", 0.1, 10.0, 1.5, help="Effect size to detect")
+        or_str = st.text_input("Target Odds Ratio (OR)", "1.5, 2.0", help="Effect size to detect. " + T.get("input_help_multivalue"), key="b3_or")
         pred_type = st.radio("Predictor Type", ["Binary", "Continuous"], horizontal=True)
         
     if pred_type == "Binary":
@@ -133,58 +140,88 @@ def render_ui(T):
         q = 0.5
         sd = st.number_input("Standard Deviation of X", 0.1, 100.0, 1.0)
         
-    r2 = st.number_input("R-squared with other covariates", 0.0, 0.9, 0.0, help="Variance Inflation Factor adjustment: N_adj = N / (1-R2)")
+    r2_str = st.text_input("R-squared with other covariates", "0.0", help="Variance Inflation Factor adjustment. " + T.get("input_help_multivalue"), key="b3_r2")
     
     
     if st.button("Calculate B3"):
-        n_req, ev_req = calculate_n_hsieh(alpha, power, p0, or_target, pred_type.lower(), q, sd, r2)
-        st.session_state["b3_result"] = {"n_req": n_req, "ev_req": ev_req}
-        st.session_state["b3_inputs"] = {
-            "alpha": alpha, "power": power, "p0": p0, "or_target": or_target,
-            "pred_type": pred_type, "q": q, "sd": sd, "r2": r2
-        }
+        try:
+            # Parse inputs
+            power_list = parse_input(power_str, float)
+            p0_list = parse_input(p0_str, float)
+            or_list = parse_input(or_str, float)
+            r2_list = parse_input(r2_str, float)
+            
+            results = []
+            import itertools
+            
+            # Loop through all combinations
+            for power_val, p0_val, or_val, r2_val in itertools.product(power_list, p0_list, or_list, r2_list):
+                n_req, ev_req = calculate_n_hsieh(alpha, power_val, p0_val, or_val, pred_type.lower(), q, sd, r2_val)
+                results.append({
+                    "Required_N": n_req,
+                    "Expected_Events": ev_req,
+                    "Alpha": alpha,
+                    "Power": power_val,
+                    "OR_Target": or_val,
+                    "Baseline_P0": p0_val,
+                    "R2": r2_val
+                })
+                
+            df = pd.DataFrame(results)
+            st.session_state["b3_result_df"] = df
+            st.session_state["b3_inputs"] = {
+                "alpha": alpha, "power_str": power_str, "p0_str": p0_str, "or_str": or_str,
+                "pred_type": pred_type, "q": q, "sd": sd, "r2_str": r2_str
+            }
+            
+        except Exception as e:
+            st.error(f"Error: {e}")
 
-    if "b3_result" in st.session_state:
-        res = st.session_state["b3_result"]
+    if "b3_result_df" in st.session_state:
+        df = st.session_state["b3_result_df"]
         inp = st.session_state["b3_inputs"]
         
-        n_req = res["n_req"]
-        ev_req = res["ev_req"]
+        st.subheader("Results")
+        st.dataframe(df, use_container_width=True)
         
-        st.success(f"Required Sample Size: **{n_req}**")
-        st.info(f"Expected Events: ~{ev_req}")
+        # Interpretation (if single row)
+        if len(df) == 1:
+            row = df.iloc[0]
+            st.success(f"Required Sample Size: **{row['Required_N']}**")
+            st.markdown(f"To detect OR={row['OR_Target']} with {int(row['Power']*100)}% power (p0={row['Baseline_P0']}), you need {row['Required_N']} subjects.")
         
-        # Provide interpretation
-        st.markdown(f"""
-        **{T.get('interpretation', 'Interpretation')}**:
-        To detect an OR of {inp['or_target']} with {int(inp['power']*100)}% power at alpha={inp['alpha']}, 
-        assuming baseline rate {inp['p0']} and predictor properties defined, 
-        you need {n_req} subjects.
-        """)
-        
+        # Visualization (if multiple rows)
+        if len(df) > 1:
+            st.markdown("### Visualization")
+            
+            import altair as alt
+            # X axis selection
+            x_axis = st.selectbox("X Axis", ["OR_Target", "Power", "Baseline_P0", "R2"], key="b3_x")
+            color_axis = st.selectbox("Color By", ["Power", "OR_Target", "Baseline_P0"], key="b3_color")
+            
+            c = alt.Chart(df).mark_line(point=True).encode(
+                x=alt.X(x_axis),
+                y=alt.Y('Required_N'),
+                color=alt.Color(f'{color_axis}:O'),
+                tooltip=['Required_N', 'Expected_Events', 'Power', 'OR_Target', 'Baseline_P0']
+            ).interactive()
+            
+            st.altair_chart(c, use_container_width=True)
+
         # Reporting
-        df = pd.DataFrame({
-            "Required_N": [n_req],
-            "Expected_Events": [ev_req],
-            "Alpha": [inp['alpha']],
-            "Power": [inp['power']],
-            "OR_Target": [inp['or_target']],
-            "Baseline_P0": [inp['p0']]
-        })
-        
         context = {
             "method_title": T.get("title_b3", "Method B3: Hsieh (Logistic)"),
-            "method_description": f"Hsieh et al. (1998) calculation for {inp['pred_type']} predictor.",
+            "method_description": f"Sensitivity analysis for {inp['pred_type']} predictor.",
             "inputs": {
-                "Alpha": inp['alpha'],
-                "Power": inp['power'],
-                "Baseline Rate (p0)": inp['p0'],
-                "Target OR": inp['or_target'],
+                "Alpha": str(inp['alpha']),
+                "Power": inp['power_str'],
+                "Baseline Rate (p0)": inp['p0_str'],
+                "Target OR": inp['or_str'],
                 "Predictor Type": inp['pred_type'],
-                "X Prevalence (q)" if inp['pred_type'] == "Binary" else "SD": inp['q'] if inp['pred_type'] == "Binary" else inp['sd'],
-                "R-squared": inp['r2']
+                "X Prevalence (q)" if inp['pred_type'] == "Binary" else "SD": str(inp['q']) if inp['pred_type'] == "Binary" else str(inp['sd']),
+                "R-squared": inp['r2_str']
             },
-            "refresh_key": ["b3_result", "b3_inputs"]
+            "refresh_key": ["b3_result_df", "b3_inputs"]
         }
         reporting.render_report_ui(context, df, T)
 

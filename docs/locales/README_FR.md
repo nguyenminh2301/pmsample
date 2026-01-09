@@ -27,42 +27,40 @@ Cette application fournit une suite d'outils pour répondre aux exigences comple
 
 ## 2. Catalogue de Méthodes
 
-L'application est structurée en quatre modules principaux, chacun ciblant une phase spécifique du cycle de recherche.
+L'application est désormais structurée hiérarchiquement (Catégorie A: Résultats Binaires).
 
-### A. Évaluation Préliminaire de Faisabilité
+### A. Résultats Binaires (Binary Outcomes)
 
-| Méthode | Description | Scénarios d'Application |
+#### A1. Vérifications Rapides (Quick Checks)
+
+| Méthode | Description | Objectif |
 | :--- | :--- | :--- |
-| **A1: Événements par Variable (EPV/EPP)** | Règle empirique basée sur le ratio événements/paramètres prédictifs. | *Vérification de faisabilité uniquement.* **Non recommandé comme justification principale** pour un protocole car ne tient pas compte du surajustement ou de l'étalonnage. |
-| **A2: Précision du Risque de Base** | Estime la taille d'échantillon nécessaire pour estimer la prévalence avec une largeur d'Intervalle de Confiance (IC) spécifiée. | Épidémiologie descriptive; planification de l'étalonnage global (calibration-in-the-large). |
+| **A1.1: Événements par Variable (EPV)** | Règle empirique. | Vérification de faisabilité. |
+| **A1.2: Précision du Risque de Base** | Estimation de la prévalence avec largeur IC. | Épidémiologie descriptive. |
 
-### B. Études de Facteurs Pronostiques (Association)
+#### A2. Facteurs Pronostiques (Prognostic Factors)
 
-| Méthode | Description | Référence |
+| Méthode | Description | Objectif |
 | :--- | :--- | :--- |
-| **B3: Puissance Régression Logistique** | Calcule la taille d'échantillon pour détecter un Odds Ratio (OR) cible pour un prédicteur, en ajustant pour la covariance avec d'autres facteurs. | **Hsieh et al. (1998)** |
-| **B4: Puissance Régression Cox** | Calcule le nombre d'événements requis pour détecter un Hazard Ratio (HR) cible dans l'analyse de survie. | **Schoenfeld (1983)** |
+| **A2.1: Puissance Logistique (Hsieh)** | Puissance pour détecter un Odds Ratio (OR). | Études d'association. |
+| **A2.2: Puissance Cox (Schoenfeld)** | Puissance pour détecter un Hazard Ratio (HR). | Analyse de survie. |
 
-### C. Développement de Modèle de Prédiction (Recommandé)
+#### A3. Développement de Modèles (Model Development)
 
-C'est le module central pour construire de nouveaux modèles de prédiction clinique.
-
-| Méthode | Description | Objectifs Clés |
+| Méthode | Description | Objectif |
 | :--- | :--- | :--- |
-| **C5: Approche Analytique (Riley)** | **Le Gold Standard.** Solution fermée pour le développement de modèles multivariés. | 1. Limiter le rétrécissement global (shrinkage $S \ge 0.9$).<br />2. Limiter l'optimisme dans la performance apparente.<br />3. Estimation précise de l'intercept. |
-| **C6: Conception basée sur la Simulation** | Simule des Mécanismes de Génération de Données (DGM) spécifiques pour estimer les exigences des modèles complexes. | Termes non linéaires, interactions complexes, structures de corrélation spécifiques. |
-| **C7: Assurance Bayesienne** | Simulation basée sur MCMC pour déterminer la taille d'échantillon avec une probabilité de succès garantie (Assurance). | Développement de modèles Bayésiens. |
+| **A3.1: Approche Analytique (Riley)** | **Recommandé.** Ajustement pour rétrécissement, optimisme et précision. | Nouveau développement. |
+| **A3.2: Conception Simulée** | Simulation de DGM spécifiques pour scénarios complexes. | Développement (Complexe). |
+| **A3.3: Assurance Bayesienne** | Simulation MCMC pour probabilité de succès garantie. | Développement Bayésien. |
 
-### D. Validation et Mise à jour
+#### A4. Validation / Mise à jour (Validation / Updating)
 
-Outils pour planifier la validation externe de modèles existants.
-
-| Méthode | Description | Référence |
+| Méthode | Description | Objectif |
 | :--- | :--- | :--- |
-| **D8: Précision AUC** | Calcule N pour atteindre une largeur d'intervalle de confiance spécifique pour l'AUC (C-statistic). | **Hanley & McNeil (1982)** |
-| **D9: Taille de Validation Sur Mesure** | Calcule N pour assurer une estimation précise du ratio O/E, de la Pente d'Étalonnage et de l'AUC. | **Riley et al. (2021)** / `pmvalsampsize` |
-| **D10: Simulation de Validation** | Planification basée sur la simulation utilisant la distribution du Prédicteur Linéaire (LP). | **Snell et al. (2021)** |
-| **D11: Mise à jour de Modèle** | Taille d'échantillon requise pour mettre à jour (recalibrer) un modèle existant (Intercept/Pente) pour un nouveau cadre. | **Van Calster et al.** |
+| **A4.1: Précision AUC** | Largeur IC pour l'AUC (C-statistic). | Validation (Discrimination). |
+| **A4.2: Validation Externe** | Précision pour O/E, pente d'étalonnage et AUC. | Validation (Complète). |
+| **A4.3: Simulation de Validation** | Simulation basée sur distribution LP. | Validation (Simulation). |
+| **A4.4: Mise à jour de Modèle** | Taille d'échantillon pour recalibrage (Intercept/Pente). | Mise à jour de modèles. |
 
 ---
 
@@ -117,6 +115,26 @@ Ce logiciel est une implémentation de méthodes statistiques publiées dans la 
 
 * **Responsabilité de l'Utilisateur**: Les utilisateurs sont responsables de la vérification des paramètres d'entrée et de l'interprétation des résultats dans le contexte de leur domaine clinique spécifique.
 * **Aucune Garantie Médicale**: Cet outil ne fournit pas de conseils médicaux.
+
+---
+
+## 5. Citation
+
+Si vous utilisez cet outil dans vos recherches, veuillez le citer comme suit :
+
+> Nguyen, M. (2025). Prognostic Research Sample Size Tool (Version 1.0) [Software]. Available at https://pmsample.streamlit.app/
+
+Ou utilisez l'entrée BibTeX :
+
+```bibtex
+@software{nguyen2025pmsample,
+  author = {Nguyen, Minh},
+  title = {Prognostic Research Sample Size Tool},
+  year = {2025},
+  url = {https://pmsample.streamlit.app/},
+  version = {1.0}
+}
+```
 
 ---
 

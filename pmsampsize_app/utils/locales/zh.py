@@ -5,6 +5,21 @@ ZH = {
     "language": "语言 / Language",
     "mode": "方法选择 (Method Selection)",
     
+    # Sidebar
+    "lbl_settings": "设置 (Settings)",
+    "lbl_theme": "主题 (Theme)",
+    "lbl_theme_light": "浅色 (Light)",
+    "lbl_theme_dark": "深色 (Dark)",
+    "lbl_theme_coder": "Coder",
+    # Subgroups
+    "sg_a1": "A1. 快速检查 (Quick Checks)",
+    "sg_a2": "A2. 预后因素 (Prognostic Factors)",
+    "sg_a3": "A3. 模型开发 (Model Development)",
+    "sg_a4": "A4. 验证 (Validation)",
+    "sg_b1": "B1. 快速检查 (Quick Checks)",
+    "sg_b2": "B2. 模型开发 (Model Development)",
+    "sg_c1": "C1. 模型开发 (Model Development)",
+    
     # New Hierarchy Titles
     "title_a1_1": "A1.1: 经验法则 (EPV)",
     "title_a1_2": "A1.2: 基线风险精度",
@@ -21,19 +36,19 @@ ZH = {
     "title_c1": "C1: Riley 等人 (生存分析)",
 
     "mode_riley": "方法 A3.1: Riley 等人 (解析法)",
-    "mode_bayes": "方法 C6: 贝叶斯主要 (模拟)",
+    "mode_bayes": "方法 A3.3: 贝叶斯保证 (模拟)",
     "mode_single": "单一场景 (Single Scenario)",
     "mode_batch": "敏感性分析 (Sensitivity Analysis)",
-    "method1_tab": "方法 C5 (Riley)",
-    "method2_tab": "方法 C6 (Bayesian)",
+    "method1_tab": "方法 A3.1 (Riley)",
+    "method2_tab": "方法 A3.3 (Bayesian)",
     "nav_title": "导航 (Navigation)",
     "nav_readme": "详细文档 (README)",
     "nav_intro": "介绍与公式 (Introduction & Formulas)",
     "nav_calc": "样本量计算器 (Calculator)",
     "intro_heading": "欢迎 (Welcome)",
     "intro_text": "本工具帮助研究人员计算开发二分类结果临床预测模型所需的最小样本量。",
-    "formula_heading": "数学框架 (方法 C5)",
-    "formula_intro": "方法 C5 使用 Riley 等人提供的解析解，而方法 C6 使用贝叶斯 MCMC 模拟。",
+    "formula_heading": "数学框架 (方法 A3.1)",
+    "formula_intro": "方法 A3.1 使用 Riley 等人提供的解析解，而方法 A3.3 使用贝叶斯 MCMC 模拟。",
     "sens_guide_title": "💡 如何使用敏感性分析 (批处理模式)",
     "sens_guide_text": """
     - **范围**: 输入 `min-max` (例如 `0.05-0.10`)。应用将自动生成步骤。
@@ -83,8 +98,8 @@ ZH = {
     "assurance_result": "保证分析 (Assurance Analysis)",
     
     # Method 6 (Dev Sim)
-    "mode_dev_sim": "方法 6: 开发模拟 (频率学派)",
-    "method6_tab": "方法 6 (模拟)",
+    "mode_dev_sim": "方法 A3.2: 开发模拟 (频率学派)",
+    "method6_tab": "方法 A3.2 (模拟)",
     "dev_sim_intro": "基于模拟的模型开发样本量计算 (频率学派方法，类似于 `samplesizedev`)。",
     "dev_mode_simple": "模式 A: 简单 (AUC 驱动)",
     "dev_mode_custom": "模式 B: 自定义 DGM",
@@ -99,8 +114,8 @@ ZH = {
     
     # Quick Methods
     "method_quick_tab": "A. 快速 / 基础 (Quick / Basic)",
-    "quick_mode_epv": "A1: EPV / EPP 规则 (启发式)",
-    "quick_mode_risk": "A2: 基线风险精度 (CI 宽度)",
+    "quick_mode_epv": "A1.1: EPV / EPP 规则 (启发式)",
+    "quick_mode_risk": "A1.2: 基线风险精度 (CI 宽度)",
     "target_epv": "目标每参数事件数 (EPP)",
     "target_epv_help": "常见的启发式值为 10, 15, 20。EPP 优于 EPV。",
     "parameters_short": "参数",
@@ -120,8 +135,8 @@ ZH = {
     "risk_help": "计算估计特定精度的事件发生率 p 所需的 N。不保证预测模型性能。",
     
     # Power Methods (B)
-    "title_b3": "B3: Logistic 功效 (Hsieh)",
-    "title_b4": "B4: Cox 功效 (Schoenfeld)",
+    "title_b3": "A2.1: Logistic 功效 (Hsieh)",
+    "title_b4": "A2.2: Cox 功效 (Schoenfeld)",
     "interpretation": "解释 (Interpretation)",
     
     # UI Basics
@@ -136,7 +151,7 @@ ZH = {
     "d8_opt_tol": "容差",
     
     # Validations (D)
-    "title_d8": "D8: AUC 精度 (Hanley-McNeil)",
+    "title_d8": "A4.1: AUC 精度 (Hanley-McNeil)",
     "d8_desc": "计算以所需精度 (CI 宽度) 估计 AUC 的样本量。",
     "auc_expected": "预期 AUC (C-统计量)",
     "formulas_header": "📚 公式与技术细节 (Formulas & Technical Details)",
@@ -151,7 +166,7 @@ ZH = {
     "d8_opt_tol": "容差",
     
     # D9
-    "title_d9": "D9: 外部验证 (Tailored)",
+    "title_d9": "A4.2: 外部验证 (Tailored)",
     "common_inputs": "通用参数",
     
     # UI Basics
@@ -219,7 +234,7 @@ ZH = {
 
 #### A. 快速 / 基础 (快速，近似)
 
-**A1 — 经验法则 (EPV/EPP) (启发式)**
+**A1.1 — 经验法则 (EPV/EPP) (启发式)**
 * **适用情况:** 您需要快速检查事件对于计划的模型规模是否“大致足够”。
 * **不适用情况:** 模型包含样条/交互作用/变量选择，或事件发生率低——EPV/EPP 不能保证良好的校准或低乐观偏差。
 * **主要输入:** 事件发生率 $p$, 参数数量 $P$ (df), 目标 EPP (例如 10/15/20)
@@ -227,7 +242,7 @@ ZH = {
 * **优点:** 极其简单；适合早期可行性研究
 * **缺点:** 可能具有误导性；非基于性能
 
-**A2 — 基线风险精度 (患病率的 CI 宽度)**
+**A1.2 — 基线风险精度 (患病率的 CI 宽度)**
 * **适用情况:** 您的目标是以所需的 CI 半宽 (例如 ±2%) 估计事件发生率 $p$。
 * **不适用情况:** 您想要预测模型性能保证 (AUC/校准斜率)。
 * **主要输入:** 预期 $p$, CI 方法 (推荐 Wilson), 置信水平, 目标半宽 $d$
@@ -237,7 +252,7 @@ ZH = {
 
 #### B. 预后因素 (功效) (关注关联性，而非预测模型大小)
 
-**B3 — Logistic OR 功效 (Hsieh)**
+**A2.1 — Logistic OR 功效 (Hsieh)**
 * **适用情况:** 您希望在 Logistic 回归中检测预后因素的目标比值比 (OR) 的功效。
 * **不适用情况:** 您的主要目标是预测模型开发 (校准/区分度)，而不是假设检验。
 * **主要输入:** 基线风险 $p_0$, 目标 OR, Alpha, 功效, 暴露患病率 (二分类) 或 SD (连续), 可选的与其他协变量的 $R^2$
@@ -245,7 +260,7 @@ ZH = {
 * **优点:** 用于关联性的经典功效框架
 * **缺点:** 不解决预测模型性能问题；对输入假设敏感
 
-**B4 — Cox HR 功效 (Schoenfeld)**
+**A2.2 — Cox HR 功效 (Schoenfeld)**
 * **适用情况:** 生存时间结果；您希望在 Cox PH 下检测风险比 (HR) 的功效。
 * **不适用情况:** PH 假设可能被违反，或事件分数高度不确定且无法合理估计。
 * **主要输入:** HR, Alpha, 功效, 分配比例 (二分类) 或 SD (连续), 随访期间的预期事件分数
@@ -255,7 +270,7 @@ ZH = {
 
 #### C. 预测模型开发 (推荐用于风险模型构建)
 
-**C5 — Riley 等 (解析法; 类似 pmsampsize)**
+**A3.1 — Riley 等 (解析法; 类似 pmsampsize)**
 * **适用情况:** 开发多变量预测模型；您希望控制过拟合均确保足够的精度。
 * **不适用情况:** 您无法提供患病率和预期模型性能 (AUC 或 $R^2$) 的合理假设；在这种情况下，使用敏感性分析或模拟。
 * **主要输入:** 事件发生率 $p$, 参数 $P$ (df), 目标收缩率 (例如 0.90), 预期模型性能 (AUC 或 Cox–Snell $R^2$)
@@ -263,7 +278,7 @@ ZH = {
 * **优点:** 基于原则，关注性能，被广泛引用
 * **缺点:** 依赖于性能假设；需要仔细计算 df
 
-**C6 — 开发模拟 (频率学派; samplesizedev/自定义 DGM)**
+**A3.2 — 开发模拟 (频率学派; samplesizedev/自定义 DGM)**
 * **适用情况:** 您更喜欢“模拟您将要做的事情”，特别是存在非线性/交互作用和自定义数据结构时。
 * **不适用情况:** 您无法指定合理的数据生成机制 (DGM) 或您需要即时结果 (计算密集型)。
 * **主要输入:** 候选 $N$ 网格, DGM 假设 (预测变量分布/相关性/效应), 性能目标 (例如 校准斜率范围, AUC 阈值), 模拟重复次数, 种子
@@ -271,7 +286,7 @@ ZH = {
 * **优点:** 灵活；与复杂建模一致
 * **缺点:** 假设繁重；计算成本高
 
-**C7 — 贝叶斯保证 (MCMC)**
+**A3.3 — 贝叶斯保证 (MCMC)**
 * **适用情况:** 最终模型将使用贝叶斯 MCMC 估计，并且您希望基于保证 (满足后验性能/精度目标的概率) 的样本量。
 * **不适用情况:** 先验无法证明或计算预算有限。
 * **主要输入:** DGM, 先验, 候选 $N$, MCMC 设置, 保证阈值 (例如 80%/90%), 性能/精度目标
@@ -281,7 +296,7 @@ ZH = {
 
 #### D. 验证 / 更新 (用于现有模型)
 
-**D8 — AUC 精度 (Hanley–McNeil / presize)**
+**A4.1 — AUC 精度 (Hanley–McNeil / presize)**
 * **适用情况:** 您的验证目标是 AUC 的精度 (CI 宽度)。
 * **不适用情况:** 校准 (斜率/CITL) 是主要关注点——此方法仅针对 AUC。
 * **主要输入:** 预期 AUC, 患病率或病例对照比, 置信水平, 目标 CI 宽度
@@ -289,7 +304,7 @@ ZH = {
 * **优点:** 简单；用于区分度精度的快速规划
 * **缺点:** 近似方差；忽略校准
 
-**D9 — 外部验证 (Tailored; pmvalsampsize / sampsizeval)**
+**A4.2 — 外部验证 (Tailored; pmvalsampsize / sampsizeval)**
 * **适用情况:** 您希望针对多个性能指标 (校准 + 区分度) 进行验证规模确定，通常需要关于 LP 分布的假设。
 * **不适用情况:** 您无法证明 LP 分布假设或预期性能。
 * **主要输入:** 患病率, 预期 AUC, 校准斜率/CITL 目标, CI 宽度或 SE 目标, LP 分布假设
@@ -297,7 +312,7 @@ ZH = {
 * **优点:**以此定制；关注校准
 * **缺点:** 需要额外假设；更复杂
 
-**D10 — 外部验证 (模拟; 基于 LP)**
+**A4.3 — 外部验证 (模拟; 基于 LP)**
 * **适用情况:** 您可以指定/估计目标验证人群中线性预测器 (LP) 的分布，并希望进行基于模拟的精度规划。
 * **不适用情况:** LP 分布未知且无法近似。
 * **主要输入:** LP 分布 (正态/Beta/经验), 误校准参数, 指标的 CI 宽度目标, 重复次数, 种子
@@ -305,7 +320,7 @@ ZH = {
 * **优点:** 非常灵活；匹配“模拟您的预期”
 * **缺点:** 假设繁重；计算成本高
 
-**D11 — 更新 / 重新校准 (截距/斜率)**
+**A4.4 — 更新 / 重新校准 (截距/斜率)**
 * **适用情况:** 您将重新校准现有模型 (更新截距和/或斜率) 并需要足够的精度。
 * **不适用情况:** 您正在开发全新的模型 (使用 C5–C7)。
 * **主要输入:** 更新类型 (仅截距 vs 截距+斜率), 事件发生率, 精度目标
@@ -401,14 +416,14 @@ This is a **prognostic factor / association-focused** power calculation (testing
 
 ### When to use
 
-Use B3 when:
+Use A2.1 when:
 
 * You want power to detect a **clinically meaningful OR** for a **single predictor** (binary or continuous) in logistic regression.
 * Your primary goal is **hypothesis testing** (is the predictor associated with the outcome?), not building a risk prediction model.
 
 ### When NOT to use
 
-Do not use B3 as your main approach when:
+Do not use A2.1 as your main approach when:
 
 * Your goal is **prediction model development** (use Riley/pmsampsize or simulation/assurance methods).
 * You plan **data-driven variable selection**, many interactions/splines, or complex machine-learning tuning (power for a single coefficient is not the right target).
@@ -561,7 +576,7 @@ $$
     "c5_content_md": """
 ### What this method is (English - Technical Details)
 
-C5 implements the **Riley et al. analytical minimum sample size criteria** for **developing a multivariable clinical prediction model** with a **binary outcome** (logistic regression). The goal is to ensure the development dataset is large enough to:
+A3.1 implements the **Riley et al. analytical minimum sample size criteria** for **developing a multivariable clinical prediction model** with a **binary outcome** (logistic regression). The goal is to ensure the development dataset is large enough to:
 
 1. **Limit overfitting** (via a target global shrinkage / calibration slope),
 2. Achieve **adequate precision** for model performance (via a bound on optimism in $R^2$), and
@@ -573,7 +588,7 @@ This is a **model development** method (not external validation). It is particul
 
 ### When to use
 
-Use C5 when:
+Use A3.1 when:
 
 * You are **developing** a new prediction model for a **binary outcome**.
 * You can specify (even approximately) the **event rate** and an anticipated **overall model performance** (Cox–Snell $R^2$ or AUC).
@@ -581,7 +596,7 @@ Use C5 when:
 
 ### When NOT to use (or use with caution)
 
-Do not rely on C5 alone when:
+Do not rely on A3.1 alone when:
 
 * You will do extensive **data-driven variable selection**, multiple interactions/splines, or heavy ML tuning without adjusting the **effective number of parameters (df)**.
 * Your data are strongly **clustered** (multicenter) without accounting for design effects.
@@ -704,13 +719,13 @@ $$
 4. Harrell FE Jr, Lee KL, Mark DB. *Multivariable prognostic models: issues in developing models, evaluating assumptions and adequacy, and measuring and reducing errors.* Statistics in Medicine. 1996.
 """,
     "c6_content_md": """
-## C6: Development Simulation (Frequentist; custom DGM) (English - Technical Details)
+## A3.2: Development Simulation (Frequentist; custom DGM) (English - Technical Details)
 
 ### What this method is
 
-C6 is a **simulation-based sample size planning** approach for **prediction model development** (binary outcome), inspired by the philosophy of **samplesizedev** and broader simulation-based design principles.
+A3.2 is a **simulation-based sample size planning** approach for **prediction model development** (binary outcome), inspired by the philosophy of **samplesizedev** and broader simulation-based design principles.
 
-Instead of relying on a single analytical formula, C6 asks:
+Instead of relying on a single analytical formula, A3.2 asks:
 
 > “If we repeatedly develop the model using the planned approach on datasets of size (N), how often will the model meet pre-specified performance criteria on new data?”
 
@@ -720,7 +735,7 @@ It therefore targets **expected performance** (and/or probability of acceptable 
 
 ## When to use
 
-Use C6 when:
+Use A3.2 when:
 
 * You want a planning method aligned with “**simulate what you will do**,” especially when:
 
@@ -733,7 +748,7 @@ Use C6 when:
 
 ## When NOT to use (or use with caution)
 
-Avoid relying on C6 alone when:
+Avoid relying on A3.2 alone when:
 
 * You cannot justify a plausible DGM (predictor distribution, correlations, effect sizes).
 * You do not have computational budget (simulation can be expensive).
@@ -897,7 +912,7 @@ Choose a range wide enough to see the pass/fail transition (e.g., 1000–5000).
 4. Steyerberg EW. *Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating.* 2nd ed. Springer. 2019.
 """,
     "c7_content_md": """
-## C7: Bayesian Assurance (MCMC) (English - Technical Details)
+## A3.3: Bayesian Assurance (MCMC) (English - Technical Details)
 
 ### What this method is
 **Bayesian assurance** is a simulation-based sample size planning method for **Bayesian model building** (here: Bayesian logistic regression for binary outcomes).
@@ -909,7 +924,7 @@ Simply put:
 ---
 
 ### When to use
-Use C7 when:
+Use A3.3 when:
 - The final analysis will be **Bayesian** estimated via **MCMC**.
 - You want to sample size for a target **success probability** (e.g., ≥80% or ≥90%).
 - You can make reasonable assumptions about:

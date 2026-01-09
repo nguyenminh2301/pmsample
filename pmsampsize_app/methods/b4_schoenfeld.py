@@ -56,11 +56,18 @@ def calculate_n_schoenfeld(alpha, power, hr, predictor_type, q=0.5, sd=1.0, f_ev
 def render_ui(T):
     st.header(T["title_b4"])
     
+    # Import parser
+    try:
+        from pmsampsize_app.utils import parse_input
+    except ImportError:
+        from utils import parse_input
+
     col1, col2 = st.columns(2)
     with col1:
         alpha = st.number_input("Alpha (2-sided)", 0.001, 0.20, 0.05, step=0.005, key="b4_alpha")
-        power = st.number_input("Power", 0.1, 0.99, 0.80, step=0.05, key="b4_power")
-        hr = st.number_input("Hazard Ratio (HR)", 0.1, 10.0, 1.5, help="Effect size to detect", key="b4_hr")
+        # Multi-value inputs
+        power_str = st.text_input("Power", "0.8, 0.9", help=T.get("input_help_multivalue"), key="b4_power")
+        hr_str = st.text_input("Hazard Ratio (HR)", "1.5, 2.0", help="Effect size to detect. " + T.get("input_help_multivalue"), key="b4_hr")
         
     with col2:
         pred_type = st.radio("Predictor Type", ["Binary", "Continuous"], horizontal=True, key="b4_type")
@@ -72,55 +79,83 @@ def render_ui(T):
             q = 0.5
             sd = st.number_input("Standard Deviation of X", 0.1, 100.0, 1.0, key="b4_sd")
             
-        f_event = st.number_input("Expected Event Fraction (Prob(Event))", 0.01, 1.0, 0.20, help="Overall probability of observing an event during follow-up", key="b4_f")
+        f_event_str = st.text_input("Expected Event Fraction (Prob(Event))", "0.2, 0.3", help="Overall probability of observing an event. " + T.get("input_help_multivalue"), key="b4_f")
     
     
     if st.button("Calculate B4", key="b4_btn"):
-        d_req, n_req = calculate_n_schoenfeld(alpha, power, hr, pred_type.lower(), q, sd, f_event)
-        st.session_state["b4_result"] = {"d_req": d_req, "n_req": n_req}
-        st.session_state["b4_inputs"] = {
-            "alpha": alpha, "power": power, "hr": hr, "pred_type": pred_type,
-            "q": q, "sd": sd, "f_event": f_event
-        }
+        try:
+            # Parse inputs
+            power_list = parse_input(power_str, float)
+            hr_list = parse_input(hr_str, float)
+            f_event_list = parse_input(f_event_str, float)
+            
+            results = []
+            import itertools
+            
+            for power_val, hr_val, f_val in itertools.product(power_list, hr_list, f_event_list):
+                d_req, n_req = calculate_n_schoenfeld(alpha, power_val, hr_val, pred_type.lower(), q, sd, f_val)
+                results.append({
+                    "Required_Events": d_req,
+                    "Required_Total_N": n_req,
+                    "Alpha": alpha,
+                    "Power": power_val,
+                    "HR_Target": hr_val,
+                    "Event_Rate": f_val
+                })
+            
+            df = pd.DataFrame(results)
+            st.session_state["b4_result_df"] = df
+            st.session_state["b4_inputs"] = {
+                "alpha": alpha, "power_str": power_str, "hr_str": hr_str, "pred_type": pred_type,
+                "q": q, "sd": sd, "f_event_str": f_event_str
+            }
+            
+        except Exception as e:
+            st.error(f"Error: {e}")
 
-    if "b4_result" in st.session_state:
-        res = st.session_state["b4_result"]
+    if "b4_result_df" in st.session_state:
+        df = st.session_state["b4_result_df"]
         inp = st.session_state["b4_inputs"]
         
-        d_req = res["d_req"]
-        n_req = res["n_req"]
+        st.subheader("Results")
+        st.dataframe(df, use_container_width=True)
         
-        st.success(f"Required Events: **{d_req}**")
-        st.info(f"Required Total N: **{n_req}** (assuming {inp['f_event']*100:.1f}% event rate)")
+        # Interpretation (single row)
+        if len(df) == 1:
+            row = df.iloc[0]
+            st.success(f"Required Events: **{row['Required_Events']}**")
+            st.info(f"Required Total N: **{row['Required_Total_N']}**")
+            st.markdown(f"To detect HR={row['HR_Target']} with {int(row['Power']*100)}% power, you need {row['Required_Events']} events.")
         
-        # Provide interpretation
-        st.markdown(f"""
-        **interpretation**:
-        To detect a Hazard Ratio of {inp['hr']} with {int(inp['power']*100)}% power at alpha={inp['alpha']}, 
-        you need {d_req} events. Given the event rate of {inp['f_event']}, this requires {n_req} total subjects.
-        """)
-        
+        # Visualization (multiple rows)
+        if len(df) > 1:
+            st.markdown("### Visualization")
+            
+            import altair as alt
+            x_axis = st.selectbox("X Axis", ["HR_Target", "Power", "Event_Rate"], key="b4_x")
+            color_axis = st.selectbox("Color By", ["Power", "HR_Target", "Event_Rate"], key="b4_color")
+            
+            c = alt.Chart(df).mark_line(point=True).encode(
+                x=alt.X(x_axis),
+                y=alt.Y('Required_Total_N'),
+                color=alt.Color(f'{color_axis}:O'),
+                tooltip=['Required_Total_N', 'Required_Events', 'Power', 'HR_Target', 'Event_Rate']
+            ).interactive()
+            
+            st.altair_chart(c, use_container_width=True)
+
         # Reporting
-        df = pd.DataFrame({
-            "Required_Events": [d_req],
-            "Required_Total_N": [n_req],
-            "Alpha": [inp['alpha']],
-            "Power": [inp['power']],
-            "HR_Target": [inp['hr']],
-            "Event_Rate": [inp['f_event']]
-        })
-        
         context = {
             "method_title": T.get("title_b4", "Method B4: Schoenfeld (Cox)"),
-            "method_description": f"Schoenfeld (1983) calculation for {inp['pred_type']} predictor in Cox model.",
+            "method_description": f"Sensitivity analysis for {inp['pred_type']} predictor in Cox.",
             "inputs": {
-                "Alpha": inp['alpha'],
-                "Power": inp['power'],
-                "Hazard Ratio": inp['hr'],
+                "Alpha": str(inp['alpha']),
+                "Power": inp['power_str'],
+                "Hazard Ratio": inp['hr_str'],
                 "Predictor Type": inp['pred_type'],
-                "X Prevalence (q)" if inp['pred_type'] == "Binary" else "SD": inp['q'] if inp['pred_type'] == "Binary" else inp['sd'],
-                "Event Rate": inp['f_event']
+                "X Prevalence (q)" if inp['pred_type'] == "Binary" else "SD": str(inp['q']) if inp['pred_type'] == "Binary" else str(inp['sd']),
+                "Event Rate": inp['f_event_str']
             },
-            "refresh_key": ["b4_result", "b4_inputs"]
+            "refresh_key": ["b4_result_df", "b4_inputs"]
         }
         reporting.render_report_ui(context, df, T)

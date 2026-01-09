@@ -61,17 +61,17 @@ registry = MethodRegistry()
 # Delayed imports to avoid cycles if any (though wrapped nicely now)
 
 try:
-    from pmsampsize_app.methods import a1_epv, a2_precision, b3_hsieh, b4_schoenfeld, c5_riley, c6_dev_sim, c7_bayes, d8_auc_precision, d9_extval, d10_sim
+    from pmsampsize_app.methods import a1_epv, a2_precision, b1_green, b3_hsieh, b4_schoenfeld, c5_riley, c6_dev_sim, c7_bayes, d8_auc_precision, d9_extval, d10_sim
 except ImportError:
     # Fallback for direct execution
-    from methods import a1_epv, a2_precision, b3_hsieh, b4_schoenfeld, c5_riley, c6_dev_sim, c7_bayes, d8_auc_precision, d9_extval, d10_sim
+    from methods import a1_epv, a2_precision, b1_green, b3_hsieh, b4_schoenfeld, c5_riley, c6_dev_sim, c7_bayes, d8_auc_precision, d9_extval, d10_sim
 
 # --- A. BINARY OUTCOMES ---
 
 # Subgroup: A1. Quick Checks
 # A1 (Old A1) -> A1.1
 registry.register(MethodSpec(
-    id="a1_1", category="A", subgroup="A1. Quick Checks / Kiểm tra nhanh",
+    id="a1_1", category="A", subgroup="sg_a1",
     title_en="A1.1: Rules of Thumb (EPV)", title_vi="A1.1: Quy tắc Ngón tay cái (EPV)", title_zh="A1.1: 经验法则 (EPV)", title_jp="A1.1: 経験則 (EPV)", title_fr="A1.1: Règles empiriques (EPV)", title_de="A1.1: Faustregeln (EPV)",
     status=MethodStatus.AVAILABLE,
     render_ui_fn=a1_epv.render_ui,
@@ -85,7 +85,7 @@ registry.register(MethodSpec(
 
 # A2 (Old A2) -> A1.2
 registry.register(MethodSpec(
-    id="a1_2", category="A", subgroup="A1. Quick Checks / Kiểm tra nhanh",
+    id="a1_2", category="A", subgroup="sg_a1",
     title_en="A1.2: Baseline Risk Precision", title_vi="A1.2: Độ chính xác Tỷ lệ nền", title_zh="A1.2: 基线风险精度", title_jp="A1.2: ベースラインリスク精度", title_fr="A1.2: Précision du Risque de Base", title_de="A1.2: Basisrisiko-Präzision",
     status=MethodStatus.AVAILABLE,
     render_ui_fn=a2_precision.render_ui,
@@ -100,7 +100,7 @@ registry.register(MethodSpec(
 # Subgroup: A2. Prognostic Factor (Power)
 # B3 (Old B3) -> A2.1
 registry.register(MethodSpec(
-    id="a2_1", category="A", subgroup="A2. Prognostic Factors / Yếu tố tiên lượng",
+    id="a2_1", category="A", subgroup="sg_a2",
     title_en="A2.1: Logistic Power (Hsieh)", title_vi="A2.1: Cỡ mẫu Logistic (Hsieh)", title_zh="A2.1: Logistic 功效 (Hsieh)", title_jp="A2.1: Logistic 検出力 (Hsieh)", title_fr="A2.1: Puissance Logistic (Hsieh)", title_de="A2.1: Logistische Power (Hsieh)",
     status=MethodStatus.AVAILABLE,
     render_ui_fn=b3_hsieh.render_ui,
@@ -114,7 +114,7 @@ registry.register(MethodSpec(
 
 # B4 (Old B4) -> A2.2
 registry.register(MethodSpec(
-    id="a2_2", category="A", subgroup="A2. Prognostic Factors / Yếu tố tiên lượng",
+    id="a2_2", category="A", subgroup="sg_a2",
     title_en="A2.2: Cox Power (Schoenfeld)", title_vi="A2.2: Cỡ mẫu Cox (Schoenfeld)", title_zh="A2.2: Cox 功效 (Schoenfeld)", title_jp="A2.2: Cox 検出力 (Schoenfeld)", title_fr="A2.2: Puissance Cox (Schoenfeld)", title_de="A2.2: Cox Power (Schoenfeld)",
     status=MethodStatus.AVAILABLE,
     render_ui_fn=b4_schoenfeld.render_ui,
@@ -129,7 +129,7 @@ registry.register(MethodSpec(
 # Subgroup: A3. Model Development
 # C5 (Old C5) -> A3.1
 registry.register(MethodSpec(
-    id="a3_1", category="A", subgroup="A3. Model Development / Phát triển mô hình",
+    id="a3_1", category="A", subgroup="sg_a3",
     title_en="A3.1: Riley et al. (Analytical)", title_vi="A3.1: Phương pháp Riley (Giải tích)", title_zh="A3.1: Riley 等 (解析法)", title_jp="A3.1: Riley 等 (解析的)", title_fr="A3.1: Riley et al. (Analytique)", title_de="A3.1: Riley et al. (Analytisch)",
     status=MethodStatus.AVAILABLE,
     ref_badges=["PubMed (+2)", "R Pkg"],
@@ -144,7 +144,7 @@ registry.register(MethodSpec(
 
 # C6 (Old C6) -> A3.2
 registry.register(MethodSpec(
-    id="a3_2", category="A", subgroup="A3. Model Development / Phát triển mô hình",
+    id="a3_2", category="A", subgroup="sg_a3",
     title_en="A3.2: Development Simulation", title_vi="A3.2: Mô phỏng Phát triển", title_zh="A3.2: 开发模拟 (Simulation)", title_jp="A3.2: 開発シミュレーション (Simulation)", title_fr="A3.2: Simulation de Développement", title_de="A3.2: Entwicklungssimulation",
     status=MethodStatus.AVAILABLE,
     render_ui_fn=c6_dev_sim.render_ui,
@@ -158,7 +158,7 @@ registry.register(MethodSpec(
 
 # C7 (Old C7) -> A3.3
 registry.register(MethodSpec(
-    id="a3_3", category="A", subgroup="A3. Model Development / Phát triển mô hình",
+    id="a3_3", category="A", subgroup="sg_a3",
     title_en="A3.3: Bayesian Assurance", title_vi="A3.3: Đảm bảo Bayesian", title_zh="A3.3: 贝叶斯保证 (Assurance)", title_jp="A3.3: ベイズ保証 (Assurance)", title_fr="A3.3: Assurance Bayesienne", title_de="A3.3: Bayes'sche Assurance",
     status=MethodStatus.AVAILABLE,
     render_ui_fn=c7_bayes.render_ui,
@@ -173,7 +173,7 @@ registry.register(MethodSpec(
 # Subgroup: A4. Validation
 # D8 (Old D8) -> A4.1
 registry.register(MethodSpec(
-    id="a4_1", category="A", subgroup="A4. Validation / Thẩm định",
+    id="a4_1", category="A", subgroup="sg_a4",
     title_en="A4.1: AUC Precision (Hanley-McNeil)", title_vi="A4.1: Độ chính xác AUC (Hanley-McNeil)", title_zh="A4.1: AUC 精度 (Hanley-McNeil)", title_jp="A4.1: AUC 精度 (Hanley-McNeil)", title_fr="A4.1: Précision AUC (Hanley-McNeil)", title_de="A4.1: AUC Präzision (Hanley-McNeil)",
     status=MethodStatus.AVAILABLE,
     render_ui_fn=d8_auc_precision.render_ui,
@@ -188,7 +188,7 @@ registry.register(MethodSpec(
 
 # D9 (Old D9) -> A4.2
 registry.register(MethodSpec(
-    id="a4_2", category="A", subgroup="A4. Validation / Thẩm định",
+    id="a4_2", category="A", subgroup="sg_a4",
     title_en="A4.2: External Validation (Tailored)", title_vi="A4.2: Thẩm định ngoài (Tailored)", title_zh="A4.2: 外部验证 (Tailored)", title_jp="A4.2: 外部検証 (Tailored)", title_fr="A4.2: Validation Externe (Sur Mesure)", title_de="A4.2: Externe Validierung (Maßgeschneidert)",
     status=MethodStatus.AVAILABLE,
     render_ui_fn=d9_extval.render_ui,
@@ -203,7 +203,7 @@ registry.register(MethodSpec(
 
 # D10 (Old D10) -> A4.3
 registry.register(MethodSpec(
-    id="a4_3", category="A", subgroup="A4. Validation / Thẩm định",
+    id="a4_3", category="A", subgroup="sg_a4",
     title_en="A4.3: Ext. Validation (Simulation)", title_vi="A4.3: Thẩm định ngoài (Mô phỏng)", title_zh="A4.3: 外部验证 (模拟)", title_jp="A4.3: 外部検証 (シミュレーション)", title_fr="A4.3: Validation Ext. (Simulation)", title_de="A4.3: Ext. Validierung (Simulation)",
     status=MethodStatus.AVAILABLE,
     render_ui_fn=d10_sim.render_ui,
@@ -217,8 +217,19 @@ registry.register(MethodSpec(
 ))
 
 # --- B. CONTINUOUS OUTCOMES ---
-registry.register(MethodSpec("b1", "B", "B1. Quick Checks", "B1: Green's Rule", "B1: Quy tắc Green", MethodStatus.COMING_SOON, title_zh="B1: Green 规则", title_jp="B1: Green のルール", title_fr="B1: Règle de Green", title_de="B1: Green's Regel"))
-registry.register(MethodSpec("b2", "B", "B2. Model Development", "B2: Riley et al. (Continuous)", "B2: Riley et al. (Liên tục)", MethodStatus.COMING_SOON, title_zh="B2: Riley 等 (连续)", title_jp="B2: Riley 等 (連続)", title_fr="B2: Riley et al. (Continu)", title_de="B2: Riley et al. (Kontinuierlich)"))
+registry.register(MethodSpec(
+    id="b1", category="B", subgroup="sg_b1",
+    title_en="B1: Green's Rule", title_vi="B1: Quy tắc Green", title_zh="B1: Green 规则", title_jp="B1: Green のルール", title_fr="B1: Règle de Green", title_de="B1: Green's Regel",
+    status=MethodStatus.AVAILABLE,
+    render_ui_fn=b1_green.render_ui,
+    description_en="Heuristic sample size for multiple linear regression (Green 1991).",
+    description_vi="Quy tắc kinh nghiệm cho hồi quy tuyến tính đa biến (Green 1991).",
+    description_zh="多元线性回归的启发式样本量 (Green 1991)。",
+    description_jp="重回帰分析のヒューリスティックなサンプルサイズ (Green 1991)。",
+    description_fr="Taille d'échantillon heuristique pour la régression linéaire multiple (Green 1991).",
+    description_de="Heuristische Stichprobengröße für multiple lineare Regression (Green 1991)."
+))
+registry.register(MethodSpec("b2", "B", "sg_b2", "B2: Riley et al. (Continuous)", "B2: Riley et al. (Liên tục)", MethodStatus.COMING_SOON, title_zh="B2: Riley 等 (连续)", title_jp="B2: Riley 等 (連続)", title_fr="B2: Riley et al. (Continu)", title_de="B2: Riley et al. (Kontinuierlich)"))
 
 # --- C. SURVIVAL OUTCOMES ---
-registry.register(MethodSpec("c1", "C", "C1. Model Development", "C1: Riley et al. (Survival)", "C1: Riley et al. (Sống còn)", MethodStatus.COMING_SOON, title_zh="C1: Riley 等 (生存)", title_jp="C1: Riley 等 (生存)", title_fr="C1: Riley et al. (Survie)", title_de="C1: Riley et al. (Überlebenszeit)"))
+registry.register(MethodSpec("c1", "C", "sg_c1", "C1: Riley et al. (Survival)", "C1: Riley et al. (Sống còn)", MethodStatus.COMING_SOON, title_zh="C1: Riley 等 (生存)", title_jp="C1: Riley 等 (生存)", title_fr="C1: Riley et al. (Survie)", title_de="C1: Riley et al. (Überlebenszeit)"))

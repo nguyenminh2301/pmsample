@@ -3,6 +3,22 @@ VI = {
         "sidebar_title": "Cấu hình",
         "language": "Ngôn ngữ / Language",
         "mode": "Chọn Phương pháp",
+        "input_help_multivalue": "Hỗ trợ nhập nhiều giá trị phân cách bằng dấu phẩy (vd: 10, 15, 20).",
+        
+        # Sidebar
+        "lbl_settings": "Cài đặt",
+        "lbl_theme": "Giao diện",
+        "lbl_theme_light": "Sáng",
+        "lbl_theme_dark": "Tối",
+        "lbl_theme_coder": "Coder",
+        # Subgroups
+        "sg_a1": "A1. Kiểm tra nhanh",
+        "sg_a2": "A2. Yếu tố tiên lượng",
+        "sg_a3": "A3. Phát triển mô hình",
+        "sg_a4": "A4. Thẩm định",
+        "sg_b1": "B1. Kiểm tra nhanh",
+        "sg_b2": "B2. Phát triển mô hình",
+        "sg_c1": "C1. Phát triển mô hình",
         
         # New Hierarchy Titles
         "title_a1_1": "A1.1: Quy tắc Ngón tay cái (EPV)",
@@ -20,19 +36,19 @@ VI = {
         "title_c1": "C1: Riley et al. (Sống còn)",
 
         "mode_riley": "Phương pháp A3.1: Riley et al. (Giải tích)",
-        "mode_bayes": "Phương pháp 2: Bayesian Assurance (Mô phỏng)",
+        "mode_bayes": "Phương pháp A3.3: Bayesian Assurance (Mô phỏng)",
         "mode_single": "Kịch bản đơn (Single)",
         "mode_batch": "Phân tích độ nhạy (Nhiều giá trị)",
-        "method1_tab": "Phương pháp 1 (Riley)",
-        "method2_tab": "Phương pháp 2 (Bayesian)",
+        "method1_tab": "Phương pháp A3.1 (Riley)",
+        "method2_tab": "Phương pháp A3.3 (Bayesian)",
         "nav_title": "Điều hướng",
         "nav_readme": "Tài liệu Chi tiết (README)",
         "nav_intro": "Giới thiệu & Công thức",
         "nav_calc": "Công cụ tính toán",
         "intro_heading": "Giới thiệu",
         "intro_text": "Ứng dụng hỗ trợ ước tính cỡ mẫu tối thiểu cho mô hình dự báo lâm sàng (biến nhị phân).",
-        "formula_heading": "Cơ sở Toán học (Phương pháp 1)",
-        "formula_intro": "Phương pháp 1 dùng công thức giải tích (Riley), Phương pháp 2 dùng mô phỏng Bayesian MCMC.",
+        "formula_heading": "Cơ sở Toán học (Phương pháp A3.1)",
+        "formula_intro": "Phương pháp A3.1 dùng công thức giải tích (Riley), Phương pháp A3.3 dùng mô phỏng Bayesian MCMC.",
         "sens_guide_title": "💡 Hướng dẫn nhập Phân tích Độ nhạy",
         "sens_guide_text": """
         - **Khoảng giá trị**: Nhập `min-max` (VD: `0.05-0.10`).
@@ -86,8 +102,8 @@ VI = {
         "assurance_result": "Phân tích Assurance",
 
         # Method 6 (Dev Sim)
-        "mode_dev_sim": "Phương pháp 6: Mô phỏng Phát triển (Freq)",
-        "method6_tab": "PP 6 (Mô phỏng)",
+        "mode_dev_sim": "Phương pháp A3.2: Mô phỏng Phát triển (Freq)",
+        "method6_tab": "Phương pháp A3.2 (Mô phỏng)",
         "dev_sim_intro": "Tính cỡ mẫu phát triển mô hình dựa trên mô phỏng (theo phương pháp `samplesizedev`).",
         "dev_mode_simple": "Chế độ A: Đơn giản (theo AUC)",
         "dev_mode_custom": "Chế độ B: DGM Tùy chỉnh",
@@ -102,8 +118,8 @@ VI = {
 
         # Quick Methods
         "method_quick_tab": "A. Nhanh / Cơ bản",
-        "quick_mode_epv": "A1: Quy tắc EPV / EPP (Kinh nghiệm)",
-        "quick_mode_risk": "A2: Ước lượng Tỷ lệ nền (Độ rộng CI)",
+        "quick_mode_epv": "A1.1: Quy tắc EPV / EPP (Kinh nghiệm)",
+        "quick_mode_risk": "A1.2: Ước lượng Tỷ lệ nền (Độ rộng CI)",
         "target_epv": "Số biến cố trên tham số mục tiêu (EPP)",
         "target_epv_help": "Giá trị thường dùng: 10, 15, 20. EPP tốt hơn EPV.",
         "parameters_short": "tham số",
@@ -123,12 +139,12 @@ VI = {
         "risk_help": "Tính N để ước lượng tỷ lệ p với độ chính xác nhất định. KHÔNG đảm bảo hiệu năng mô hình dự báo.",
         
         # Power Methods (B)
-        "title_b3": "B3: Logistic Power (Hsieh)",
-        "title_b4": "B4: Cox Power (Schoenfeld)",
+        "title_b3": "A2.1: Logistic Power (Hsieh)",
+        "title_b4": "A2.2: Cox Power (Schoenfeld)",
         "interpretation": "Giải thích kết quả",
         
         # Validations (D)
-        "title_d8": "D8: AUC Precision (Hanley-McNeil)",
+        "title_d8": "A4.1: AUC Precision (Hanley-McNeil)",
         "d8_desc": "Calculate sample size for estimating AUC with desired precision (CI width).",
         "auc_expected": "AUC dự kiến (C-statistic)",
         "formulas_header": "📚 Công thức & Chi tiết kỹ thuật",
@@ -143,7 +159,7 @@ VI = {
         "d8_opt_tol": "Dung sai (Tolerance)",
         
         # D9
-        "title_d9": "D9: Thẩm định ngoài (Tailored)",
+        "title_d9": "A4.2: Thẩm định ngoài (Tailored)",
         "common_inputs": "Tham số chung",
         
         # UI Basics
@@ -298,7 +314,7 @@ Cần dùng số tham số (df), không chỉ "số biến". Quy tắc cơ bản
 * **Mạnh:** linh hoạt
 * **Yếu:** tốn compute, nhạy giả định
 
-**D11 — Updating / Recalibration (intercept/slope)**
+**A4.4 — Model Updating / Recalibration (intercept/slope)**
 * **Dùng khi:** cần cập nhật intercept/slope khi triển khai ở bệnh viện mới.
 * **Không dùng khi:** phát triển mô hình mới hoàn toàn.
 * **Đầu vào:** kiểu cập nhật, $p$, mục tiêu độ chính xác
@@ -390,14 +406,14 @@ Chức năng này ước tính **cỡ mẫu tối thiểu** để phát hiện m
 
 ### Khi nào nên dùng
 
-Dùng B3 khi:
+Dùng A2.1 khi:
 
 * Bạn cần power để phát hiện **OR có ý nghĩa lâm sàng** cho **một biến** (nhị phân hoặc liên tục) trong logistic regression.
 * Mục tiêu là **kiểm định giả thuyết** (biến có liên quan kết cục hay không), không phải xây dựng mô hình dự báo nguy cơ.
 
 ### Khi nào không nên dùng
 
-Không dùng B3 làm phương pháp chính khi:
+Không dùng A2.1 làm phương pháp chính khi:
 
 * Mục tiêu là **xây dựng mô hình dự báo** (nên dùng Riley/pmsampsize hoặc mô phỏng/assurance).
 * Bạn dự định **chọn biến theo dữ liệu**, dùng nhiều spline/tương tác, hoặc tuning mô hình phức tạp (power cho 1 hệ số không còn là mục tiêu phù hợp).
@@ -537,7 +553,7 @@ $$
 
 ### Phương pháp này là gì?
 
-C5 triển khai các **tiêu chí cỡ mẫu tối thiểu của Riley và cộng sự** cho **xây dựng mô hình dự báo đa biến** với **kết cục nhị phân** (hồi quy logistic). Mục tiêu là bảo đảm cỡ mẫu đủ để:
+Phương pháp A3.1 triển khai các **tiêu chí cỡ mẫu tối thiểu của Riley và cộng sự** cho **xây dựng mô hình dự báo đa biến** với **kết cục nhị phân** (hồi quy logistic). Mục tiêu là bảo đảm cỡ mẫu đủ để:
 
 1. **Hạn chế overfitting** (nhắm tới hệ số co rút toàn cục / calibration slope mục tiêu),
 2. Bảo đảm **độ chính xác** của hiệu năng mô hình (giới hạn mức “lạc quan” của $R^2$), và
@@ -549,7 +565,7 @@ C5 triển khai các **tiêu chí cỡ mẫu tối thiểu của Riley và cộn
 
 ### Khi nào nên dùng
 
-Dùng C5 khi:
+Dùng A3.1 khi:
 
 * Bạn đang **xây dựng** mô hình dự báo cho **kết cục nhị phân**.
 * Bạn có thể ước lượng (dù gần đúng) **tỷ lệ biến cố** và **hiệu năng dự kiến** (Cox–Snell $R^2$ hoặc AUC).
@@ -557,7 +573,7 @@ Dùng C5 khi:
 
 ### Khi nào không nên dùng (hoặc cần thận trọng)
 
-Không nên chỉ dựa vào C5 khi:
+Không nên chỉ dựa vào A3.1 khi:
 
 * Bạn dự định **chọn biến theo dữ liệu**, dùng nhiều tương tác/spline/tinh chỉnh phức tạp mà chưa quy đổi đúng **df hiệu dụng**.
 * Dữ liệu có **cụm/đa trung tâm** mà chưa tính design effect.
@@ -682,19 +698,19 @@ $$
 
 ### Phương pháp này là gì?
 
-C6 là phương pháp **ước tính cỡ mẫu bằng mô phỏng** cho **xây dựng mô hình dự báo** (kết cục nhị phân), theo triết lý gần với **samplesizedev** và các hướng dẫn mô phỏng trong prediction modeling.
+Phương pháp A3.2 là phương pháp **ước tính cỡ mẫu bằng mô phỏng** cho **xây dựng mô hình dự báo** (kết cục nhị phân), theo triết lý gần với **samplesizedev** và các hướng dẫn mô phỏng trong prediction modeling.
 
-Thay vì một công thức đóng, C6 trả lời câu hỏi:
+Thay vì một công thức đóng, Phương pháp A3.2 trả lời câu hỏi:
 
 > “Nếu lặp lại nhiều lần quá trình xây dựng mô hình trên dữ liệu cỡ mẫu (N), mô hình có đạt tiêu chí hiệu năng mong muốn trên dữ liệu mới với xác suất đủ cao không?”
 
-Do đó C6 nhắm tới **hiệu năng kỳ vọng** (và/hoặc xác suất đạt hiệu năng chấp nhận được) dưới một **cơ chế sinh dữ liệu (DGM)** mô tả quần thể lâm sàng dự kiến.
+Do đó Phương pháp A3.2 nhắm tới **hiệu năng kỳ vọng** (và/hoặc xác suất đạt hiệu năng chấp nhận được) dưới một **cơ chế sinh dữ liệu (DGM)** mô tả quần thể lâm sàng dự kiến.
 
 ---
 
 ## Khi nào nên dùng
 
-Dùng C6 khi:
+Dùng A3.2 khi:
 
 * Muốn “**mô phỏng đúng cách bạn sẽ làm**”, đặc biệt khi:
 
@@ -707,7 +723,7 @@ Dùng C6 khi:
 
 ## Khi nào không nên dùng (hoặc cần thận trọng)
 
-Không nên chỉ dựa vào C6 khi:
+Không nên chỉ dựa vào A3.2 khi:
 
 * Không biện minh được DGM (phân bố biến, tương quan, hiệu ứng).
 * Hạn chế tài nguyên tính toán.
@@ -857,7 +873,7 @@ Chọn dải đủ rộng để thấy ngưỡng đạt/không đạt (ví dụ 
 4. Steyerberg EW. *Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating.* 2nd ed. Springer. 2019.
 """,
     "c7_content_md": """
-## C7: Bayesian Assurance (MCMC) — Tiếng Việt
+## A3.3: Bayesian Assurance (MCMC) — Tiếng Việt
 
 ### Phương pháp này là gì?
 **Bayesian assurance** là phương pháp lập kế hoạch cỡ mẫu bằng mô phỏng cho **xây dựng mô hình Bayes** (ở đây: hồi quy logistic Bayes cho kết cục nhị phân).  
@@ -869,7 +885,7 @@ Nói đơn giản:
 ---
 
 ### Khi nào nên dùng
-Dùng C7 khi:
+Dùng A3.3 khi:
 - Phân tích cuối cùng là **Bayes** và ước lượng bằng **MCMC**.
 - Bạn muốn chọn cỡ mẫu sao cho đạt **xác suất thành công mục tiêu** (ví dụ ≥80% hoặc ≥90%).
 - Bạn có thể đưa ra giả định hợp lý về:
@@ -879,7 +895,7 @@ Dùng C7 khi:
   - prior cho các hệ số hồi quy.
 
 ### Khi nào không nên dùng (hoặc cần thận trọng)
-Không nên chỉ dựa vào C7 khi:
+Không nên chỉ dựa vào A3.3 khi:
 - Không thể biện minh prior hoặc **cơ chế sinh dữ liệu (DGM)**.
 - Hạn chế tài nguyên tính toán (MCMC tốn thời gian; nhạy với cài đặt).
 - Pipeline thực tế có bước “data-adaptive” lớn (chọn biến/tuning) nhưng bạn **không mô phỏng đầy đủ** pipeline đó.

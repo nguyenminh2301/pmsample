@@ -5,6 +5,21 @@ JP = {
     "language": "言語 / Language",
     "mode": "手法の選択 (Method Selection)",
     
+    # Sidebar
+    "lbl_settings": "設定 (Settings)",
+    "lbl_theme": "テーマ (Theme)",
+    "lbl_theme_light": "ライト (Light)",
+    "lbl_theme_dark": "ダーク (Dark)",
+    "lbl_theme_coder": "Coder",
+    # Subgroups
+    "sg_a1": "A1. クイックチェック (Quick Checks)",
+    "sg_a2": "A2. 予後因子 (Prognostic Factors)",
+    "sg_a3": "A3. モデル開発 (Model Development)",
+    "sg_a4": "A4. 検証 (Validation)",
+    "sg_b1": "B1. クイックチェック (Quick Checks)",
+    "sg_b2": "B2. モデル開発 (Model Development)",
+    "sg_c1": "C1. モデル開発 (Model Development)",
+    
     # New Hierarchy Titles
     "title_a1_1": "A1.1: 経験則 (EPV)",
     "title_a1_2": "A1.2: ベースラインリスク精度",
@@ -21,19 +36,19 @@ JP = {
     "title_c1": "C1: Riley et al. (生存)",
 
     "mode_riley": "手法 A3.1: Riley et al. (分析的)",
-    "mode_bayes": "手法 C6: ベイズ主導 (シミュレーション)",
+    "mode_bayes": "手法 A3.3: ベイズ主導 (シミュレーション)",
     "mode_single": "単一シナリオ (Single Scenario)",
     "mode_batch": "感度分析 (Sensitivity Analysis)",
-    "method1_tab": "手法 C5 (Riley)",
-    "method2_tab": "手法 C6 (Bayesian)",
+    "method1_tab": "手法 A3.1 (Riley)",
+    "method2_tab": "手法 A3.3 (Bayesian)",
     "nav_title": "ナビゲーション (Navigation)",
     "nav_readme": "詳細ドキュメント (README)",
     "nav_intro": "概要と数式 (Introduction & Formulas)",
     "nav_calc": "サンプルサイズ計算機 (Calculator)",
     "intro_heading": "ようこそ (Welcome)",
     "intro_text": "このツールは、二値アウトカムの臨床予測モデル開発に必要な最小サンプルサイズを計算するのに役立ちます。",
-    "formula_heading": "数学的枠組み (手法 C5)",
-    "formula_intro": "手法 C5 は Riley 等による解析解を使用し、手法 C6 はベイズ MCMC シミュレーションを使用します。",
+    "formula_heading": "数学的枠組み (手法 A3.1)",
+    "formula_intro": "手法 A3.1 は Riley 等による解析解を使用し、手法 A3.3 はベイズ MCMC シミュレーションを使用します。",
     "sens_guide_title": "💡 感度分析の使い方 (バッチモード)",
     "sens_guide_text": """
     - **範囲**: `min-max` を入力 (例: `0.05-0.10`)。ステップは自動生成されます。
@@ -83,8 +98,8 @@ JP = {
     "assurance_result": "保証分析 (Assurance Analysis)",
     
     # Method 6 (Dev Sim)
-    "mode_dev_sim": "手法 6: 開発シミュレーション (頻度論)",
-    "method6_tab": "手法 6 (Simulation)",
+    "mode_dev_sim": "手法 A3.2: 開発シミュレーション (頻度論)",
+    "method6_tab": "手法 A3.2 (Simulation)",
     "dev_sim_intro": "シミュレーションに基づくモデル開発サンプルサイズ計算 (頻度論的手法, `samplesizedev` に類似)。",
     "dev_mode_simple": "モード A: シンプル (AUC 駆動)",
     "dev_mode_custom": "モード B: カスタム DGM",
@@ -99,8 +114,8 @@ JP = {
     
     # Quick Methods
     "method_quick_tab": "A. クイック / 基本 (Quick / Basic)",
-    "quick_mode_epv": "A1: EPV / EPP ルール (ヒューリスティック)",
-    "quick_mode_risk": "A2: ベースラインリスク精度 (CI 幅)",
+    "quick_mode_epv": "A1.1: EPV / EPP ルール (ヒューリスティック)",
+    "quick_mode_risk": "A1.2: ベースラインリスク精度 (CI 幅)",
     "target_epv": "目標パラメータあたりイベント数 (EPP)",
     "target_epv_help": "一般的なヒューリスティック値は 10, 15, 20 です。EPV よりも EPP が推奨されます。",
     "parameters_short": "パラメータ",
@@ -120,8 +135,8 @@ JP = {
     "risk_help": "特定の精度でイベント発生率 p を推定するために必要な N を計算します。予測モデルのパフォーマンスは保証しません。",
     
     # Power Methods (B)
-    "title_b3": "B3: Logistic 検出力 (Hsieh)",
-    "title_b4": "B4: Cox 検出力 (Schoenfeld)",
+    "title_b3": "A2.1: Logistic 検出力 (Hsieh)",
+    "title_b4": "A2.2: Cox 検出力 (Schoenfeld)",
     "interpretation": "解釈 (Interpretation)",
     
     # UI Basics
@@ -136,7 +151,7 @@ JP = {
     "d8_opt_tol": "許容誤差",
     
     # Validations (D)
-    "title_d8": "D8: AUC 精度 (Hanley-McNeil)",
+    "title_d8": "A4.1: AUC 精度 (Hanley-McNeil)",
     "d8_desc": "AUC を所望の精度 (CI 幅) で推定するためのサンプルサイズを計算します。",
     "auc_expected": "予想される AUC (C統計量)",
     "formulas_header": "📚 数式と技術詳細 (Formulas & Technical Details)",
@@ -151,7 +166,7 @@ JP = {
     "d8_opt_tol": "許容誤差",
     
     # D9
-    "title_d9": "D9: 外部検証 (Tailored)",
+    "title_d9": "A4.2: 外部検証 (Tailored)",
     "common_inputs": "共通パラメータ",
     
     # UI Basics

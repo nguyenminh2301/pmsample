@@ -5,6 +5,21 @@ DE = {
     "language": "Sprache / Language",
     "mode": "Methodenauswahl",
     
+    # Sidebar
+    "lbl_settings": "Einstellungen",
+    "lbl_theme": "Thema",
+    "lbl_theme_light": "Hell",
+    "lbl_theme_dark": "Dunkel",
+    "lbl_theme_coder": "Coder",
+    # Subgroups
+    "sg_a1": "A1. Schnellüberprüfungen",
+    "sg_a2": "A2. Prognosefaktoren",
+    "sg_a3": "A3. Modellentwicklung",
+    "sg_a4": "A4. Validierung",
+    "sg_b1": "B1. Schnellüberprüfungen",
+    "sg_b2": "B2. Modellentwicklung",
+    "sg_c1": "C1. Modellentwicklung",
+    
     # New Hierarchy Titles
     "title_a1_1": "A1.1: Daumenregeln (EPV)",
     "title_a1_2": "A1.2: Grundrisiko-Präzision",
@@ -21,19 +36,19 @@ DE = {
     "title_c1": "C1: Riley et al. (Überleben)",
 
     "mode_riley": "Methode A3.1: Riley et al. (Analytisch)",
-    "mode_bayes": "Methode C6: Bayes (Simulation)",
+    "mode_bayes": "Methode A3.3: Bayes (Simulation)",
     "mode_single": "Einzelszenario",
     "mode_batch": "Sensitivitätsanalyse",
-    "method1_tab": "Methode C5 (Riley)",
-    "method2_tab": "Methode C6 (Bayes)",
+    "method1_tab": "Methode A3.1 (Riley)",
+    "method2_tab": "Methode A3.3 (Bayes)",
     "nav_title": "Navigation",
     "nav_readme": "Detaillierte Dokumentation (README)",
     "nav_intro": "Einführung & Formeln",
     "nav_calc": "Stichprobenrechner",
     "intro_heading": "Willkommen",
     "intro_text": "Dieses Tool hilft bei der Berechnung der minimalen Stichprobengröße für die Entwicklung klinischer Vorhersagemodelle für binäre Ergebnisse.",
-    "formula_heading": "Mathematischer Rahmen (Methode C5)",
-    "formula_intro": "Methode C5 verwendet analytische Lösungen von Riley et al., während Methode C6 Bayes'sche MCMC-Simulationen nutzt.",
+    "formula_heading": "Mathematischer Rahmen (Methode A3.1)",
+    "formula_intro": "Methode A3.1 verwendet analytische Lösungen von Riley et al., während Methode A3.3 Bayes'sche MCMC-Simulationen nutzt.",
     "sens_guide_title": "💡 Anleitung zur Sensitivitätsanalyse (Batch-Modus)",
     "sens_guide_text": """
     - **Bereich**: Geben Sie `min-max` ein (z.B. `0.05-0.10`). Schritte werden automatisch generiert.
@@ -83,8 +98,8 @@ DE = {
     "assurance_result": "Assurance-Analyse",
     
     # Method 6 (Dev Sim)
-    "mode_dev_sim": "Methode 6: Entwicklungssimulation (Frequentistisch)",
-    "method6_tab": "Methode 6 (Simulation)",
+    "mode_dev_sim": "Methode A3.2: Entwicklungssimulation (Frequentistisch)",
+    "method6_tab": "Methode A3.2 (Simulation)",
     "dev_sim_intro": "Simulationsbasierte Größenbestimmung für die Modellentwicklung (frequentistisch, ähnlich wie `samplesizedev`).",
     "dev_mode_simple": "Modus A: Einfach (AUC-gesteuert)",
     "dev_mode_custom": "Modus B: Benutzerdefinierter DGM",
@@ -99,8 +114,8 @@ DE = {
     
     # Quick Methods
     "method_quick_tab": "A. Schnell / Basis",
-    "quick_mode_epv": "A1: EPV / EPP Regeln (Heuristik)",
-    "quick_mode_risk": "A2: Basisrisiko-Präzision (KI-Breite)",
+    "quick_mode_epv": "A1.1: EPV / EPP Regeln (Heuristik)",
+    "quick_mode_risk": "A1.2: Basisrisiko-Präzision (KI-Breite)",
     "target_epv": "Ziel-Ereignisse pro Parameter (EPP)",
     "target_epv_help": "Übliche heuristische Werte sind 10, 15, 20. EPP wird gegenüber EPV bevorzugt.",
     "parameters_short": "Parameter",
@@ -120,8 +135,8 @@ DE = {
     "risk_help": "Berechnet N, um die Ereignisrate p mit einer gegebenen Genauigkeit zu schätzen. Garantiert NICHT die Leistung des Vorhersagemodells.",
     
     # Power Methods (B)
-    "title_b3": "B3: Logistische Power (Hsieh)",
-    "title_b4": "B4: Cox Power (Schoenfeld)",
+    "title_b3": "A2.1: Logistische Power (Hsieh)",
+    "title_b4": "A2.2: Cox Power (Schoenfeld)",
     "interpretation": "Interpretation",
     
     # UI Basics
@@ -136,7 +151,7 @@ DE = {
     "d8_opt_tol": "Toleranz",
     
     # Validations (D)
-    "title_d8": "D8: AUC Präzision (Hanley-McNeil)",
+    "title_d8": "A4.1: AUC Präzision (Hanley-McNeil)",
     "d8_desc": "Stichprobengröße zur Schätzung der AUC mit gewünschter Präzision (KI-Breite).",
     "auc_expected": "Erwartete AUC (C-Statistik)",
     "formulas_header": "📚 Formeln und technische Details (Formulas & Technical Details)",
@@ -151,7 +166,7 @@ DE = {
     "d8_opt_tol": "Toleranz",
     
     # D9
-    "title_d9": "D9: Externe Validierung (Maßgeschneidert)",
+    "title_d9": "A4.2: Externe Validierung (Maßgeschneidert)",
     "common_inputs": "Gemeinsame Parameter",
     
     # UI Basics

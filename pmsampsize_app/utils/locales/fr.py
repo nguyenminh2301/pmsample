@@ -5,6 +5,21 @@ FR = {
     "language": "Langue / Language",
     "mode": "Sélection de la Méthode",
     
+    # Sidebar
+    "lbl_settings": "Paramètres",
+    "lbl_theme": "Thème",
+    "lbl_theme_light": "Clair",
+    "lbl_theme_dark": "Sombre",
+    "lbl_theme_coder": "Coder",
+    # Subgroups
+    "sg_a1": "A1. Vérifications rapides",
+    "sg_a2": "A2. Facteurs pronostiques",
+    "sg_a3": "A3. Développement de modèle",
+    "sg_a4": "A4. Validation",
+    "sg_b1": "B1. Vérifications rapides",
+    "sg_b2": "B2. Développement de modèle",
+    "sg_c1": "C1. Développement de modèle",
+    
     # New Hierarchy Titles
     "title_a1_1": "A1.1: Règles empiriques (EPV)",
     "title_a1_2": "A1.2: Précision du risque de base",
@@ -21,19 +36,19 @@ FR = {
     "title_c1": "C1: Riley et al. (Survie)",
 
     "mode_riley": "Méthode A3.1: Riley et al. (Analytique)",
-    "mode_bayes": "Méthode C6: Piloté par Bayes (Simulation)",
+    "mode_bayes": "Méthode A3.3: Assurance Bayésienne (Simulation)",
     "mode_single": "Scénario Unique",
     "mode_batch": "Analyse de Sensibilité",
-    "method1_tab": "Méthode C5 (Riley)",
-    "method2_tab": "Méthode C6 (Bayesien)",
+    "method1_tab": "Méthode A3.1 (Riley)",
+    "method2_tab": "Méthode A3.3 (Bayesien)",
     "nav_title": "Navigation",
     "nav_readme": "Documentation Détaillée (README)",
     "nav_intro": "Introduction & Formules",
     "nav_calc": "Calculateur de Taille d'Échantillon",
     "intro_heading": "Bienvenue",
     "intro_text": "Cet outil aide à calculer la taille minimale de l'échantillon pour développer des modèles de prédiction clinique pour des résultats binaires.",
-    "formula_heading": "Cadre Mathématique (Méthode C5)",
-    "formula_intro": "La méthode C5 utilise les solutions analytiques de Riley et al., tandis que la méthode C6 utilise la simulation Bayesienne MCMC.",
+    "formula_heading": "Cadre Mathématique (Méthode A3.1)",
+    "formula_intro": "La méthode A3.1 utilise les solutions analytiques de Riley et al., tandis que la méthode A3.3 utilise la simulation Bayesienne MCMC.",
     "sens_guide_title": "💡 Guide d'Analyse de Sensibilité (Mode Batch)",
     "sens_guide_text": """
     - **Plage**: Entrez `min-max` (ex: `0.05-0.10`). Les étapes sont générées automatiquement.
@@ -83,8 +98,8 @@ FR = {
     "assurance_result": "Analyse d'Assurance",
     
     # Method 6 (Dev Sim)
-    "mode_dev_sim": "Méthode 6: Simulation de Développement (Fréquentiste)",
-    "method6_tab": "Méthode 6 (Simulation)",
+    "mode_dev_sim": "Méthode A3.2: Simulation de Développement (Fréquentiste)",
+    "method6_tab": "Méthode A3.2 (Simulation)",
     "dev_sim_intro": "Taille basée sur la simulation pour le développement de modèles (fréquentiste, similaire à `samplesizedev`).",
     "dev_mode_simple": "Mode A: Simple (Piloté par AUC)",
     "dev_mode_custom": "Mode B: DGM Personnalisé",
@@ -99,8 +114,8 @@ FR = {
     
     # Quick Methods
     "method_quick_tab": "A. Rapide / Basique",
-    "quick_mode_epv": "A1: Règles EPV / EPP (Heuristique)",
-    "quick_mode_risk": "A2: Précision du Risque de Base (Largeur IC)",
+    "quick_mode_epv": "A1.1: Règles EPV / EPP (Heuristique)",
+    "quick_mode_risk": "A1.2: Précision du Risque de Base (Largeur IC)",
     "target_epv": "Événements par Paramètre Cibles (EPP)",
     "target_epv_help": "Les valeurs heuristiques courantes sont 10, 15, 20. EPP est préféré à EPV.",
     "parameters_short": "paramètres",
@@ -120,8 +135,8 @@ FR = {
     "risk_help": "Calcule N pour estimer le taux d'événement p avec une précision donnée. Ne garantit PAS la performance du modèle de prédiction.",
     
     # Power Methods (B)
-    "title_b3": "B3: Puissance Logistic (Hsieh)",
-    "title_b4": "B4: Puissance Cox (Schoenfeld)",
+    "title_b3": "A2.1: Puissance Logistic (Hsieh)",
+    "title_b4": "A2.2: Puissance Cox (Schoenfeld)",
     "interpretation": "Interprétation",
     
     # UI Basics
@@ -136,7 +151,7 @@ FR = {
     "d8_opt_tol": "Tolérance",
     
     # Validations (D)
-    "title_d8": "D8: Précision AUC (Hanley-McNeil)",
+    "title_d8": "A4.1: Précision AUC (Hanley-McNeil)",
     "d8_desc": "Taille d'échantillon pour estimer l'AUC avec la précision souhaitée (largeur IC).",
     "auc_expected": "AUC (Statistique C) Anticipée",
     "formulas_header": "📚 Formules et Détails Techniques (Formulas & Technical Details)",
@@ -151,7 +166,7 @@ FR = {
     "d8_opt_tol": "Tolérance",
     
     # D9
-    "title_d9": "D9: Validation Externe (Sur Mesure)",
+    "title_d9": "A4.2: Validation Externe (Sur Mesure)",
     "common_inputs": "Paramètres Communs",
     
     # UI Basics

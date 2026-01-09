@@ -3,7 +3,23 @@ EN = {
         "sidebar_title": "Configuration",
         "language": "Language / Ngôn ngữ",
         "mode": "Method Selection",
+        "input_help_multivalue": "Supports multiple values separated by commas (e.g., 10, 15, 20).",
         
+        # Sidebar
+        "lbl_settings": "Settings",
+        "lbl_theme": "Theme",
+        "lbl_theme_light": "Light",
+        "lbl_theme_dark": "Dark",
+        "lbl_theme_coder": "Coder",
+        # Subgroups
+        "sg_a1": "A1. Quick Checks",
+        "sg_a2": "A2. Prognostic Factors",
+        "sg_a3": "A3. Model Development",
+        "sg_a4": "A4. Validation",
+        "sg_b1": "B1. Quick Checks",
+        "sg_b2": "B2. Model Development",
+        "sg_c1": "C1. Model Development",
+
         # New Hierarchy Titles
         "title_a1_1": "A1.1: Rules of Thumb (EPV)",
         "title_a1_2": "A1.2: Baseline Risk Precision",
@@ -20,11 +36,11 @@ EN = {
         "title_c1": "C1: Riley et al. (Survival)",
 
         "mode_riley": "Method A3.1: Riley et al. (Analytical)",
-        "mode_bayes": "Method C6: Bayesian Assurance (Simulation)",
+        "mode_bayes": "Method A3.3: Bayesian Assurance (Simulation)",
         "mode_single": "Single Scenario",
         "mode_batch": "Sensitivity Analysis (Ranges)",
-        "method1_tab": "Method C5 (Riley)",
-        "method2_tab": "Method C6 (Bayesian)",
+        "method1_tab": "Method A3.1 (Riley)",
+        "method2_tab": "Method A3.3 (Bayesian)",
         "nav_title": "Navigation",
         "nav_readme": "Documentation (README)",
         "nav_intro": "Introduction & Formulas",
@@ -91,8 +107,8 @@ EN = {
         "assurance_result": "Assurance Analysis",
         
         # Method 6 (Dev Sim)
-        "mode_dev_sim": "Method 6: Development Simulation (Freq)",
-        "method6_tab": "Method 6 (Simulation)",
+        "mode_dev_sim": "Method A3.2: Development Simulation (Freq)",
+        "method6_tab": "Method A3.2 (Simulation)",
         "dev_sim_intro": "Simulation-based sample size for model development (frequentist approach similar to `samplesizedev`).",
         "dev_mode_simple": "Mode A: Simple (AUC-driven)",
         "dev_mode_custom": "Mode B: Custom DGM",
@@ -107,8 +123,8 @@ EN = {
         
         # Quick Methods
         "method_quick_tab": "A. Quick / Basic",
-        "quick_mode_epv": "A1: EPV / EPP Rule (Heuristic)",
-        "quick_mode_risk": "A2: Baseline Risk Precision (CI Width)",
+        "quick_mode_epv": "A1.1: EPV / EPP Rule (Heuristic)",
+        "quick_mode_risk": "A1.2: Baseline Risk Precision (CI Width)",
         "target_epv": "Target Events Per Parameter (EPP)",
         "target_epv_help": "Common heuristic values are 10, 15, 20. EPP is preferred over EPV.",
         "parameters_short": "params",
@@ -128,8 +144,8 @@ EN = {
         "risk_help": "Calculates N to estimate the event rate p with a specific precision. Does not ensure prediction model performance.",
         
         # Power Methods (B)
-        "title_b3": "B3: Logistic Power (Hsieh)",
-        "title_b4": "B4: Cox Power (Schoenfeld)",
+        "title_b3": "A2.1: Logistic Power (Hsieh)",
+        "title_b4": "A2.2: Cox Power (Schoenfeld)",
         "interpretation": "Interpretation",
         
         # UI Basics
@@ -144,7 +160,8 @@ EN = {
         "d8_opt_tol": "Tolerance",
         
         # Validations (D)
-        "title_d8": "D8: AUC Precision (Hanley-McNeil)",
+        # Validations (D)
+        "title_d8": "A4.1: AUC Precision (Hanley-McNeil)",
         "d8_desc": "Calculate sample size for estimating AUC with desired precision (CI width).",
         "auc_expected": "Expected AUC (C-statistic)",
         "formulas_header": "📚 Formulas & Technical Details",
@@ -159,7 +176,7 @@ EN = {
         "d8_opt_tol": "Tolerance",
         
         # D9
-        "title_d9": "D9: External Validation (Tailored)",
+        "title_d9": "A4.2: External Validation (Tailored)",
         "common_inputs": "Common Parameters",
         
         # UI Basics
@@ -305,7 +322,7 @@ Use parameters (degrees of freedom), not just "number of variables."
 * **Strengths:** tailored; calibration-aware
 * **Weaknesses:** requires additional assumptions; more complex
 
-**D10 — External Validation (Simulation; LP-based)**
+**A4.3 — External Validation (Simulation; LP-based)**
 * **Use when:** you can specify/estimate the distribution of the linear predictor (LP) in the target validation population and want simulation-based precision planning.
 * **Do not use when:** LP distribution is unknown and cannot be approximated.
 * **Key inputs:** LP distribution (normal/beta/empirical), miscalibration parameters, CI width targets for metrics, replicates, seed
@@ -313,7 +330,7 @@ Use parameters (degrees of freedom), not just "number of variables."
 * **Strengths:** very flexible; matches "simulate what you expect"
 * **Weaknesses:** assumptions-heavy; computational cost
 
-**D11 — Updating / Recalibration (intercept/slope)**
+**A4.4 — Model Updating / Recalibration (intercept/slope)**
 * **Use when:** you will recalibrate an existing model (update intercept and/or slope) and need adequate precision.
 * **Do not use when:** you are developing a brand-new model (use C5–C7).
 * **Key inputs:** updating type (intercept only vs intercept+slope), event rate, precision targets
@@ -409,14 +426,14 @@ This is a **prognostic factor / association-focused** power calculation (testing
 
 ### When to use
 
-Use B3 when:
+Use A2.1 when:
 
 * You want power to detect a **clinically meaningful OR** for a **single predictor** (binary or continuous) in logistic regression.
 * Your primary goal is **hypothesis testing** (is the predictor associated with the outcome?), not building a risk prediction model.
 
 ### When NOT to use
 
-Do not use B3 as your main approach when:
+Do not use A2.1 as your main approach when:
 
 * Your goal is **prediction model development** (use Riley/pmsampsize or simulation/assurance methods).
 * You plan **data-driven variable selection**, many interactions/splines, or complex machine-learning tuning (power for a single coefficient is not the right target).
@@ -581,7 +598,7 @@ This is a **model development** method (not external validation). It is particul
 
 ### When to use
 
-Use C5 when:
+Use A3.1 when:
 
 * You are **developing** a new prediction model for a **binary outcome**.
 * You can specify (even approximately) the **event rate** and an anticipated **overall model performance** (Cox–Snell $R^2$ or AUC).
@@ -589,7 +606,7 @@ Use C5 when:
 
 ### When NOT to use (or use with caution)
 
-Do not rely on C5 alone when:
+Do not rely on A3.1 alone when:
 
 * You will do extensive **data-driven variable selection**, multiple interactions/splines, or heavy ML tuning without adjusting the **effective number of parameters (df)**.
 * Your data are strongly **clustered** (multicenter) without accounting for design effects.
@@ -716,9 +733,9 @@ $$
 
 ### What this method is
 
-C6 is a **simulation-based sample size planning** approach for **prediction model development** (binary outcome), inspired by the philosophy of **samplesizedev** and broader simulation-based design principles.
+Method A3.2 is a **simulation-based sample size planning** approach for **prediction model development** (binary outcome), inspired by the philosophy of **samplesizedev** and broader simulation-based design principles.
 
-Instead of relying on a single analytical formula, C6 asks:
+Instead of relying on a single analytical formula, Method A3.2 asks:
 
 > “If we repeatedly develop the model using the planned approach on datasets of size (N), how often will the model meet pre-specified performance criteria on new data?”
 
@@ -728,7 +745,7 @@ It therefore targets **expected performance** (and/or probability of acceptable 
 
 ## When to use
 
-Use C6 when:
+Use A3.2 when:
 
 * You want a planning method aligned with “**simulate what you will do**,” especially when:
 
@@ -741,7 +758,7 @@ Use C6 when:
 
 ## When NOT to use (or use with caution)
 
-Avoid relying on C6 alone when:
+Avoid relying on A3.2 alone when:
 
 * You cannot justify a plausible DGM (predictor distribution, correlations, effect sizes).
 * You do not have computational budget (simulation can be expensive).
@@ -921,7 +938,7 @@ Provide a grid (e.g., 1000, 1500, 2000, 3000, 5000).
 4. Steyerberg EW. *Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating.* 2nd ed. Springer. 2019.
 """,
     "c7_content_md": """
-## C7: Bayesian Assurance (MCMC)
+## A3.3: Bayesian Assurance (MCMC)
 
 ### What this method is
 **Bayesian assurance** is a simulation-based approach to sample size planning for **Bayesian model development** (here: Bayesian logistic regression for a binary outcome).  
@@ -933,7 +950,7 @@ In plain terms:
 ---
 
 ### When to use
-Use C7 when:
+Use A3.3 when:
 - Your final analysis is **Bayesian** and will be estimated by **MCMC**.
 - You want sample size chosen to achieve **a target probability of success** (e.g., ≥80% or ≥90%).
 - You can specify reasonable assumptions for:
@@ -943,7 +960,7 @@ Use C7 when:
   - priors for regression coefficients.
 
 ### When NOT to use (or use with caution)
-Avoid relying on C7 alone when:
+Avoid relying on A3.3 alone when:
 - You cannot justify priors or a plausible **data-generating mechanism (DGM)**.
 - You do not have the compute budget (MCMC is slow; results can be sensitive to MCMC settings).
 - Your real development pipeline includes substantial data-adaptive steps (feature selection, heavy tuning) that you are **not** simulating.

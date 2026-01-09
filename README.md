@@ -29,40 +29,45 @@ This application provides a suite of tools to address the complex requirements o
 
 The application is structured into four primary modules, each targeting a specific phase of the research lifecycle.
 
-### A. Preliminary Feasibility Assessment
+### A. Binary Outcomes
 
-| Method                                      | Description                                                                                                                 | Application Scenarios                                                                                                                                              |
-| :------------------------------------------ | :-------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **A1: Events Per Variable (EPV/EPP)** | A heuristic approach based on the ratio of events to candidate predictor parameters.                                        | *Feasibility checks only.* **Not recommended as the primary justification** for a protocol due to its inability to account for overfitting or calibration. |
-| **A2: Precision of Baseline Risk**    | Estimates the sample size required to estimate the outcome prevalence with a specified Confidence Interval (CI) half-width. | Descriptive epidemiology; planning calibration-in-the-large.                                                                                                       |
+#### Subgroup A1: Quick Checks
+| Method | Description |
+| :--- | :--- |
+| **A1.1: Rules of Thumb (EPV)** | Heuristic check (events per variable). |
+| **A1.2: Baseline Risk Precision** | Sample size for estimating prevalence (CI width). |
 
-### B. Prognostic Factor Studies (Association)
+#### Subgroup A2: Prognostic Factors
+| Method | Description |
+| :--- | :--- |
+| **A2.1: Logistic Power (Hsieh)** | Power to detect an OR for a single predictor. |
+| **A2.2: Cox Power (Schoenfeld)** | Power to detect a HR for a single predictor. |
 
-| Method                                  | Description                                                                                                                      | Reference                     |
-| :-------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------- | :---------------------------- |
-| **B3: Logistic Regression Power** | Calculates sample size to detect a target Odds Ratio (OR) for a specific predictor, adjusting for covariance with other factors. | **Hsieh et al. (1998)** |
-| **B4: Cox Regression Power**      | Calculates the number of events required to detect a target Hazard Ratio (HR) in survival analysis.                              | **Schoenfeld (1983)**   |
+#### Subgroup A3: Model Development (Prediction)
+| Method | Description |
+| :--- | :--- |
+| **A3.1: Riley et al. (Analytical)** | **Gold Standard.** Development sample size for overfitting & precision. |
+| **A3.2: Development Simulation** | Simulation-based planning for complex models (DGM). |
+| **A3.3: Bayesian Assurance** | MCMC-based assurance for Bayesian models. |
 
-### C. Prediction Model Development (Recommended)
+#### Subgroup A4: Validation / Updating
+| Method | Description |
+| :--- | :--- |
+| **A4.1: AUC Precision** | Sample size for AUC CI width (Hanley-McNeil). |
+| **A4.2: External Validation (Tailored)** | Target calibration and discrimination precision (Riley/Snell). |
+| **A4.3: Ext. Validation (Simulation)** | Simulation-based validation planning (LP distribution). |
+| **A4.4: Model Updating** | Sample size for recalibrating intercept/slope. |
 
-This is the core module for developing new clinical prediction models.
+### B. Continuous Outcomes
+| Method | Description |
+| :--- | :--- |
+| **B1: Green's Rule** | Heuristic for linear regression (50 + 8k). |
+| **B2: Riley et al. (Continuous)** | Analytical method for linear regression (residuals). |
 
-| Method                                    | Description                                                                                          | Key Objectives                                                                                                                              |
-| :---------------------------------------- | :--------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
-| **C5: Analytical Approach (Riley)** | **The Gold Standard.** Closed-form solution for multivariable model development.               | 1. Limit global shrinkage ($S \ge 0.9$).`<br>`2. Limit optimism in apparent performance.`<br>`3. Precise estimation of the intercept. |
-| **C6: Simulation-Based Design**     | Simulates specific Data Generating Mechanisms (DGM) to estimate requirements for complex models.     | Non-linear terms, complex interactions, specific correlation structures.                                                                    |
-| **C7: Bayesian Assurance**          | MCMC-based simulation to determine sample size with a guaranteed probability of success (Assurance). | Bayesian model development.                                                                                                                 |
-
-### D. Validation and Updating
-
-Tools for planning external validation of existing models.
-
-| Method                                   | Description                                                                                         | Reference                                         |
-| :--------------------------------------- | :-------------------------------------------------------------------------------------------------- | :------------------------------------------------ |
-| **D8: AUC Precision**              | Calculates N to achieve a specific Confidence Interval width for the AUC (C-statistic).             | **Hanley & McNeil (1982)**                  |
-| **D9: Tailored Validation Sizing** | Calculates N to ensure precise estimation of O/E ratio, Calibration Slope, and AUC.                 | **Riley et al. (2021)** / `pmvalsampsize` |
-| **D10: Validation Simulation**     | Simulation-based planning using the distribution of the Linear Predictor (LP).                      | **Snell et al. (2021)**                     |
-| **D11: Model Updating**            | Sample size required to update (recalibrate) an existing model (Intercept/Slope) for a new setting. | **Van Calster et al.**                      |
+### C. Survival Outcomes
+| Method | Description |
+| :--- | :--- |
+| **C1: Riley et al. (Survival)** | Analytical method for Cox models (time-to-event). |
 
 ---
 
@@ -114,6 +119,26 @@ This software is an implementation of statistical methods published in peer-revi
 
 * **User Responsibility**: Users are responsible for verifying the input parameters and interpreting the results within the context of their specific clinical domain.
 * **No Clinical Warranty**: This tool does not provide medical advice.
+
+---
+
+## 5. Citation
+
+If you use this tool in your research, please cite it as follows:
+
+> Nguyen, M. (2025). Prognostic Research Sample Size Tool (Version 1.0) [Software]. Available at https://pmsample.streamlit.app/
+
+Or use the BibTeX entry:
+
+```bibtex
+@software{nguyen2025pmsample,
+  author = {Nguyen, Minh},
+  title = {Prognostic Research Sample Size Tool},
+  year = {2025},
+  url = {https://pmsample.streamlit.app/},
+  version = {1.0}
+}
+```
 
 ---
 

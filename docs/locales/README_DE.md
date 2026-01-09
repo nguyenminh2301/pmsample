@@ -27,42 +27,40 @@ Diese Anwendung bietet eine Reihe von Tools, um den komplexen Anforderungen der 
 
 ## 2. Methodenkatalog
 
-Die Anwendung ist in vier Hauptmodule unterteilt, die jeweils auf eine bestimmte Phase des Forschungszyklus abzielen.
+Die Anwendung ist nun hierarchisch strukturiert (Kategorie A: Binäre Ergebnisse).
 
-### A. Vorläufige Machbarkeitsbewertung
+### A. Binäre Ergebnisse (Binary Outcomes)
 
-| Methode | Beschreibung | Anwendungsszenarien |
+#### A1. Schnellüberprüfungen (Quick Checks)
+
+| Methode | Beschreibung | Ziel |
 | :--- | :--- | :--- |
-| **A1: Ereignisse pro Variable (EPV/EPP)** | Eine Faustregel basierend auf dem Verhältnis von Ereignissen zu Kandidaten-Prädiktorparametern. | *Nur zur Machbarkeitsprüfung.* **Nicht als Hauptbegründung** für ein Protokoll empfohlen, da Überanpassung oder Kalibrierung nicht berücksichtigt werden. |
-| **A2: Präzision des Basisrisikos** | Schätzt die benötigte Stichprobengröße, um die Prävalenz mit einer angegebenen Konfidenzintervall (KI) Breite zu schätzen. | Deskriptive Epidemiologie; Planung der Gesamtkalibrierung (calibration-in-the-large). |
+| **A1.1: Ereignisse pro Variable (EPV)** | Faustregel-Heuristik. | Machbarkeitsprüfung. |
+| **A1.2: Präzision des Basisrisikos** | Schätzung der Prävalenz mit einer bestimmten KI-Breite. | Deskriptive Epidemiologie. |
 
-### B. Prognosefaktor-Studien (Assoziation)
+#### A2. Prognosefaktoren (Prognostic Factors)
 
-| Methode | Beschreibung | Referenz |
+| Methode | Beschreibung | Ziel |
 | :--- | :--- | :--- |
-| **B3: Logistische Regression Power** | Berechnet die Stichprobengröße, um eine Ziel-Odds Ratio (OR) für einen bestimmten Prädiktor zu erkennen, angepasst an die Kovarianz mit anderen Faktoren. | **Hsieh et al. (1998)** |
-| **B4: Cox Regression Power** | Berechnet die Anzahl der Ereignisse, die erforderlich sind, um eine Ziel-Hazard Ratio (HR) in der Überlebensanalyse zu erkennen. | **Schoenfeld (1983)** |
+| **A2.1: Logistische Power (Hsieh)** | Power zur Erkennung einer Odds Ratio (OR). | Assoziationsstudien. |
+| **A2.2: Cox Power (Schoenfeld)** | Power zur Erkennung einer Hazard Ratio (HR). | Überlebensanalyse. |
 
-### C. Entwicklung von Vorhersagemodellen (Empfohlen)
+#### A3. Modellentwicklung (Prediction Model Development)
 
-Dies ist das Kernmodul zum Aufbau neuer klinischer Vorhersagemodelle.
-
-| Methode | Beschreibung | Hauptziele |
+| Methode | Beschreibung | Ziel |
 | :--- | :--- | :--- |
-| **C5: Analytischer Ansatz (Riley)** | **Der Goldstandard.** Geschlossene Lösung für die Entwicklung multivariater Modelle. | 1. Begrenzung der globalen Schrumpfung (shrinkage $S \ge 0.9$).<br />2. Begrenzung des Optimismus in der scheinbaren Leistung.<br />3. Präzise Schätzung des Interzepts. |
-| **C6: Simulationsbasiertes Design** | Simuliert spezifische Datengenerierungsmechanismen (DGM), um Anforderungen für komplexe Modelle abzuschätzen. | Nichtlineare Terme, komplexe Interaktionen, spezifische Korrelationsstrukturen. |
-| **C7: Bayes'sche Assurance** | MCMC-basierte Simulation zur Bestimmung der Stichprobengröße mit einer garantierten Erfolgswahrscheinlichkeit (Assurance). | Entwicklung Bayes'scher Modelle. |
+| **A3.1: Analytischer Ansatz (Riley)** | **Empfohlen.** Anpassung von Schrumpfung, Optimismus und Präzision. | Entwicklung neuer Modelle. |
+| **A3.2: Simulationsdesign** | Simulation spezifischer DGMs für komplexe Szenarien. | Entwicklung (Komplex). |
+| **A3.3: Bayes'sche Assurance** | MCMC-Simulation für garantierte Erfolgswahrscheinlichkeit. | Bayes'sche Entwicklung. |
 
-### D. Validierung und Aktualisierung
+#### A4. Validierung / Aktualisierung (Validation / Updating)
 
-Tools zur Planung der externen Validierung bestehender Modelle.
-
-| Methode | Beschreibung | Referenz |
+| Methode | Beschreibung | Ziel |
 | :--- | :--- | :--- |
-| **D8: AUC Präzision** | Berechnet N, um eine bestimmte Konfidenzintervallbreite für die AUC (C-Statistik) zu erreichen. | **Hanley & McNeil (1982)** |
-| **D9: Maßgeschneiderte Validierungsgröße** | Berechnet N, um eine präzise Schätzung des O/E-Verhältnisses, der Kalibrierungssteigung und der AUC sicherzustellen. | **Riley et al. (2021)** / `pmvalsampsize` |
-| **D10: Validierungssimulation** | Simulationsbasierte Planung unter Verwendung der Verteilung des linearen Prädiktors (LP). | **Snell et al. (2021)** |
-| **D11: Modellaktualisierung** | Erforderliche Stichprobengröße zur Aktualisierung (Neukalibrierung) eines bestehenden Modells (Intercept/Steigung) für eine neue Umgebung. | **Van Calster et al.** |
+| **A4.1: AUC Präzision** | KI-Breite für AUC (C-Statistik). | Validierung (Diskriminierung). |
+| **A4.2: Externe Validierung** | Präzision für O/E, Kalibrierungssteigung und AUC. | Validierung (Vollständig). |
+| **A4.3: Validierungssimulation** | Simulation basierend auf LP-Verteilung. | Validierung (Simulation). |
+| **A4.4: Modellaktualisierung** | Stichprobengröße zur Neukalibrierung (Intercept/Slope). | Modell-Updating. |
 
 ---
 
@@ -106,6 +104,26 @@ So stellen Sie diese Anwendung in Ihrer eigenen Infrastruktur bereit:
    ```bash
    streamlit run pmsampsize_app/app.py
    ```
+
+---
+
+## 5. Zitation
+
+Wenn Sie dieses Tool in Ihrer Forschung verwenden, zitieren Sie es bitte wie folgt:
+
+> Nguyen, M. (2025). Prognostic Research Sample Size Tool (Version 1.0) [Software]. Available at https://pmsample.streamlit.app/
+
+Oder verwenden Sie den BibTeX-Eintrag:
+
+```bibtex
+@software{nguyen2025pmsample,
+  author = {Nguyen, Minh},
+  title = {Prognostic Research Sample Size Tool},
+  year = {2025},
+  url = {https://pmsample.streamlit.app/},
+  version = {1.0}
+}
+```
 
 ---
 

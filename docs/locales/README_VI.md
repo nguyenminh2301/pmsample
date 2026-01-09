@@ -29,40 +29,45 @@ Một bộ công cụ để tính toán cỡ mẫu tối thiểu trong nghiên c
 
 Ứng dụng được cấu trúc thành bốn mô-đun chính, mỗi mô-đun nhắm mục tiêu đến một giai đoạn cụ thể của chu trình nghiên cứu.
 
-### A. Đánh giá Tính khả thi Sơ bộ
+### A. Kết cục Nhị phân
 
-| Phương pháp                                    | Mô tả                                                                                                                 | Tình huống Ứng dụng                                                                                                                                                                   |
-| :------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **A1: Events Per Variable (EPV/EPP)**       | Quy tắc kinh nghiệm dựa trên tỷ lệ số biến cố trên số tham số dự báo.                                     | *Chỉ dùng để kiểm tra tính khả thi.* **Không khuyến nghị dùng làm căn cứ chính** cho đề cương nghiên cứu vì không tính đến overfitting hay calibration. |
-| **A2: Độ chính xác của Nguy cơ Nền** | Ước tính cỡ mẫu cần thiết để ước tính tỷ lệ hiện mắc với độ rộng Khoảng tin cậy (CI) xác định. | Dịch tễ học mô tả; lập kế hoạch cho calibration-in-the-large.                                                                                                                     |
+#### Nhóm phụ A1: Kiểm tra nhanh
+| Phương pháp | Mô tả |
+| :--- | :--- |
+| **A1.1: Quy tắc kinh nghiệm (EPV)** | Kiểm tra sơ bộ theo kinh nghiệm (biến cố trên tham số). |
+| **A1.2: Độ chính xác Nguy cơ Nền** | Cỡ mẫu để ước tính tỷ lệ hiện mắc (độ rộng KTC). |
 
-### B. Nghiên cứu Yếu tố Tiên lượng (Mối liên quan)
+#### Nhóm phụ A2: Yếu tố Tiên lượng
+| Phương pháp | Mô tả |
+| :--- | :--- |
+| **A2.1: Logistic Power (Hsieh)** | Power để phát hiện OR cho một biến dự báo đơn. |
+| **A2.2: Cox Power (Schoenfeld)** | Power để phát hiện HR cho một biến dự báo đơn. |
 
-| Phương pháp                          | Mô tả                                                                                                                                      | Tài liệu tham khảo         |
-| :-------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------- |
-| **B3: Logistic Regression Power** | Tính cỡ mẫu để phát hiện Tỷ số Chênh (OR) mục tiêu cho một biến dự báo, có hiệu chỉnh tương quan với các biến khác. | **Hsieh et al. (1998)** |
-| **B4: Cox Regression Power**      | Tính số biến cố cần thiết để phát hiện Tỷ số Nguy cơ (HR) mục tiêu trong phân tích sống còn.                              | **Schoenfeld (1983)**   |
+#### Nhóm phụ A3: Phát triển Mô hình (Dự báo)
+| Phương pháp | Mô tả |
+| :--- | :--- |
+| **A3.1: Riley et al. (Giải tích)** | **Tiêu chuẩn Vàng.** Cỡ mẫu phát triển để hạn chế overfitting & đảm bảo độ chính xác. |
+| **A3.2: Mô phỏng Phát triển** | Lập kế hoạch dựa trên mô phỏng cho các mô hình phức tạp (DGM). |
+| **A3.3: Bayesian Assurance** | Đảm bảo (Assurance) dựa trên MCMC cho mô hình Bayes. |
 
-### C. Phát triển Mô hình Dự báo (Khuyến nghị)
+#### Nhóm phụ A4: Thẩm định / Cập nhật
+| Phương pháp | Mô tả |
+| :--- | :--- |
+| **A4.1: Độ chính xác AUC** | Cỡ mẫu cho độ rộng KTC của AUC (Hanley-McNeil). |
+| **A4.2: Thẩm định Ngoài (Tailored)** | Mục tiêu độ chính xác calibration và discrimination (Riley/Snell). |
+| **A4.3: Thẩm định Ngoài (Mô phỏng)** | Lập kế hoạch thẩm định dựa trên mô phỏng (phân phối LP). |
+| **A4.4: Cập nhật Mô hình** | Cỡ mẫu để hiệu chuẩn lại intercept/slope. |
 
-Đây là mô-đun cốt lõi để xây dựng các mô hình dự báo lâm sàng mới.
+### B. Kết cục Liên tục
+| Phương pháp | Mô tả |
+| :--- | :--- |
+| **B1: Quy tắc Green** | Quy tắc kinh nghiệm cho hồi quy tuyến tính (50 + 8k). |
+| **B2: Riley et al. (Liên tục)** | Phương pháp giải tích cho hồi quy tuyến tính (residuals). |
 
-| Phương pháp                                   | Mô tả                                                                                                           | Mục tiêu Chính                                                                                                                                             |
-| :----------------------------------------------- | :---------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **C5: Phương pháp Giải tích (Riley)** | **Tiêu chuẩn Vàng.** Công thức đóng cho phát triển mô hình đa biến.                            | 1. Hạn chế co rút toàn cục (shrinkage$S \ge 0.9$).<br />2. Hạn chế sự lạc quan về hiệu năng.<br />3. Ước tính chính xác hệ số intercept. |
-| **C6: Thiết kế dựa trên Mô phỏng**   | Mô phỏng Cơ chế Sinh Dữ liệu (DGM) cụ thể để ước tính yêu cầu cho các mô hình phức tạp.       | Các thuật ngữ phi tuyến, tương tác phức tạp, cấu trúc tương quan đặc thù.                                                                     |
-| **C7: Bayesian Assurance**                 | Mô phỏng dựa trên MCMC để xác định cỡ mẫu với xác suất thành công được đảm bảo (Assurance). | Phát triển mô hình theo trường phái Bayes.                                                                                                             |
-
-### D. Thẩm định và Cập nhật Mô hình
-
-Các công cụ để lập kế hoạch thẩm định ngoài (external validation) cho các mô hình hiện có.
-
-| Phương pháp                                  | Mô tả                                                                                                                  | Tài liệu tham khảo                             |
-| :---------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------ |
-| **D8: Độ chính xác AUC**              | Tính N để đạt được độ rộng Khoảng tin cậy xác định cho AUC (C-statistic).                                | **Hanley & McNeil (1982)**                  |
-| **D9: Cỡ mẫu Thẩm định Tùy chỉnh** | Tính N để đảm bảo ước tính chính xác tỷ lệ O/E, Calibration Slope, và AUC.                                 | **Riley et al. (2021)** / `pmvalsampsize` |
-| **D10: Mô phỏng Thẩm định**          | Lập kế hoạch dựa trên mô phỏng sử dụng phân phối của yếu tố Tiên lượng Tuyến tính (LP).               | **Snell et al. (2021)**                     |
-| **D11: Cập nhật Mô hình**             | Cỡ mẫu cần thiết để cập nhật (hiệu chuẩn lại) một mô hình hiện có (Intercept/Slope) cho bối cảnh mới. | **Van Calster et al.**                      |
+### C. Kết cục Sống còn
+| Phương pháp | Mô tả |
+| :--- | :--- |
+| **C1: Riley et al. (Sống còn)** | Phương pháp giải tích cho mô hình Cox (time-to-event). |
 
 ---
 
@@ -114,6 +119,26 @@ Phần mềm này là một sự triển khai của các phương pháp thống 
 
 * **Trách nhiệm của Người dùng**: Người dùng chịu trách nhiệm xác minh các tham số đầu vào và giải thích kết quả trong bối cảnh lâm sàng cụ thể của họ.
 * **Không đảm bảo Y tế**: Công cụ này không cung cấp lời khuyên y tế.
+
+---
+
+## 5. Trích dẫn
+
+Nếu bạn sử dụng công cụ này trong nghiên cứu, vui lòng trích dẫn như sau:
+
+> Nguyen, M. (2025). Prognostic Research Sample Size Tool (Version 1.0) [Software]. Available at https://pmsample.streamlit.app/
+
+Hoặc sử dụng BibTeX:
+
+```bibtex
+@software{nguyen2025pmsample,
+  author = {Nguyen, Minh},
+  title = {Prognostic Research Sample Size Tool},
+  year = {2025},
+  url = {https://pmsample.streamlit.app/},
+  version = {1.0}
+}
+```
 
 ---
 
