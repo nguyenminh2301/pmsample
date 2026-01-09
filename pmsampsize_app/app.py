@@ -24,74 +24,80 @@ st.set_page_config(
 
 # --- THEME MANAGEMENT ---
 def apply_theme():
-    # Dark Theme Only - Comprehensive Coverage
+    # GitHub Dark Theme - Comprehensive Coverage
     css = """
     <style>
     /* Base Application */
     .stApp { 
-        background-color: #0e1117; 
-        color: #FAFAFA !important; 
+        background-color: #0d1117 !important; 
+        color: #c9d1d9 !important; 
     }
     
     /* Headers */
     h1, h2, h3, h4, h5, h6 {
-        color: #FFFFFF !important;
+        color: #c9d1d9 !important;
     }
     
     /* Text Elements */
     p, li, span, label, div {
-        color: #FAFAFA !important;
+        color: #c9d1d9 !important;
+    }
+    
+    /* Secondary Text */
+    .stMarkdown p, .stMarkdown li {
+        color: #8b949e !important;
     }
     
     /* Links */
     a {
-        color: #58A6FF !important;
+        color: #58a6ff !important;
     }
     a:hover {
-        color: #79C0FF !important;
+        color: #79c0ff !important;
     }
     
     /* Sidebar */
     section[data-testid="stSidebar"] {
-        background-color: #1a1d24 !important;
-        color: #FAFAFA !important;
+        background-color: #161b22 !important;
+        color: #c9d1d9 !important;
     }
     section[data-testid="stSidebar"] p,
     section[data-testid="stSidebar"] label,
     section[data-testid="stSidebar"] span {
-        color: #FAFAFA !important;
+        color: #c9d1d9 !important;
     }
     
     /* Input Fields */
     div[data-baseweb="input"] > div {
-        background-color: #262730 !important;
-        color: #FAFAFA !important;
-        border-color: #4A4A4A !important;
+        background-color: #0d1117 !important;
+        color: #c9d1d9 !important;
+        border-color: #30363d !important;
     }
     
     input, textarea {
-        color: #FAFAFA !important;
-        background-color: #262730 !important;
+        color: #c9d1d9 !important;
+        background-color: #0d1117 !important;
     }
     
     /* Select Boxes */
     div[data-baseweb="select"] > div {
-        background-color: #262730 !important;
-        color: #FAFAFA !important;
-        border-color: #4A4A4A !important;
+        background-color: #0d1117 !important;
+        color: #c9d1d9 !important;
+        border-color: #30363d !important;
     }
     
     /* Text Areas */
     .stTextArea textarea {
-        color: #FAFAFA !important;
-        background-color: #262730 !important;
+        color: #c9d1d9 !important;
+        background-color: #0d1117 !important;
+        border-color: #30363d !important;
     }
     
     /* Buttons */
     .stButton > button {
         background-color: #238636 !important;
-        color: #FFFFFF !important;
-        border: none !important;
+        color: #ffffff !important;
+        border: 1px solid #30363d !important;
     }
     .stButton > button:hover {
         background-color: #2ea043 !important;
@@ -99,7 +105,8 @@ def apply_theme():
     
     /* Info/Warning/Success/Error Boxes */
     .stAlert {
-        color: #FAFAFA !important;
+        color: #c9d1d9 !important;
+        border-color: #30363d !important;
     }
     
     /* DataFrames and Tables */
@@ -107,59 +114,65 @@ def apply_theme():
         border: 1px solid #30363d;
     }
     .stDataFrame table {
-        color: #FAFAFA !important;
+        color: #c9d1d9 !important;
     }
     .stDataFrame th {
-        background-color: #21262d !important;
-        color: #FFFFFF !important;
+        background-color: #161b22 !important;
+        color: #c9d1d9 !important;
         border-color: #30363d !important;
     }
     .stDataFrame td {
-        color: #FAFAFA !important;
+        color: #c9d1d9 !important;
         border-color: #30363d !important;
     }
     
     /* Metrics */
     .stMetric {
-        color: #FAFAFA !important;
+        color: #c9d1d9 !important;
     }
     .stMetricLabel {
         color: #8b949e !important;
     }
     .stMetricValue {
-        color: #FFFFFF !important;
+        color: #c9d1d9 !important;
     }
     
     /* Expanders */
     .streamlit-expanderHeader {
-        background-color: #21262d !important;
-        color: #FAFAFA !important;
+        background-color: #161b22 !important;
+        color: #c9d1d9 !important;
+        border-color: #30363d !important;
     }
     
     /* Radio Buttons and Checkboxes */
     .stRadio label, .stCheckbox label {
-        color: #FAFAFA !important;
+        color: #c9d1d9 !important;
     }
     
     /* Number Input */
     .stNumberInput label {
-        color: #FAFAFA !important;
+        color: #c9d1d9 !important;
     }
     
     /* Markdown */
     .stMarkdown {
-        color: #FAFAFA !important;
+        color: #c9d1d9 !important;
     }
     
     /* Code Blocks */
     code {
-        color: #79C0FF !important;
+        color: #79c0ff !important;
         background-color: #161b22 !important;
     }
     
     /* Divider */
     hr {
         border-color: #30363d !important;
+    }
+    
+    /* Header/Toolbar */
+    header[data-testid="stHeader"] {
+        background-color: #161b22 !important;
     }
     </style>
     """
