@@ -3,7 +3,23 @@ KO = {
         "sidebar_title": "설정",
         "language": "언어 / Language",
         "mode": "방법 선택",
+        "input_help_multivalue": "쉼표로 구분된 여러 값을 지원합니다 (예: 10, 15, 20).",
         
+        # Sidebar
+        "lbl_settings": "설정",
+        "lbl_theme": "테마",
+        "lbl_theme_light": "밝게",
+        "lbl_theme_dark": "어둡게",
+        "lbl_theme_coder": "코더",
+        # Subgroups
+        "sg_a1": "A1. 빠른 검사",
+        "sg_a2": "A2. 예후 인자",
+        "sg_a3": "A3. 모델 개발",
+        "sg_a4": "A4. 검증",
+        "sg_b1": "B1. 규칙",
+        "sg_b2": "B2. 모델 개발",
+        "sg_c1": "C1. 모델 개발",
+
         # New Hierarchy Titles
         "title_a1_1": "A1.1: 경험 법칙 (EPV)",
         "title_a1_2": "A1.2: 기저 위험 정밀도",
