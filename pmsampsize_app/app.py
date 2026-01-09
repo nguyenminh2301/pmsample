@@ -183,6 +183,58 @@ def apply_theme():
 
 def render_sidebar(lang):
     """Renders the Tree Navigation and Settings."""
+    
+    # 0. Logo
+    try:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        logo_path = os.path.join(current_dir, "assets", "logo.png")
+        if os.path.exists(logo_path):
+            st.sidebar.image(logo_path, use_container_width=True)
+    except Exception:
+        pass
+        
+    # 1. Language Selector (Moved from bottom)
+    from utils.locales.en import EN
+    from utils.locales.vi import VI
+    from utils.locales.zh import ZH
+    from utils.locales.jp import JP
+    from utils.locales.fr import FR
+    from utils.locales.de import DE
+    from utils.locales.ko import KO
+    locales = {"EN": EN, "VI": VI, "ZH": ZH, "JP": JP, "FR": FR, "DE": DE, "KO": KO}
+    
+    # We need a temporary T_loc here for the label 'Language'
+    T_loc = locales.get(lang, EN)
+    
+    lang_idx = 0
+    if lang == "VI": lang_idx = 1
+    elif lang == "KO": lang_idx = 2
+    elif lang == "ZH": lang_idx = 3
+    elif lang == "JP": lang_idx = 4
+    elif lang == "FR": lang_idx = 5
+    elif lang == "DE": lang_idx = 6
+    
+    new_lang = st.sidebar.selectbox(
+        T_loc.get('language', "Language"), 
+        ["English (EN)", "Tiếng Việt (VI)", "한국어 (KO)", "中文 (ZH)", "日本語 (JP)", "Français (FR)", "Deutsch (DE)"], 
+        index=lang_idx
+    )
+    
+    if "English" in new_lang: selected_lang = "EN"
+    elif "Tiếng Việt" in new_lang: selected_lang = "VI"
+    elif "한국어" in new_lang: selected_lang = "KO"
+    elif "中文" in new_lang: selected_lang = "ZH"
+    elif "日本語" in new_lang: selected_lang = "JP"
+    elif "Français" in new_lang: selected_lang = "FR"
+    elif "Deutsch" in new_lang: selected_lang = "DE"
+    else: selected_lang = lang
+        
+    if selected_lang != st.session_state.get("lang", "EN"):
+        st.session_state["lang"] = selected_lang
+        st.rerun()
+
+    st.sidebar.divider()
+
     T = TRANS.get(lang, TRANS["EN"])
     st.sidebar.title(T["title"])
     
@@ -292,44 +344,8 @@ def render_sidebar(lang):
 
     st.sidebar.divider()
     
-    # 3. Settings
-    from utils.locales.en import EN
-    from utils.locales.vi import VI
-    from utils.locales.zh import ZH
-    from utils.locales.jp import JP
-    from utils.locales.fr import FR
-    from utils.locales.de import DE
-    from utils.locales.ko import KO
-    locales = {"EN": EN, "VI": VI, "ZH": ZH, "JP": JP, "FR": FR, "DE": DE, "KO": KO}
-    T_loc = locales.get(lang, EN)
-    
-    st.sidebar.markdown(f"### {T_loc.get('lbl_settings', 'Settings')}")
-    
-    # Language
-    lang_idx = 0
-    if lang == "VI": lang_idx = 1
-    elif lang == "KO": lang_idx = 2
-    elif lang == "ZH": lang_idx = 3
-    elif lang == "JP": lang_idx = 4
-    elif lang == "FR": lang_idx = 5
-    elif lang == "DE": lang_idx = 6
-    
-    new_lang = st.sidebar.selectbox(T_loc.get('language', "Language"), ["English (EN)", "Tiếng Việt (VI)", "한국어 (KO)", "中文 (ZH)", "日本語 (JP)", "Français (FR)", "Deutsch (DE)"], index=lang_idx)
-    
-    if "English" in new_lang: selected_lang = "EN"
-    elif "Tiếng Việt" in new_lang: selected_lang = "VI"
-    elif "한국어" in new_lang: selected_lang = "KO"
-    elif "中文" in new_lang: selected_lang = "ZH"
-    elif "日本語" in new_lang: selected_lang = "JP"
-    elif "Français" in new_lang: selected_lang = "FR"
-    elif "Deutsch" in new_lang: selected_lang = "DE"
-    else:
-        st.sidebar.info("Coming soon")
-        selected_lang = lang # Keep current
-        
-    if selected_lang != st.session_state.get("lang", "EN"):
-        st.session_state["lang"] = selected_lang
-        st.rerun()
+    # Settings (Language moved to top)
+
 
 
 
