@@ -23,7 +23,6 @@ st.set_page_config(
 )
 
 # --- THEME MANAGEMENT ---
-# --- THEME MANAGEMENT ---
 def apply_theme():
     # Retrieve theme from session state or default
     theme = st.session_state.get("theme", "Coder")
