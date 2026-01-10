@@ -189,7 +189,10 @@ def render_sidebar(lang):
         current_dir = os.path.dirname(os.path.abspath(__file__))
         logo_path = os.path.join(current_dir, "assets", "logo.png")
         if os.path.exists(logo_path):
-            st.sidebar.image(logo_path, use_container_width=True)
+            # Center logo using columns
+            _, col2, _ = st.sidebar.columns([3, 2, 3])
+            with col2:
+                st.image(logo_path, width=50)
     except Exception:
         pass
         
