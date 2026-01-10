@@ -1,4 +1,6 @@
-# 予後研究のためのサンプルサイズ推定 (Prognostic Research Sample Size Tool)
+# 予後モデルサンプルサイズツールキット (Prognosis-N)
+
+> *臨床予測モデルの開発、検証、更新のためのツールキット。*
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://pmsample.streamlit.app/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
@@ -67,6 +69,11 @@
 ## 3. インストールとローカル実行
 
 このアプリケーションを独自のインフラストラクチャにデプロイするには：
+
+**リポジトリ (Repositories):**
+
+* **GitLab (プライマリ)**: [`gitlab.com/minhthiennguyen/pmsample`](https://gitlab.com/minhthiennguyen/pmsample.git)
+* **GitHub (ミラー)**: [`github.com/nguyenminh2301/pmsample`](https://github.com/nguyenminh2301/pmsample.git)
 
 ### 前提条件
 

@@ -1,4 +1,6 @@
-# Estimation de la Taille d'Échantillon pour la Recherche Pronostique
+# Boîte à outils de taille d'échantillon pour modèles de pronostic (Prognosis-N)
+
+> *Une boîte à outils pour le développement, la validation et la mise à jour de modèles de prédiction clinique.*
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://pmsample.streamlit.app/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
@@ -67,6 +69,11 @@ L'application est désormais structurée hiérarchiquement (Catégorie A: Résul
 ## 3. Installation et Exécution Locale
 
 Pour déployer cette application sur votre propre infrastructure :
+
+**Dépôts (Repositories):**
+
+* **GitLab (Principal)**: [`gitlab.com/minhthiennguyen/pmsample`](https://gitlab.com/minhthiennguyen/pmsample.git)
+* **GitHub (Miroir)**: [`github.com/nguyenminh2301/pmsample`](https://github.com/nguyenminh2301/pmsample.git)
 
 ### Prérequis
 

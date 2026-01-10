@@ -15,13 +15,14 @@ def render_ui(T):
     
     col1, col2 = st.columns(2)
     with col1:
-        p_str = st.text_input(T["prevalence"], "0.1, 0.2", help=T.get("input_help_multivalue"), key="q2_p")
+        p_str = st.text_input(T["prevalence"] + " #", "0.1, 0.2", help=T.get("input_help_multivalue"), key="q2_p")
         method = st.selectbox(T["ci_method"], ["wilson", "wald", "clopper-pearson"], 
                               format_func=lambda x: T[f"ci_method_{x.replace('clopper-pearson', 'cp')}"], key="q2_method")
     with col2:
-        width_str = st.text_input(T["ci_half_width"], "0.05, 0.1", help=T.get("input_help_multivalue"), key="q2_w")
-        conf_str = st.text_input(T["ci_level"], "0.95", help=T.get("input_help_multivalue"), key="q2_c")
+        width_str = st.text_input(T["ci_half_width"] + " #", "0.05, 0.1", help=T.get("input_help_multivalue"), key="q2_w")
+        conf_str = st.text_input(T["ci_level"] + " #", "0.95", help=T.get("input_help_multivalue"), key="q2_c")
         
+    st.caption(T.get("multivalue_note", "Note: Fields marked with # allow multiple values."))
     if st.button(T["calc_btn"], key="btn_q2"):
         try:
             p_list = parse_input(p_str)

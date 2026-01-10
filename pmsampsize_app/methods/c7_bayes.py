@@ -24,7 +24,7 @@ def render_ui(T):
             P = st.number_input(T["parameters"], 2, 100, 15, key="bayes_P")
         with col2:
             rho = st.number_input(T["correlation"], 0.0, 0.9, 0.1, key="bayes_rho")
-            n_candidates_str = st.text_input(T["n_candidates"], "500, 1000, 1500, 2000", help=T["n_candidates_help"])
+            n_candidates_str = st.text_input(T["n_candidates"] + " #", "500, 1000, 1500, 2000", help=T["n_candidates_help"])
             
     # 2. Sim Settings
     with st.expander(T["sim_settings"], expanded=False):
@@ -33,6 +33,7 @@ def render_ui(T):
         
     start_seed = st.sidebar.number_input("Global Random Seed", 0, 999999999, 42, key="bayes_seed")
     
+    st.caption(T.get("multivalue_note", "Note: Fields marked with # allow multiple values."))
     if st.button(T["run_simulation"], type="primary"):
         # Import bayes core here to handle load errors
         try:

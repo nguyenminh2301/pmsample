@@ -4,6 +4,7 @@ VI = {
         "language": "Ngôn ngữ / Language",
         "mode": "Chọn Phương pháp",
         "input_help_multivalue": "Hỗ trợ nhập nhiều giá trị phân cách bằng dấu phẩy (vd: 10, 15, 20).",
+        "multivalue_note": "Ghi chú: Các ô có dấu # có thể nhập nhiều giá trị.",
         
         # Sidebar
         "lbl_settings": "Cài đặt",

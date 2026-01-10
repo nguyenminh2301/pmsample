@@ -38,7 +38,7 @@ def render_ui(T):
         
         # Predictors (m)
         m_str = st.text_input(
-            "Number of Predictors (m)", 
+            "Number of Predictors (m) #", 
             "5, 10, 15", 
             help=T.get("input_help_multivalue", "Supports multiple values separated by commas.")
         )
@@ -69,6 +69,7 @@ def render_ui(T):
             effect_size = 0.15
 
     # --- Calculation ---
+    st.caption(T.get("multivalue_note", "Note: Fields marked with # allow multiple values."))
     if st.button(T.get("calc_btn", "Calculate"), key="btn_b1"):
         try:
             # Parse m

@@ -1,4 +1,6 @@
-# Prognostic Research Sample Size Tool
+# Prognosis Model Sample Size Toolkit (Prognosis-N)
+
+> *A toolkit for Development, Validation, and Updating of Clinical Prediction Models.*
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://pmsample.streamlit.app/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
@@ -82,8 +84,9 @@ The application is structured into four primary modules, each targeting a specif
 To deploy this application within your own infrastructure:
 
 **Repositories:**
-*   **GitLab (Primary)**: [`gitlab.com/minhthiennguyen/pmsample`](https://gitlab.com/minhthiennguyen/pmsample.git)
-*   **GitHub (Mirror)**: [`github.com/nguyenminh2301/pmsample`](https://github.com/nguyenminh2301/pmsample.git)
+
+* **GitLab (Primary)**: [`gitlab.com/minhthiennguyen/pmsample`](https://gitlab.com/minhthiennguyen/pmsample.git)
+* **GitHub (Mirror)**: [`github.com/nguyenminh2301/pmsample`](https://github.com/nguyenminh2301/pmsample.git)
 
 ### Prerequisites
 

@@ -66,8 +66,8 @@ def render_ui(T):
     with col1:
         alpha = st.number_input("Alpha (2-sided)", 0.001, 0.20, 0.05, step=0.005, key="b4_alpha")
         # Multi-value inputs
-        power_str = st.text_input("Power", "0.8, 0.9", help=T.get("input_help_multivalue"), key="b4_power")
-        hr_str = st.text_input("Hazard Ratio (HR)", "1.5, 2.0", help="Effect size to detect. " + T.get("input_help_multivalue"), key="b4_hr")
+        power_str = st.text_input("Power #", "0.8, 0.9", help=T.get("input_help_multivalue"), key="b4_power")
+        hr_str = st.text_input("Hazard Ratio (HR) #", "1.5, 2.0", help="Effect size to detect. " + T.get("input_help_multivalue"), key="b4_hr")
         
     with col2:
         pred_type = st.radio("Predictor Type", ["Binary", "Continuous"], horizontal=True, key="b4_type")
@@ -79,9 +79,10 @@ def render_ui(T):
             q = 0.5
             sd = st.number_input("Standard Deviation of X", 0.1, 100.0, 1.0, key="b4_sd")
             
-        f_event_str = st.text_input("Expected Event Fraction (Prob(Event))", "0.2, 0.3", help="Overall probability of observing an event. " + T.get("input_help_multivalue"), key="b4_f")
+        f_event_str = st.text_input("Expected Event Fraction (Prob(Event)) #", "0.2, 0.3", help="Overall probability of observing an event. " + T.get("input_help_multivalue"), key="b4_f")
     
     
+    st.caption(T.get("multivalue_note", "Note: Fields marked with # allow multiple values."))
     if st.button("Calculate B4", key="b4_btn"):
         try:
             # Parse inputs

@@ -1,4 +1,6 @@
-# 예후 연구를 위한 최소 표본 크기 추정 (Minimum Sample Size Estimation for Prognostic Research)
+# 예후 모델 표본 크기 툴킷 (Prognosis-N)
+
+> *임상 예측 모델의 개발, 검증 및 업데이트를 위한 툴킷입니다.*
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://pmsample.streamlit.app/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
@@ -64,6 +66,11 @@
 ## 3. 설치 및 로컬 실행
 
 자신의 인프라 내에 이 애플리케이션을 배포하려면:
+
+**저장소 (Repositories):**
+
+* **GitLab (기본)**: [`gitlab.com/minhthiennguyen/pmsample`](https://gitlab.com/minhthiennguyen/pmsample.git)
+* **GitHub (미러)**: [`github.com/nguyenminh2301/pmsample`](https://github.com/nguyenminh2301/pmsample.git)
 
 ### 전제 조건
 *   Python 3.9 이상

@@ -17,12 +17,12 @@ def render_ui(T):
     
     col1, col2 = st.columns(2)
     with col1:
-        p_str = st.text_input(T["prevalence"], "0.05, 0.15", help=T.get("input_help_multivalue"), key="q1_p")
+        p_str = st.text_input(T["prevalence"] + " #", "0.05, 0.15", help=T.get("input_help_multivalue"), key="q1_p")
     with col2:
-        P_str = st.text_input(T["parameters"], "10, 20", help=T.get("input_help_multivalue"), key="q1_P")
-        epv_str = st.text_input(T["target_epv"], "10, 15, 20", help=T.get("input_help_multivalue"), key="q1_epv")
+        P_str = st.text_input(T["parameters"] + " #", "10, 20", help=T.get("input_help_multivalue"), key="q1_P")
+        epv_str = st.text_input(T["target_epv"] + " #", "10, 15, 20", help=T.get("input_help_multivalue"), key="q1_epv")
         
-    
+    st.caption(T.get("multivalue_note", "Note: Fields marked with # allow multiple values."))
     if st.button(T["calc_btn"]):
         try:
             # Parse inputs
@@ -63,12 +63,14 @@ def render_ui(T):
         st.dataframe(df, use_container_width=True)
         
         # Visualization (if multiple rows)
+        # Visualization (if multiple rows)
         if len(df) > 1:
             st.markdown("### Visualization")
-            chart_type = st.selectbox("Chart Type", ["Scatter", "Line"], key="a1_chart_type")
-            
+            # User simplified: always line chart
+            # chart_type = st.selectbox("Chart Type", ["Scatter", "Line"], key="a1_chart_type")
+
             import altair as alt
-            
+
             # Dynamic chart customization
             c = alt.Chart(df).encode(
                 x=alt.X('Parameters', title=T['parameters']),
@@ -76,12 +78,10 @@ def render_ui(T):
                 color=alt.Color('Target_EPV:O', title=T['target_epv']),
                 tooltip=['Required_N', 'Prevalence', 'Parameters', 'Target_EPV']
             )
-            
-            if chart_type == "Line":
-                c = c.mark_line(point=True)
-            else:
-                c = c.mark_circle(size=60)
-                
+
+            # Always line chart
+            c = c.mark_line(point=True)
+
             st.altair_chart(c, use_container_width=True)
         
         # Interpretation for the first row (simplest case)

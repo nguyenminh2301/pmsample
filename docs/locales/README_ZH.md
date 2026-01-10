@@ -1,4 +1,6 @@
-# 预后研究样本量计算器 (Prognostic Research Sample Size Tool)
+# 预后模型样本量工具包 (Prognosis-N)
+
+> *用于临床预测模型开发、验证和更新的工具包。*
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://pmsample.streamlit.app/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
@@ -67,6 +69,11 @@
 ## 3. 安装与本地运行
 
 要在您自己的基础设施上部署此应用程序：
+
+**仓库 (Repositories):**
+
+* **GitLab (主站)**: [`gitlab.com/minhthiennguyen/pmsample`](https://gitlab.com/minhthiennguyen/pmsample.git)
+* **GitHub (镜像)**: [`github.com/nguyenminh2301/pmsample`](https://github.com/nguyenminh2301/pmsample.git)
 
 ### 先决条件
 

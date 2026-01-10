@@ -4,6 +4,7 @@ EN = {
         "language": "Language / Ngôn ngữ",
         "mode": "Method Selection",
         "input_help_multivalue": "Supports multiple values separated by commas (e.g., 10, 15, 20).",
+        "multivalue_note": "Note: Fields marked with # allow multiple values (comma-separated).",
         
         # Sidebar
         "lbl_settings": "Settings",

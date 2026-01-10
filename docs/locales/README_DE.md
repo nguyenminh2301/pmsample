@@ -1,4 +1,6 @@
-# Stichprobenberechnung für Prognostische Forschung (Prognostic Research Sample Size Tool)
+# Toolkit zur Stichprobenberechnung für Prognosemodelle (Prognosis-N)
+
+> *Ein Toolkit für Entwicklung, Validierung und Aktualisierung klinischer Vorhersagemodelle.*
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://pmsample.streamlit.app/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
@@ -67,6 +69,11 @@ Die Anwendung ist nun hierarchisch strukturiert (Kategorie A: Binäre Ergebnisse
 ## 3. Installation und lokale Ausführung
 
 So stellen Sie diese Anwendung in Ihrer eigenen Infrastruktur bereit:
+
+**Repositories:**
+
+* **GitLab (Primär)**: [`gitlab.com/minhthiennguyen/pmsample`](https://gitlab.com/minhthiennguyen/pmsample.git)
+* **GitHub (Spiegel)**: [`github.com/nguyenminh2301/pmsample`](https://github.com/nguyenminh2301/pmsample.git)
 
 ### Voraussetzungen
 

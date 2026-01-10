@@ -20,14 +20,14 @@ def render_ui(T):
     col1, col2 = st.columns(2)
     with col1:
         if is_batch:
-            p_input = st.text_input(T["prevalence"], value="0.1", help=T["prevalence_help"])
+            p_input = st.text_input(T["prevalence"] + " #", value="0.1", help=T["prevalence_help"])
         else:
             p_val = st.number_input(T["prevalence"], min_value=0.001, max_value=0.999, value=0.1, step=0.01, format="%.3f", help=T["prevalence_help"], key="riley_p")
             p_input = str(p_val)
             
     with col2:
         if is_batch:
-            param_input = st.text_input(T["parameters"], value="10", help=T["parameters_help"])
+            param_input = st.text_input(T["parameters"] + " #", value="10", help=T["parameters_help"])
         else:
             param_val = st.number_input(T["parameters"], min_value=1, value=10, step=1, help=T["parameters_help"], key="riley_params")
             param_input = str(param_val)
@@ -42,7 +42,7 @@ def render_ui(T):
         default_val = "0.8" if perf_mode == "AUC" else "0.15"
         
         if is_batch:
-            perf_input_raw = st.text_input(label, value=default_val, key="riley_perf_batch")
+            perf_input_raw = st.text_input(label + " #", value=default_val, key="riley_perf_batch")
         else:
             val = st.number_input(label, value=float(default_val), step=0.01, key="riley_perf_single")
             perf_input_raw = str(val)
@@ -51,6 +51,7 @@ def render_ui(T):
         
     shrinkage = st.number_input(T["shrinkage"], value=0.9, min_value=0.5, max_value=0.99, step=0.05, help=T["shrinkage_help"], key="riley_shrink")
     
+    st.caption(T.get("multivalue_note", "Note: Fields marked with # allow multiple values."))
     if st.button(T["calc_btn"], type="primary", key="btn_riley"):
         try:
             p_list = parse_input(p_input, float)

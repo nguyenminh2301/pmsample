@@ -33,7 +33,7 @@ def render_ui(T):
             target_auc = 0.8 # unused
             rho = st.number_input(T["correlation"], 0.0, 0.9, 0.2, key="dev_rho")
             
-    n_candidates_str = st.text_input(T["n_candidates"], "1000, 1500, 2000, 3000, 5000", key="dev_n_cands")
+    n_candidates_str = st.text_input(T["n_candidates"] + " #", "1000, 1500, 2000, 3000, 5000", key="dev_n_cands")
     n_sims = st.number_input(T["n_sims"], 10, 5000, 200, key="dev_nsims")
     
     # Criteria Selector
@@ -44,6 +44,7 @@ def render_ui(T):
     
     start_seed = st.sidebar.number_input("Global Random Seed (Dev)", 0, 999999999, 20260107, key="dev_seed")
     
+    st.caption(T.get("multivalue_note", "Note: Fields marked with # allow multiple values."))
     if st.button(T["run_simulation"], type="primary", key="btn_dev"):
         try:
             n_cands = parse_input(n_candidates_str, int)

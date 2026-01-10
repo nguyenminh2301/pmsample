@@ -31,16 +31,16 @@ def render_ui(T):
     
     col1, col2 = st.columns(2)
     with col1:
-        auc_str = st.text_input(T["auc_expected"], "0.80", key="d8_auc")
-        p_str = st.text_input(T["prevalence"], "0.10", key="d8_p")
+        auc_str = st.text_input(T["auc_expected"] + " #", "0.80", key="d8_auc")
+        p_str = st.text_input(T["prevalence"] + " #", "0.10", key="d8_p")
         
     with col2:
         if is_finding_n:
-            target_str = st.text_input(T["d8_width_input"], "0.10", key="d8_width")
+            target_str = st.text_input(T["d8_width_input"] + " #", "0.10", key="d8_width")
         else:
-            target_str = st.text_input(T["d8_n_input"], "500", key="d8_n")
+            target_str = st.text_input(T["d8_n_input"] + " #", "500", key="d8_n")
             
-        conf_str = st.text_input(T["ci_level"], "0.95", key="d8_conf")
+        conf_str = st.text_input(T["ci_level"] + " #", "0.95", key="d8_conf")
 
     # Advanced Options
     with st.expander(T["d8_opt_settings"]):
@@ -52,6 +52,7 @@ def render_ui(T):
             show_rounding = st.checkbox(T["d8_practical_rounding"], value=False, key="d8_round")
 
     # Calculate Button
+    st.caption(T.get("multivalue_note", "Note: Fields marked with # allow multiple values."))
     if st.button(T["calc_btn"], key="btn_d8"):
         try:
             auc_list = parse_input(auc_str)

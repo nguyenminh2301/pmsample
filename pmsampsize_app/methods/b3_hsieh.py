@@ -126,11 +126,11 @@ def render_ui(T):
     with col1:
         alpha = st.number_input("Alpha (2-sided)", 0.001, 0.20, 0.05, step=0.005)
         # Multi-value inputs
-        power_str = st.text_input("Power", "0.8, 0.9", help=T.get("input_help_multivalue"), key="b3_power")
-        p0_str = st.text_input("Baseline Event Rate (p0)", "0.1, 0.2", help="Event rate when X=mean (continuous) or X=0 (binary). " + T.get("input_help_multivalue"), key="b3_p0")
+        power_str = st.text_input("Power #", "0.8, 0.9", help=T.get("input_help_multivalue"), key="b3_power")
+        p0_str = st.text_input("Baseline Event Rate (p0) #", "0.1, 0.2", help="Event rate when X=mean (continuous) or X=0 (binary). " + T.get("input_help_multivalue"), key="b3_p0")
         
     with col2:
-        or_str = st.text_input("Target Odds Ratio (OR)", "1.5, 2.0", help="Effect size to detect. " + T.get("input_help_multivalue"), key="b3_or")
+        or_str = st.text_input("Target Odds Ratio (OR) #", "1.5, 2.0", help="Effect size to detect. " + T.get("input_help_multivalue"), key="b3_or")
         pred_type = st.radio("Predictor Type", ["Binary", "Continuous"], horizontal=True)
         
     if pred_type == "Binary":
@@ -140,9 +140,9 @@ def render_ui(T):
         q = 0.5
         sd = st.number_input("Standard Deviation of X", 0.1, 100.0, 1.0)
         
-    r2_str = st.text_input("R-squared with other covariates", "0.0", help="Variance Inflation Factor adjustment. " + T.get("input_help_multivalue"), key="b3_r2")
+    r2_str = st.text_input("R-squared with other covariates #", "0.0", help="Variance Inflation Factor adjustment. " + T.get("input_help_multivalue"), key="b3_r2")
     
-    
+    st.caption(T.get("multivalue_note", "Note: Fields marked with # allow multiple values."))
     if st.button("Calculate B3"):
         try:
             # Parse inputs

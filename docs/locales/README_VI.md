@@ -1,10 +1,12 @@
-# Ước tính Cỡ mẫu cho Nghiên cứu Tiên lượng
+# Bộ công cụ ước tính cỡ mẫu mô hình tiên lượng (Prognosis-N)
+
+> *Bộ công cụ dành cho Phát triển, Thẩm định và Cập nhật các Mô hình Dự báo Nghiên cứu Tiên lượng Lâm sàng.*
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://pmsample.streamlit.app/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Một bộ công cụ để tính toán cỡ mẫu tối thiểu trong nghiên cứu tiên lượng lâm sàng. Được thiết kế dành cho các nhà khoa học dữ liệu, nhà thống kê và nghiên cứu viên lâm sàng, ứng dụng này triển khai các phương pháp thống kê đã được kiểm chứng cho **Phát triển Mô hình Dự báo**, **Thẩm định Ngoài (External Validation)**, **Nghiên cứu Yếu tố Tiên lượng**, và **Cập nhật Mô hình**.
+Một bộ công cụ để tính toán cỡ mẫu tối thiểu trong nghiên cứu tiên lượng lâm sàng. Được thiết kế dành cho các nhà khoa học dữ liệu, nhà thống kê và nghiên cứu lâm sàng, ứng dụng này triển khai các phương pháp thống kê đã được kiểm chứng cho **Phát triển Mô hình Dự báo**, **Thẩm định Ngoài (External Validation)**, **Nghiên cứu Yếu tố Tiên lượng**, và **Cập nhật Mô hình**.
 
 🔗 **Truy cập Ứng dụng:** [https://pmsample.streamlit.app/](https://pmsample.streamlit.app/)
 
@@ -19,7 +21,7 @@ Một bộ công cụ để tính toán cỡ mẫu tối thiểu trong nghiên c
 ### Các Tính năng Chính
 
 * **Độ chính xác Phương pháp luận**: Triển khai các thuật toán tuân thủ nghiêm ngặt các tài liệu thống kê đã được bình duyệt (Riley et al., Hanley & McNeil, Hsieh, et al.).
-* **Kiểm chứng (Validation)**: Các tính toán cốt lõi đã được đối chiếu với các gói R uy tín (`pmsampsize`, `presize`, `pmvalsampsize`, `sampsizeval`) để đảm bảo độ chính xác.
+* **Kiểm chứng (Validation)**: Các tính toán cốt lõi đã được đối chiếu với các gói R (`pmsampsize`, `presize`, `pmvalsampsize`, `sampsizeval`) để đảm bảo độ chính xác.
 * **Hỗ trợ Đa ngôn ngữ**: Hỗ trợ đầy đủ tiếng Anh và tiếng Việt, tạo thuận lợi cho hợp tác quốc tế.
 * **Phân tích Độ nhạy**: Tích hợp xử lý hàng loạt cho phép các nhà nghiên cứu đánh giá sự thay đổi yêu cầu cỡ mẫu qua một loạt các giả định (ví dụ: thay đổi tỷ lệ hiện mắc hoặc $R^2$ dự kiến).
 
@@ -32,41 +34,47 @@ Một bộ công cụ để tính toán cỡ mẫu tối thiểu trong nghiên c
 ### A. Kết cục Nhị phân
 
 #### Nhóm phụ A1: Kiểm tra nhanh
-| Phương pháp | Mô tả |
-| :--- | :--- |
-| **A1.1: Quy tắc kinh nghiệm (EPV)** | Kiểm tra sơ bộ theo kinh nghiệm (biến cố trên tham số). |
-| **A1.2: Độ chính xác Nguy cơ Nền** | Cỡ mẫu để ước tính tỷ lệ hiện mắc (độ rộng KTC). |
+
+| Phương pháp                                 | Mô tả                                                         |
+| :--------------------------------------------- | :-------------------------------------------------------------- |
+| **A1.1: Quy tắc kinh nghiệm (EPV)**    | Kiểm tra sơ bộ theo kinh nghiệm (biến cố trên tham số). |
+| **A1.2: Độ chính xác Nguy cơ Nền** | Cỡ mẫu để ước tính tỷ lệ hiện mắc (độ rộng KTC).  |
 
 #### Nhóm phụ A2: Yếu tố Tiên lượng
-| Phương pháp | Mô tả |
-| :--- | :--- |
+
+| Phương pháp                         | Mô tả                                                  |
+| :------------------------------------- | :------------------------------------------------------- |
 | **A2.1: Logistic Power (Hsieh)** | Power để phát hiện OR cho một biến dự báo đơn. |
 | **A2.2: Cox Power (Schoenfeld)** | Power để phát hiện HR cho một biến dự báo đơn. |
 
 #### Nhóm phụ A3: Phát triển Mô hình (Dự báo)
-| Phương pháp | Mô tả |
-| :--- | :--- |
+
+| Phương pháp                             | Mô tả                                                                                                       |
+| :----------------------------------------- | :------------------------------------------------------------------------------------------------------------ |
 | **A3.1: Riley et al. (Giải tích)** | **Tiêu chuẩn Vàng.** Cỡ mẫu phát triển để hạn chế overfitting & đảm bảo độ chính xác. |
-| **A3.2: Mô phỏng Phát triển** | Lập kế hoạch dựa trên mô phỏng cho các mô hình phức tạp (DGM). |
-| **A3.3: Bayesian Assurance** | Đảm bảo (Assurance) dựa trên MCMC cho mô hình Bayes. |
+| **A3.2: Mô phỏng Phát triển**    | Lập kế hoạch dựa trên mô phỏng cho các mô hình phức tạp (DGM).                                    |
+| **A3.3: Bayesian Assurance**         | Đảm bảo (Assurance) dựa trên MCMC cho mô hình Bayes.                                                   |
 
 #### Nhóm phụ A4: Thẩm định / Cập nhật
-| Phương pháp | Mô tả |
-| :--- | :--- |
-| **A4.1: Độ chính xác AUC** | Cỡ mẫu cho độ rộng KTC của AUC (Hanley-McNeil). |
-| **A4.2: Thẩm định Ngoài (Tailored)** | Mục tiêu độ chính xác calibration và discrimination (Riley/Snell). |
-| **A4.3: Thẩm định Ngoài (Mô phỏng)** | Lập kế hoạch thẩm định dựa trên mô phỏng (phân phối LP). |
-| **A4.4: Cập nhật Mô hình** | Cỡ mẫu để hiệu chuẩn lại intercept/slope. |
+
+| Phương pháp                                   | Mô tả                                                                   |
+| :----------------------------------------------- | :------------------------------------------------------------------------ |
+| **A4.1: Độ chính xác AUC**             | Cỡ mẫu cho độ rộng KTC của AUC (Hanley-McNeil).                     |
+| **A4.2: Thẩm định Ngoài (Tailored)**   | Mục tiêu độ chính xác calibration và discrimination (Riley/Snell). |
+| **A4.3: Thẩm định Ngoài (Mô phỏng)** | Lập kế hoạch thẩm định dựa trên mô phỏng (phân phối LP).      |
+| **A4.4: Cập nhật Mô hình**             | Cỡ mẫu để hiệu chuẩn lại intercept/slope.                          |
 
 ### B. Kết cục Liên tục
-| Phương pháp | Mô tả |
-| :--- | :--- |
-| **B1: Quy tắc Green** | Quy tắc kinh nghiệm cho hồi quy tuyến tính (50 + 8k). |
+
+| Phương pháp                          | Mô tả                                                           |
+| :-------------------------------------- | :---------------------------------------------------------------- |
+| **B1: Quy tắc Green**            | Quy tắc kinh nghiệm cho hồi quy tuyến tính (50 + 8k).        |
 | **B2: Riley et al. (Liên tục)** | Phương pháp giải tích cho hồi quy tuyến tính (residuals). |
 
 ### C. Kết cục Sống còn
-| Phương pháp | Mô tả |
-| :--- | :--- |
+
+| Phương pháp                          | Mô tả                                                       |
+| :-------------------------------------- | :------------------------------------------------------------ |
 | **C1: Riley et al. (Sống còn)** | Phương pháp giải tích cho mô hình Cox (time-to-event). |
 
 ---
@@ -74,6 +82,11 @@ Một bộ công cụ để tính toán cỡ mẫu tối thiểu trong nghiên c
 ## 3. Cài đặt và Chạy cục bộ
 
 Để triển khai ứng dụng này trên hạ tầng của riêng bạn:
+
+**Kho lưu trữ (Repositories):**
+
+* **GitLab (Chính)**: [`gitlab.com/minhthiennguyen/pmsample`](https://gitlab.com/minhthiennguyen/pmsample.git)
+* **GitHub (Dự phòng)**: [`github.com/nguyenminh2301/pmsample`](https://github.com/nguyenminh2301/pmsample.git)
 
 ### Yêu cầu Tiên quyết
 
@@ -143,5 +156,6 @@ Hoặc sử dụng BibTeX:
 ---
 
 **Tác giả & Bảo trì:**
-Minh Nguyen (minhnt@ump.edu.vn)
+Minh Nguyen, MPH (Mr/ He/ him)
+email: minhnt@ump.edu.vn
 Bộ môn Dịch tễ học, Khoa Y tế công cộng, Đại học Y Dược TP. Hồ Chí Minh, Việt Nam
