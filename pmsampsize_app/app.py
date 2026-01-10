@@ -95,12 +95,12 @@ def apply_theme():
     
     /* Buttons */
     .stButton > button {
-        background-color: #238636 !important;
+        background-color: #0a2c4d !important;
         color: #ffffff !important;
-        border: 1px solid #30363d !important;
+        border: 1px solid #0e406e !important;
     }
     .stButton > button:hover {
-        background-color: #2ea043 !important;
+        background-color: #184a85 !important;
     }
     
     /* Info/Warning/Success/Error Boxes */

@@ -143,7 +143,7 @@ def render_ui(T):
     r2_str = st.text_input("R-squared with other covariates #", "0.0", help="Variance Inflation Factor adjustment. " + T.get("input_help_multivalue"), key="b3_r2")
     
     st.caption(T.get("multivalue_note", "Note: Fields marked with # allow multiple values."))
-    if st.button("Calculate B3"):
+    if st.button("Calculate"):
         try:
             # Parse inputs
             power_list = parse_input(power_str, float)

@@ -83,7 +83,7 @@ def render_ui(T):
     
     
     st.caption(T.get("multivalue_note", "Note: Fields marked with # allow multiple values."))
-    if st.button("Calculate B4", key="b4_btn"):
+    if st.button("Calculate", key="b4_btn"):
         try:
             # Parse inputs
             power_list = parse_input(power_str, float)
