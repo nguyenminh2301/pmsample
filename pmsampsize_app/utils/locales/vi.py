@@ -549,6 +549,103 @@ $$
 2. Hsieh FY. *Sample size tables for logistic regression.* Statistics in Medicine. 1989;8(7):795–802.
 3. Whittemore AS. *Sample size for logistic regression with small response probability.* Journal of the American Statistical Association. 1981;76:27–32.
 """,
+        "b4_content_md": """
+### Mục đích
+
+Module này ước tính **số biến cố / cỡ mẫu tối thiểu** cần thiết để phát hiện mối liên hệ giữa một biến dự báo ($X$) và một **kết cục sống còn (time-to-event)**, sử dụng **mô hình hồi quy Cox (Cox proportional hazards)**, với mục tiêu là một **tỷ số nguy cơ (Hazard Ratio - HR)** cụ thể, mức ý nghĩa **hai phía $\\alpha$**, và **công suất (power)** mong muốn. Công thức dựa trên phương pháp giải tích kinh điển của **Schoenfeld (1983)**, được tổng quát hóa cho biến liên tục bởi **Hsieh & Lavori (2000)**.
+
+Giống A2.1 (Hsieh, logistic), đây là phép tính công suất cho **kiểm định giả thuyết / một hệ số hồi quy đơn lẻ**, **không phải** phương pháp phát triển mô hình tiên lượng đa biến. Phương pháp này **không** đảm bảo hiệu năng hiệu chỉnh (calibration) hay phân biệt (discrimination) của một mô hình tiên lượng hoàn chỉnh.
+
+---
+
+### Khi nào nên dùng
+
+Dùng A2.2 khi:
+
+* Bạn muốn tính công suất để phát hiện một **HR có ý nghĩa lâm sàng** cho **một biến dự báo đơn lẻ** (nhị giá hoặc liên tục) trong mô hình Cox.
+* Mục tiêu chính là **kiểm định giả thuyết** (biến dự báo có liên quan đến nguy cơ theo thời gian hay không?), không phải xây dựng mô hình tiên lượng đa biến.
+
+### Khi nào KHÔNG nên dùng
+
+* Mục tiêu là **phát triển mô hình tiên lượng** cho dữ liệu sống còn (dùng phương pháp Riley cho sống còn — C1, khi có sẵn).
+* Bạn dự định **chọn biến**, dùng số hạng phi tuyến, hoặc nhiều đồng biến — công suất cho một hệ số không phản ánh hiệu năng tổng thể của mô hình.
+* Thời gian theo dõi và việc kiểm duyệt (censoring) rất **không đồng nhất** giữa các đối tượng theo cách không thể tóm gọn bằng một xác suất biến cố tổng quát duy nhất.
+
+---
+
+## Mô hình thống kê và tham số
+
+Mô hình nguy cơ tỷ lệ Cox:
+$$
+h(t \\mid X) = h_0(t)\\, \\exp(\\beta_1 X)
+$$
+
+$$
+\\mathrm{HR} = \\exp(\\beta_1)
+$$
+
+Kiểm định giả thuyết:
+$$
+H_0:\\beta_1=0 \\quad \\text{so với}\\quad H_1:\\beta_1\\neq 0
+$$
+
+---
+
+## Công thức tính (Schoenfeld / Hsieh–Lavori)
+
+**Bước 1 — Số biến cố cần thiết ($d$):**
+$$
+d=\\left\\lceil \\frac{(z_{1-\\alpha/2}+z_{1-\\beta})^2}{\\mathrm{Var}(X)\\,[\\ln(\\mathrm{HR})]^2} \\right\\rceil
+$$
+
+trong đó $\\mathrm{Var}(X)$ phụ thuộc vào loại biến dự báo:
+
+* **Biến nhị giá** ($q = P(X=1)$, tỷ lệ ở nhóm phơi nhiễm/so sánh):
+  $$
+  \\mathrm{Var}(X)=q(1-q)
+  $$
+* **Biến liên tục** (độ lệch chuẩn $\\sigma_X$):
+  $$
+  \\mathrm{Var}(X)=\\sigma_X^2
+  $$
+
+**Bước 2 — Tổng cỡ mẫu ($N$):**
+
+Với $f_{\\text{event}}$ là xác suất tổng quát kỳ vọng một đối tượng sẽ gặp biến cố trong suốt thời gian nghiên cứu (gộp cả nguy cơ nền, thời gian theo dõi và kiểm duyệt):
+$$
+N=\\left\\lceil \\frac{d}{f_{\\text{event}}} \\right\\rceil
+$$
+
+---
+
+## Chú giải đầu vào
+
+1. **Alpha (hai phía)** ($\\alpha$): thường là 0,05.
+2. **Power** ($1-\\beta$): thường 0,80–0,90.
+3. **HR mục tiêu**: HR nhỏ nhất có ý nghĩa lâm sàng cần phát hiện.
+4. **Loại biến dự báo**: Nhị giá hoặc Liên tục.
+
+   * Nhị giá: cần tỷ lệ nhóm phơi nhiễm, $q=P(X=1)$.
+   * Liên tục: cần độ lệch chuẩn $\\sigma_X$ của biến (HR được hiểu theo 1 đơn vị tăng của $X$; nên chuẩn hóa $X$ trước nếu muốn HR theo 1 SD).
+5. **Tỷ lệ biến cố kỳ vọng** ($f_{\\text{event}}$): xác suất tổng quát một đối tượng gặp biến cố trong suốt nghiên cứu (phụ thuộc nguy cơ nền, thời gian theo dõi, và mất dấu/kiểm duyệt).
+
+---
+
+## Hướng dẫn thực hành
+
+* **Tỷ lệ phơi nhiễm ($q$)**: giá trị gần 0,5 giúp tối thiểu hóa số biến cố cần thiết; $q$ rất nhỏ/lớn làm tăng đáng kể $d$.
+* **Ước tính $f_{\\text{event}}$**: dùng dữ liệu pilot, sổ bộ (registry), hoặc đường cong sống còn đã công bố cho quần thể và thời gian theo dõi dự kiến; nên thử nhiều giá trị hợp lý (sensitivity).
+* **Không điều chỉnh do tương quan đồng biến**: khác với A2.1 (logistic), bản triển khai này **không** áp dụng hệ số điều chỉnh $R^2$ cho tương quan với các đồng biến khác trong mô hình đa biến. Nếu $X$ sẽ được phân tích cùng các biến dự báo tương quan mạnh khác, hãy xem kết quả ở đây là **cận dưới lạc quan** và cân nhắc tăng $N$.
+* Công thức này giả định **giả định nguy cơ tỷ lệ (proportional hazards)** đúng và biến cố không quá hiếm so với mức kiểm duyệt thường gặp trong các nghiên cứu lâm sàng.
+
+---
+
+## Tài liệu tham khảo
+
+1. Schoenfeld DA. *Sample-size formula for the proportional-hazards regression model.* Biometrics. 1983;39(2):499–503.
+2. Hsieh FY, Lavori PW. *Sample-size calculations for the Cox proportional hazards regression model with nonbinary covariates.* Controlled Clinical Trials. 2000;21(6):552–560.
+3. Riley RD, et al. *Minimum sample size for developing a multivariable prediction model: Part II—binary and time-to-event outcomes.* Stat Med. 2019.
+""",
         "c5_content_md": """
 ### A3.1: Riley et al. (Phân tích)
 
@@ -907,23 +1004,23 @@ Không nên chỉ dựa vào A3.3 khi:
 ## Mô hình và DGM
 
 ### Hồi quy logistic Bayes (mô hình phân tích)
-\[
+$$
 Y_i \sim \\text{Bernoulli}(\\pi_i), \\qquad
 \\text{logit}(\\pi_i)=\\beta_0 + \\sum_{j=1}^{P}\\beta_j f_j(X_{ij})
-\]
-- \(P\) = số tham số/df (**không tính intercept**).
-- \(f_j(\cdot)\): cách mã hóa biến (tuyến tính, dummy, spline, tương tác…).
+$$
+- $P$ = số tham số/df (**không tính intercept**).
+- $f_j(\cdot)$: cách mã hóa biến (tuyến tính, dummy, spline, tương tác…).
 
 **Ví dụ prior “weakly informative” hay dùng:**
-\[
+$$
 \\beta_j \sim \\mathcal{N}(0,\\sigma_\\beta^2),\\quad \\sigma_\\beta \\in [1, 2.5],
 \\qquad \\beta_0 \sim \\mathcal{N}(0, 5^2)
-\]
+$$
 (Trong thực hành cần chạy độ nhạy theo prior hợp lý.)
 
 ### DGM cho biến dự báo (ví dụ equicorrelation)
-Nếu app dùng một tham số tương quan \\(\\rho\\) (mọi cặp biến có cùng tương quan):
-\[
+Nếu app dùng một tham số tương quan $\\rho$ (mọi cặp biến có cùng tương quan):
+$$
 \\mathrm{Corr}(X_j, X_k)=\\rho \\quad (j\\neq k),
 \\qquad
 \\Sigma_{jk}=
@@ -931,46 +1028,46 @@ Nếu app dùng một tham số tương quan \\(\\rho\\) (mọi cặp biến có
 1,& j=k\\\\
 \\rho,& j\\neq k
 \\end{cases}
-\]
+$$
 Sau đó sinh dữ liệu dự báo theo cơ chế tương quan (ví dụ Gaussian copula), rồi chuyển thành biến liên tục/nhị phân.
 
 ### Khớp tỷ lệ biến cố mục tiêu
 Chọn intercept (hoặc hằng số hiệu chỉnh) để:
-\[
+$$
 \\mathbb{E}[\\pi_i]=p
-\]
-(thường giải bằng root-finding dựa trên mô phỏng \\(X\\).)
+$$
+(thường giải bằng root-finding dựa trên mô phỏng $X$.)
 
 ---
 
 ## “Assurance” là gì (công thức chính)
 Gọi:
-- \\(\\theta\\): tham số “thật” theo DGM,
-- \\(y\\): dữ liệu quan sát cỡ mẫu \\(N\\),
-- \\(S(y)\\): biến chỉ báo thành công (1 nếu đạt tiêu chí, 0 nếu không).
+- $\\theta$: tham số “thật” theo DGM,
+- $y$: dữ liệu quan sát cỡ mẫu $N$,
+- $S(y)$: biến chỉ báo thành công (1 nếu đạt tiêu chí, 0 nếu không).
 
-**Assurance tại cỡ mẫu \\(N\\):**
-\[
+**Assurance tại cỡ mẫu $N$:**
+$$
 \\mathcal{A}(N)=\\Pr(\\text{thành công tại }N)
 =\\mathbb{E}_{\\theta}\\left[\\mathbb{E}_{y\\mid \\theta,N}\\left\\{S(y)\\right\\}\\right]
-\]
+$$
 
-**Ước lượng Monte Carlo trong app (với \\(R\\) mô phỏng cho mỗi \\(N\\)):**
-\[
+**Ước lượng Monte Carlo trong app (với $R$ mô phỏng cho mỗi $N$):**
+$$
 \\widehat{\\mathcal{A}}(N)=\\frac{1}{R}\\sum_{r=1}^{R} S\\!\\left(y^{(r)}\\right)
-\]
+$$
 
 Sai số Monte Carlo:
-\[
+$$
 \\mathrm{MCSE}\\left(\\widehat{\\mathcal{A}}(N)\\right)
 =\\sqrt{\\frac{\\widehat{\\mathcal{A}}(N)\\left[1-\\widehat{\\mathcal{A}}(N)\\right]}{R}}
-\]
+$$
 
 **Quy tắc chọn cỡ mẫu:**
-Chọn \\(N\\) nhỏ nhất sao cho:
-\[
+Chọn $N$ nhỏ nhất sao cho:
+$$
 \\widehat{\\mathcal{A}}(N)\\ge \\mathcal{A}_\\text{target}
-\]
+$$
 (ví dụ 0,80 hoặc 0,90).
 
 ---
@@ -978,51 +1075,51 @@ Chọn \\(N\\) nhỏ nhất sao cho:
 ## Tiêu chí thành công (ví dụ thường dùng)
 Tùy cấu hình app, có thể chọn một hoặc nhiều tiêu chí:
 - **Calibration slope** trong khoảng chấp nhận:
-  \[
+  $$
   0.90 \le b \le 1.10
-  \]
-  với \\(b\\) ước lượng từ mô hình hiệu chỉnh trên dữ liệu test/validation:
-  \[
+  $$
+  với $b$ ước lượng từ mô hình hiệu chỉnh trên dữ liệu test/validation:
+  $$
   \\text{logit}(Y)=a + b\\cdot \\text{logit}(\\widehat{p})
-  \]
+  $$
 - **Discrimination (AUC)**:
-  \[
+  $$
   \\mathrm{AUC} \\ge 0.75 \\;(\\text{hoặc ngưỡng do bạn chọn})
-  \]
+  $$
 - **Độ chính xác hậu nghiệm**, ví dụ độ rộng CrI 95% của slope:
-  \[
+  $$
   \\mathrm{Width}\\left(\\text{CrI}_{95\\%}(b)\\right) \\le w
   \\quad (\\text{ví dụ } w=0.20)
-  \]
+  $$
 
 ---
 
 ## Chú giải đầu vào (tìm ở đâu; chọn bao nhiêu)
 
-### 1) Tỷ lệ biến cố \\(p\\)
+### 1) Tỷ lệ biến cố $p$
 **Nguồn:** dữ liệu hồi cứu/đoàn hệ gần nhất tại bệnh viện; registry; y văn tương đồng.  
 **Thông lệ khi lập kế hoạch:** 0,05–0,15 thường gặp (tùy bệnh).  
 **Khuyến nghị:** chạy độ nhạy theo khoảng plausible.
 
-### 2) Số tham số (df) \\(P\\)
+### 2) Số tham số (df) $P$
 **Nguồn:** đặc tả mô hình dự kiến (đếm theo tham số, không phải số biến).  
 Bao gồm dummy, spline, tương tác; không tính intercept.  
 **Thông lệ:** 10–30 df; df càng cao càng cần mẫu lớn và prior hợp lý.
 
-### 3) Tương quan biến dự báo \\(\\rho\\)
+### 3) Tương quan biến dự báo $\\rho$
 **Nguồn:** ước lượng từ dữ liệu bệnh viện (ma trận tương quan của biến ứng viên).  
 Nếu chưa biết, chạy độ nhạy (0; 0,1; 0,3).  
 **Thông lệ:** 0–0,3 là mức nhẹ–vừa; tương quan cao làm tăng bất ổn và có thể tăng cỡ mẫu.
 
-### 4) Danh sách \\(N\\) ứng viên
+### 4) Danh sách $N$ ứng viên
 Chọn dải đủ rộng để thấy ngưỡng đạt/không đạt (500–2000 hoặc hơn tùy khả thi).
 
-### 5) Số mô phỏng mỗi \\(N\\) (R)
+### 5) Số mô phỏng mỗi $N$ (R)
 - **Demo:** 50–200  
 - **Final:** ≥500–1000  
 Dùng MCSE để đánh giá độ ổn định.
 
-### 6) Ngưỡng assurance \\(\\mathcal{A}_\\text{target}\\)
+### 6) Ngưỡng assurance $\\mathcal{A}_\\text{target}$
 - **0,80:** hay dùng khi ưu tiên khả thi  
 - **0,90:** khi muốn chắc chắn cao hơn
 
@@ -1046,6 +1143,151 @@ Dùng MCSE để đánh giá độ ổn định.
 2) Pan J, Banerjee S. bayesassurance: An R Package for Calculating Sample Size and Bayesian Assurance. *The R Journal.* 2023.  
 3) Gelman A, Jakulin A, Pittau MG, Su Y-S. A weakly informative default prior distribution for logistic and other regression models. *The Annals of Applied Statistics.* 2008.  
 4) Sahu SK, Smith TMF. Bayesian methods of sample size determination. *Statistical Methodology / related Bayesian SSD literature.* 2006.
+""",
+        "d9_content_md": """
+### Mục đích
+
+A4.2 ước tính **cỡ mẫu tối thiểu để thẩm định ngoài (external validation)** một mô hình tiên lượng đã được phát triển, với mục tiêu đạt **độ chính xác** mong muốn cho các chỉ số hiệu chỉnh (calibration) và phân biệt (discrimination) chính trên một quần thể (thẩm định) mới. Hai khung phương pháp đã công bố được triển khai song song:
+
+* **Riley/Archer** (mô phỏng lại gói R `pmvalsampsize`) — nhắm mục tiêu **độ rộng khoảng tin cậy (CI) 95%** cho từng chỉ số hiệu năng.
+* **Pavlou** (mô phỏng lại gói R `sampsizeval`) — nhắm mục tiêu **sai số chuẩn (SE)** tuyệt đối cho từng chỉ số.
+
+Phương pháp này giả định bạn **đã có sẵn một mô hình** với chỉ số C-statistic đã biết (hoặc dự kiến), và đang lên kế hoạch cho một **bộ dữ liệu thẩm định độc lập mới** — đây *không phải* là phương pháp phát triển mô hình.
+
+---
+
+### Đầu vào chung
+
+* **Tỷ lệ hiện mắc ($p$)**: tỷ lệ biến cố dự kiến trong quần thể thẩm định.
+* **C-statistic ($C$)**: khả năng phân biệt (AUC) dự kiến của mô hình trên quần thể thẩm định.
+
+### Bước 1 — Mô phỏng phân phối chỉ số dự báo tuyến tính (LP)
+
+Cả hai tab đều cần một phân phối giả định cho LP của mô hình trên quần thể thẩm định. Ứng dụng giả định $\\mathrm{LP}\\sim \\mathcal{N}(\\mu,\\sigma^2)$ và giải để tìm $(\\mu,\\sigma)$ sao cho quần thể mô phỏng khớp với $C$ và $p$ mục tiêu:
+$$
+\\sigma = \\sqrt{2}\\,\\Phi^{-1}(C)
+$$
+$\\mu$ sau đó được tìm bằng số (tìm kiếm nhị phân kết hợp tích phân số) sao cho $\\mathbb{E}[\\mathrm{expit}(\\mathrm{LP})] = p$.
+
+---
+
+## Tab 1 — Riley/Archer (mục tiêu độ rộng CI)
+
+Với mỗi chỉ số, ứng dụng tìm $N$ tối thiểu sao cho nửa độ rộng CI 95% khớp với mục tiêu (tức $\\text{width} = 3{,}92\\times SE$, nên $SE_{\\text{target}} = \\text{width}/3{,}92$):
+
+**1) Hiệu chỉnh tổng thể (O/E ratio).** Dùng $SE(\\ln(O/E)) \\approx \\sqrt{1/E}$ với $E=Np$:
+$$
+N_{O/E}=\\left\\lceil \\frac{1}{p\\,SE_{\\text{target}}^2} \\right\\rceil
+$$
+
+**2) Hệ số góc hiệu chỉnh (calibration slope).** Mô hình hiệu chỉnh là $\\text{logit}(p)=\\alpha+\\beta\\cdot\\mathrm{LP}$ (giá trị $\\beta=1$ khi hiệu chỉnh hoàn hảo). Thông tin Fisher cho $\\beta$ được tính thực nghiệm trên mẫu LP mô phỏng (với $w=\\hat p(\\mathrm{LP})(1-\\hat p(\\mathrm{LP}))$):
+$$
+\\mathrm{Var}(\\beta)_{\\text{mỗi qs}}=\\frac{\\mathbb{E}[w]}{\\mathbb{E}[w]\\,\\mathbb{E}[w\\cdot \\mathrm{LP}^2]-\\mathbb{E}[w\\cdot \\mathrm{LP}]^2}
+\\qquad\\Rightarrow\\qquad
+N_{\\text{slope}}=\\left\\lceil \\frac{\\mathrm{Var}(\\beta)_{\\text{mỗi qs}}}{SE_{\\text{target}}^2} \\right\\rceil
+$$
+
+**3) C-statistic.** Dùng xấp xỉ phương sai **Hanley & McNeil (1982)** (giống công thức ở A4.1):
+$$
+\\mathrm{Var}(C)=\\frac{C(1-C)+(n_1-1)(Q_1-C^2)+(n_0-1)(Q_2-C^2)}{n_1\\,n_0},\\quad Q_1=\\frac{C}{2-C},\\ Q_2=\\frac{2C^2}{1+C}
+$$
+với $n_1=Np$, $n_0=N(1-p)$; $N_C$ được tìm bằng phép lặp sao cho $\\sqrt{\\mathrm{Var}(C)} \\le SE_{\\text{target}}$.
+
+**Cỡ mẫu khuyến nghị $N = \\max(N_{O/E},\\,N_{\\text{slope}},\\,N_C)$.**
+
+---
+
+## Tab 2 — Pavlou (mục tiêu SE)
+
+Công thức dạng đóng / bán đóng, nhắm trực tiếp vào một giá trị SE tuyệt đối (không phải độ rộng CI):
+
+**1) C-statistic**: cùng công thức $\\mathrm{Var}(C)$ Hanley–McNeil ở trên, giải bằng tìm kiếm nhị phân để tìm $N$ tối thiểu sao cho $SE(C)\\le SE_{\\text{target}}$.
+
+**2) Hệ số góc hiệu chỉnh** (xấp xỉ theo Pavlou et al. 2021, công thức (12)), với $\\sigma=\\sqrt{2}\\,\\Phi^{-1}(C)$:
+$$
+N_{\\text{slope}}=\\left\\lceil \\frac{1}{p(1-p)\\,\\sigma^2\\,SE_{\\text{target}}^2} \\right\\rceil
+$$
+
+**3) Hiệu chỉnh tổng thể** (intercept), dùng $\\mathrm{Var}(\\alpha)\\approx \\dfrac{1}{Np(1-p)}$:
+$$
+N_{\\text{large}}=\\left\\lceil \\frac{1}{p(1-p)\\,SE_{\\text{target}}^2} \\right\\rceil
+$$
+
+**Cỡ mẫu khuyến nghị $N = \\max(N_C,\\,N_{\\text{slope}},\\,N_{\\text{large}})$.**
+
+*Tab 3 ("Báo cáo tổng hợp") chạy lại Tab 1 và Tab 2 với các đầu vào đã lưu rồi so sánh hai $N$ khuyến nghị. Tab 4 ("Phân tích độ nhạy") lặp lại tính toán Riley/Archer trên một dải giá trị $p$ hoặc $C$.*
+
+---
+
+## Hướng dẫn thực hành
+
+* Các mục tiêu độ rộng CI mặc định ở đây (O/E = 0,2; slope = 0,2; C = 0,1) khớp với mặc định thường dùng của `pmvalsampsize`.
+* Mục tiêu SE của Pavlou thường là những con số nhỏ hơn nhiều so với độ rộng CI (ví dụ $SE(C)=0{,}025$) vì chúng giới hạn trực tiếp sai số chuẩn thay vì khoảng $\\pm 1{,}96\\,SE$.
+* Vì cả hai tab đều dựa trên một phân phối LP **mô phỏng** thay cho dữ liệu thẩm định thật, kết quả có thể dao động theo Monte Carlo — nên chạy lại với seed khác để kiểm tra độ ổn định, đặc biệt khi $N$ ở mức biên.
+
+## Hạn chế của bản triển khai này
+
+* Hiện chỉ hỗ trợ phân phối LP dạng **Chuẩn (Normal)** khi giải $(\\mu,\\sigma)$ từ $(C,p)$; các gói R gốc còn hỗ trợ điểm nguy cơ phân phối Beta.
+* Bước tìm $N$ cho C-statistic ở Tab 1 tinh chỉnh kết quả cuối bằng cách **ngoại suy tuyến tính tại một điểm** ($\\mathrm{Var}(C)\\propto 1/N$) thay vì tìm kiếm toàn diện; đây là xấp xỉ tốt với $N$ thực tế nhưng không chính xác tuyệt đối khi $N$ rất nhỏ.
+
+---
+
+## Tài liệu tham khảo
+
+1. Riley RD, et al. *Minimum sample size for external validation of a clinical prediction model with a binary outcome.* Stat Med. 2021;40(19):4230–4251.
+2. Archer L, et al. *pmvalsampsize: an R package for calculating the sample size required for external validation of risk prediction models.* (CRAN / bài báo đi kèm), 2023.
+3. Pavlou M, et al. *Estimation of required sample size for external validation of risk models for binary outcomes.* Stat Methods Med Res. 2021;30(10):2187–2206.
+4. Hanley JA, McNeil BJ. *The meaning and use of the area under a receiver operating characteristic (ROC) curve.* Radiology. 1982;143(1):29–36.
+""",
+        "d10_content_md": """
+### Mục đích
+
+A4.3 lên kế hoạch nghiên cứu thẩm định ngoài bằng **mô phỏng Monte Carlo toàn diện**: tạo trực tiếp các bộ dữ liệu thẩm định giả định từ một phân phối chỉ số dự báo tuyến tính (LP) và một **kịch bản sai lệch hiệu chỉnh (miscalibration)**, sau đó kiểm tra cỡ mẫu nào đạt được độ chính xác mong muốn cho nhiều chỉ số hiệu năng **cùng lúc**. Phương pháp này bổ sung cho A4.2 (giải tích) khi các giả định dễ mô tả theo kiểu sinh dữ liệu hơn là theo công thức (ví dụ một kiểu trôi hiệu chỉnh cụ thể), theo tinh thần của **Snell et al. (2021)**.
+
+---
+
+### Bước 1 — Phân phối LP
+Chọn cách chỉ số dự báo tuyến tính của mô hình phân phối trong quần thể thẩm định:
+* **Chuẩn (log-odds):** $\\mathrm{LP}\\sim \\mathcal{N}(\\mu,\\sigma^2)$.
+* **Beta (xác suất):** mô phỏng nguy cơ $\\pi\\sim \\mathrm{Beta}(\\alpha,\\beta)$, sau đó $\\mathrm{LP}=\\mathrm{logit}(\\pi)$.
+
+### Bước 2 — Mô hình sai lệch hiệu chỉnh
+Mô hình kết cục "thật" (sinh dữ liệu) theo LP là:
+$$
+\\mathrm{logit}\\big(P(Y=1)\\big)=\\gamma+S\\cdot \\mathrm{LP}
+$$
+* $S=1,\\ \\gamma=0$: mô hình **hiệu chỉnh hoàn hảo** với quần thể thẩm định.
+* $S\\neq 1$: sai lệch về **độ trải (spread)** ($S<1$: mô hình gốc quá cực đoan/overfit; $S>1$: quá thận trọng/underfit).
+* $\\gamma\\neq 0$: sai lệch về **mức độ chung** (intercept).
+
+Ngoài ra, có thể cố định $S$ và **giải tìm $\\gamma$** bằng số (tìm kiếm nhị phân trên các lần lấy mẫu Monte Carlo của LP) sao cho quần thể mô phỏng khớp với một tỷ lệ hiện mắc mục tiêu.
+
+### Bước 3 — Vòng lặp mô phỏng
+Với mỗi $N$ ứng viên trong khoảng đã chọn (bắt đầu/kết thúc/bước nhảy), lặp lại $R$ lần ("Repetitions"):
+1. Lấy $N$ giá trị LP từ phân phối đã chọn.
+2. Sinh kết cục $Y\\sim \\mathrm{Bernoulli}\\big(\\mathrm{expit}(\\gamma+S\\cdot\\mathrm{LP})\\big)$.
+3. Khớp mô hình hiệu chỉnh và tính C-statistic, hệ số góc hiệu chỉnh, và $\\ln(O/E)$ (cùng độ rộng CI) trên mẫu mô phỏng.
+4. Ghi nhận liệu từng mục tiêu độ chính xác có đạt được hay không ở lần lặp đó.
+
+**Độ rộng CI trung bình** trên $R$ lần lặp được báo cáo cho mỗi $N$ ứng viên; **$N$ nhỏ nhất** mà tất cả các mục tiêu đều đạt trung bình chính là cỡ mẫu khuyến nghị.
+
+---
+
+### Đầu vào
+* Phân phối LP & tham số ($\\mu,\\sigma$ hoặc $\\alpha,\\beta$).
+* Sai lệch hiệu chỉnh: nhập trực tiếp $(\\gamma, S)$, hoặc tỷ lệ hiện mắc mục tiêu + $S$ (giải tìm $\\gamma$).
+* Mục tiêu độ chính xác: độ rộng CI cho C-statistic, hệ số góc hiệu chỉnh, và $\\ln(O/E)$.
+* Cài đặt mô phỏng: khoảng/bước $N$, số lần lặp $R$, seed ngẫu nhiên.
+
+### Hướng dẫn thực hành
+* Dùng nhiều lần lặp hơn ($R\\ge 500$) để có khuyến nghị ổn định; mặc định ($R=200$) chỉ là xem nhanh và sẽ có nhiễu Monte Carlo rõ rệt quanh $N$ biên.
+* Khoảng $N$ rộng với bước nhỏ cho kết quả "N đạt đầu tiên" chính xác hơn nhưng chậm hơn nhiều (mô phỏng chạy $R$ lần cho mỗi $N$ ứng viên).
+* Khi LP có phân phối Chuẩn và mô hình hiệu chỉnh tốt ($\\gamma=0,\\ S=1$), kết quả nên gần khớp với phương pháp giải tích A4.2 (Riley/Archer). Nên dùng A4.3 chủ yếu khi cần mô tả một kịch bản sai lệch hiệu chỉnh cụ thể mà A4.2 không thể biểu diễn bằng công thức giải tích.
+
+### Tài liệu tham khảo
+1. Snell KIE, et al. *External validation of clinical prediction models: simulation-based sample size calculations were more reliable than rules of thumb.* J Clin Epidemiol. 2021;135:79–89.
+2. Riley RD, et al. *Minimum sample size for external validation of a clinical prediction model with a binary outcome.* Stat Med. 2021;40(19):4230–4251.
+3. Van Calster B, et al. *A calibration hierarchy for risk models was defined: from utopia to empirical data.* J Clin Epidemiol. 2016;74:167–176.
 """,
         # Email & Reporting
         "report_header": "Báo cáo & Tải xuống",

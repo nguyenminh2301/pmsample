@@ -160,3 +160,7 @@ def render_ui(T):
             "refresh_key": ["b4_result_df", "b4_inputs"]
         }
         reporting.render_report_ui(context, df, T)
+
+    st.divider()
+    with st.expander(T.get("formulas_header", "📚 Formulas & Technical Details")):
+        st.markdown(T.get("b4_content_md", "Content not found."))

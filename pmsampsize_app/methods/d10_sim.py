@@ -177,3 +177,7 @@ def render_ui(T):
             "refresh_key": ["d10_data"]
         }
         reporting.render_report_ui(context, res_df, T)
+
+    st.divider()
+    with st.expander(T.get("formulas_header", "📚 Formulas & Technical Details")):
+        st.markdown(T.get("d10_content_md", "Content not found."))

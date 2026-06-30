@@ -584,6 +584,103 @@ $$
 2. Hsieh FY. *Sample size tables for logistic regression.* Statistics in Medicine. 1989;8(7):795–802.
 3. Whittemore AS. *Sample size for logistic regression with small response probability.* Journal of the American Statistical Association. 1981;76:27–32.
 """,
+        "b4_content_md": """
+### Purpose (what this method is)
+
+This module estimates the **minimum number of events / sample size** needed to detect an association between a single predictor ($X$) and a **time-to-event (survival) outcome**, using the **Cox proportional hazards model**, targeting a specified **hazard ratio (HR)**, **two-sided $\\alpha$**, and **power**. The calculation follows the classic analytical method of **Schoenfeld (1983)**, generalized to continuous predictors by **Hsieh & Lavori (2000)**.
+
+Like A2.1 (Hsieh, logistic), this is a **hypothesis-testing / association-focused** power calculation for a **single regression coefficient**, **not** a multivariable prediction-model development method. It does not guarantee good calibration or discrimination of a full prognostic model.
+
+---
+
+### When to use
+
+Use A2.2 when:
+
+* You want power to detect a **clinically meaningful HR** for a **single predictor** (binary or continuous) in a Cox model.
+* Your primary goal is **hypothesis testing** (is the predictor associated with time-to-event risk?), not building a multivariable risk prediction model.
+
+### When NOT to use
+
+* Your goal is **prediction model development** for survival data (use the Riley et al. survival method, C1, once available).
+* You plan extensive **variable selection**, non-linear terms, or many covariates — power for one coefficient does not capture overall model performance.
+* Follow-up time and censoring are highly **non-uniform** across the cohort in ways not captured by a single overall event probability.
+
+---
+
+## Statistical model and parameters
+
+Cox proportional hazards model:
+$$
+h(t \\mid X) = h_0(t)\\, \\exp(\\beta_1 X)
+$$
+
+$$
+\\mathrm{HR} = \\exp(\\beta_1)
+$$
+
+Hypothesis test:
+$$
+H_0:\\beta_1=0 \\quad \\text{vs}\\quad H_1:\\beta_1\\neq 0
+$$
+
+---
+
+## Calculation (Schoenfeld / Hsieh–Lavori formula)
+
+**Step 1 — Required number of events ($d$):**
+$$
+d=\\left\\lceil \\frac{(z_{1-\\alpha/2}+z_{1-\\beta})^2}{\\mathrm{Var}(X)\\,[\\ln(\\mathrm{HR})]^2} \\right\\rceil
+$$
+
+where $\\mathrm{Var}(X)$ depends on the predictor type:
+
+* **Binary predictor** ($q = P(X=1)$, the proportion in the exposed/comparison group):
+  $$
+  \\mathrm{Var}(X)=q(1-q)
+  $$
+* **Continuous predictor** (standard deviation $\\sigma_X$):
+  $$
+  \\mathrm{Var}(X)=\\sigma_X^2
+  $$
+
+**Step 2 — Total sample size ($N$):**
+
+Given the expected overall probability of observing the event by the end of follow-up, $f_{\\text{event}}$ (a single number summarizing event risk, censoring, and follow-up duration):
+$$
+N=\\left\\lceil \\frac{d}{f_{\\text{event}}} \\right\\rceil
+$$
+
+---
+
+## Inputs (what each value means)
+
+1. **Alpha (two-sided)** ($\\alpha$): typically 0.05.
+2. **Power** ($1-\\beta$): typically 0.80–0.90.
+3. **Target hazard ratio** ($\\mathrm{HR}$): the smallest HR that is clinically meaningful to detect.
+4. **Predictor type**: Binary or Continuous.
+
+   * Binary: requires prevalence of the exposed group, $q=P(X=1)$.
+   * Continuous: requires the standard deviation, $\\sigma_X$, of the predictor (HR interpreted per 1-unit increase in $X$; standardize $X$ first if you want HR per 1 SD).
+5. **Expected event fraction** ($f_{\\text{event}}$): overall probability that a subject experiences the event during the study (depends on baseline hazard, follow-up length, and censoring/loss to follow-up).
+
+---
+
+## Practical guidance
+
+* **Binary predictor prevalence ($q$)**: values near 0.5 minimize the required number of events; very small/large $q$ increases $d$ substantially.
+* **Estimating $f_{\\text{event}}$**: use pilot data, registries, or published survival curves for the target population and expected follow-up duration; sensitivity-test a plausible range.
+* **No covariate-adjustment inflation**: unlike A2.1 (logistic), this implementation does **not** apply an $R^2$-based inflation for correlation with other covariates in a multivariable model. If $X$ will be analyzed alongside other strongly correlated predictors, treat the result here as an **optimistic lower bound** and consider increasing $N$.
+* This formula assumes the **proportional hazards** assumption holds and that events are reasonably rare relative to censoring patterns typical of clinical cohorts.
+
+---
+
+## Key references
+
+1. Schoenfeld DA. *Sample-size formula for the proportional-hazards regression model.* Biometrics. 1983;39(2):499–503.
+2. Hsieh FY, Lavori PW. *Sample-size calculations for the Cox proportional hazards regression model with nonbinary covariates.* Controlled Clinical Trials. 2000;21(6):552–560.
+3. Riley RD, et al. *Minimum sample size for developing a multivariable prediction model: Part II—binary and time-to-event outcomes.* Stat Med. 2019. (context: contrast with prediction-model development sizing.)
+""",
         "c5_content_md": """
 ### What this method is
 
@@ -972,23 +1069,23 @@ Avoid relying on A3.3 alone when:
 ## Core model and DGM
 
 ### Bayesian logistic regression (analysis model)
-\[
+$$
 Y_i \sim \\text{Bernoulli}(\\pi_i), \\qquad
 \\text{logit}(\\pi_i)=\\beta_0 + \\sum_{j=1}^{P}\\beta_j f_j(X_{ij})
-\]
-- \(P\) = number of predictor parameters (degrees of freedom; **exclude intercept**).
-- \(f_j(\\cdot)\) represents your coding choices (linear term, dummies, spline bases, interactions).
+$$
+- $P$ = number of predictor parameters (degrees of freedom; **exclude intercept**).
+- $f_j(\\cdot)$ represents your coding choices (linear term, dummies, spline bases, interactions).
 
 **Example priors (typical weakly informative defaults):**
-\[
+$$
 \\beta_j \sim \\mathcal{N}(0,\\sigma_\\beta^2),\\quad \\sigma_\\beta \\in [1, 2.5],
 \\qquad \\beta_0 \sim \\mathcal{N}(0, 5^2)
-\]
+$$
 (Your app may use fixed priors; users should run sensitivity analyses over plausible priors.)
 
 ### DGM for predictors (example equicorrelation)
-If the app uses a single correlation parameter \\(\\rho\\) (equicorrelation):
-\[
+If the app uses a single correlation parameter $\\rho$ (equicorrelation):
+$$
 \\mathrm{Corr}(X_j, X_k)=\\rho \\quad (j\\neq k),
 \\qquad
 \\Sigma_{jk}=
@@ -996,47 +1093,47 @@ If the app uses a single correlation parameter \\(\\rho\\) (equicorrelation):
 1,& j=k\\\\
 \\rho,& j\\neq k
 \\end{cases}
-\]
+$$
 Predictors are then generated from a correlated mechanism (e.g., Gaussian copula / multivariate normal core), and transformed into continuous/binary predictors as needed.
 
 ### Setting the event rate
 The intercept (or a calibration constant) is chosen so that the marginal event rate matches the target prevalence:
-\[
+$$
 \\mathbb{E}[\\pi_i]=p
-\]
-This is typically solved numerically using Monte Carlo draws of \(X\).
+$$
+This is typically solved numerically using Monte Carlo draws of $X$.
 
 ---
 
 ## What "assurance" means (key formula)
 Let:
-- \\(\\theta\\) denote the "true" parameters under the DGM (effect sizes, correlation structure, etc.).
-- \\(y\\) denote the observed dataset of size \\(N\\).
-- \\(S(y)\\) be a **success indicator** that equals 1 if performance/precision criteria are met.
+- $\\theta$ denote the "true" parameters under the DGM (effect sizes, correlation structure, etc.).
+- $y$ denote the observed dataset of size $N$.
+- $S(y)$ be a **success indicator** that equals 1 if performance/precision criteria are met.
 
-**Assurance at sample size \\(N\\):**
-\[
+**Assurance at sample size $N$:**
+$$
 \\mathcal{A}(N)=\\Pr(\\text{Success at }N)
 =\\mathbb{E}_{\\theta}\\left[\\mathbb{E}_{y\\mid \\theta,N}\\left\\{S(y)\\right\\}\\right]
-\]
+$$
 
-**Monte Carlo estimate used in the app (for each candidate \\(N\\)):**
-\[
+**Monte Carlo estimate used in the app (for each candidate $N$):**
+$$
 \\widehat{\\mathcal{A}}(N)=\\frac{1}{R}\\sum_{r=1}^{R} S\\!\\left(y^{(r)}\\right)
-\]
-where each replicate \\(r\\) simulates a dataset, fits the Bayesian model with MCMC, and evaluates success criteria.
+$$
+where each replicate $r$ simulates a dataset, fits the Bayesian model with MCMC, and evaluates success criteria.
 
 Monte Carlo standard error (helpful for interpreting stability):
-\[
+$$
 \\mathrm{MCSE}\\left(\\widehat{\\mathcal{A}}(N)\\right)
 =\\sqrt{\\frac{\\widehat{\\mathcal{A}}(N)\\left[1-\\widehat{\\mathcal{A}}(N)\\right]}{R}}
-\]
+$$
 
 **Decision rule:**
-Choose the smallest \\(N\\) such that:
-\[
+Choose the smallest $N$ such that:
+$$
 \\widehat{\\mathcal{A}}(N)\\ge \\mathcal{A}_\\text{target}
-\]
+$$
 (e.g., 0.80 or 0.90).
 
 ---
@@ -1044,52 +1141,52 @@ Choose the smallest \\(N\\) such that:
 ## Success criteria (typical examples)
 Your app may implement one or more of the following (user-selectable):
 - **Calibration slope** in an acceptable range:
-  \[
+  $$
   0.90 \le b \le 1.10
-  \]
-  where \\(b\\) is estimated from a calibration model on validation/test data:
-  \[
+  $$
+  where $b$ is estimated from a calibration model on validation/test data:
+  $$
   \\text{logit}(Y)=a + b\\cdot \\text{logit}(\\widehat{p})
-  \]
+  $$
 - **Discrimination** threshold:
-  \[
+  $$
   \\mathrm{AUC} \\ge 0.75 \\;(\\text{or your chosen target})
-  \]
+  $$
 - **Posterior precision** target, e.g. 95% credible interval width for calibration slope:
-  \[
+  $$
   \\mathrm{Width}\\left(\\text{CrI}_{95\\%}(b)\\right) \\le w
   \\quad (\\text{e.g., } w=0.20)
-  \]
+  $$
 
 ---
 
 ## Input guide (where to find values; typical choices)
 
-### 1) Outcome prevalence (event rate) \\(p\\)
+### 1) Outcome prevalence (event rate) $p$
 **Where to get it:** local hospital cohort/registry; recent retrospective data.  
 **Typical planning ranges:** 0.05–0.15 are common in many clinical settings, but use your disease context.  
 **Tip:** If uncertain, run a sensitivity analysis over a plausible range.
 
-### 2) Number of predictor parameters (df) \\(P\\)
+### 2) Number of predictor parameters (df) $P$
 **Where to get it:** your finalized model specification (count **parameters**, not variables).  
 Include dummies, spline bases, interactions. Exclude intercept.  
-**Typical range:** 10–30 df is common; larger df demands much larger \\(N\\) and stronger prior justification.
+**Typical range:** 10–30 df is common; larger df demands much larger $N$ and stronger prior justification.
 
-### 3) Predictor correlation \\(\\rho\\)
+### 3) Predictor correlation $\\rho$
 **Where to get it:** estimate from pilot/hospital data (correlation matrix of candidate predictors).  
-If unknown, use sensitivity analysis (e.g., \\(\\rho=0, 0.1, 0.3\\)).  
-**Typical:** mild-to-moderate correlations (0–0.3) are common; higher correlations increase instability and may increase required \\(N\\).
+If unknown, use sensitivity analysis (e.g., $\\rho=0, 0.1, 0.3$).  
+**Typical:** mild-to-moderate correlations (0–0.3) are common; higher correlations increase instability and may increase required $N$.
 
-### 4) Candidate sample sizes \\(N\\)
+### 4) Candidate sample sizes $N$
 Choose a grid wide enough to cross the pass/fail boundary (e.g., 500, 1000, 1500, 2000, …).  
 Start from feasibility constraints (available charts/records) and expand upward.
 
-### 5) Number of simulations per \\(N\\) (replicates) \\(R\\)
+### 5) Number of simulations per $N$ (replicates) $R$
 - **Demo:** 50–200 (fast; higher MC error)  
 - **Final planning:** ≥500–1000 (more stable assurance estimate)  
 Use MCSE to judge stability.
 
-### 6) Assurance threshold \\(\\mathcal{A}_\\text{target}\\)
+### 6) Assurance threshold $\\mathcal{A}_\\text{target}$
 - **0.80**: common for feasibility-driven planning  
 - **0.90**: preferred when you want higher confidence in meeting criteria
 
@@ -1113,6 +1210,151 @@ Use MCSE to judge stability.
 2) Pan J, Banerjee S. bayesassurance: An R Package for Calculating Sample Size and Bayesian Assurance. *The R Journal.* 2023.  
 3) Gelman A, Jakulin A, Pittau MG, Su Y-S. A weakly informative default prior distribution for logistic and other regression models. *The Annals of Applied Statistics.* 2008.  
 4) Sahu SK, Smith TMF. Bayesian methods of sample size determination. *Statistical Methodology / related Bayesian SSD literature.* 2006.
+""",
+        "d9_content_md": """
+### Purpose (what this method is)
+
+A4.2 estimates the **minimum sample size for externally validating** an already-developed prediction model, targeting adequate **precision** for its key calibration and discrimination measures in a new (validation) population. Two complementary, published frameworks are implemented side-by-side:
+
+* **Riley/Archer** (replicating the R package `pmvalsampsize`) — targets **95% CI width** for each performance measure.
+* **Pavlou** (replicating the R package `sampsizeval`) — targets an absolute **standard error (SE)** for each performance measure.
+
+This method assumes you already have a model with a known (or anticipated) **C-statistic**, and you are planning a **new, independent** validation dataset — it is *not* a model-development method.
+
+---
+
+### Common inputs
+
+* **Prevalence ($p$)**: anticipated outcome event rate in the validation population.
+* **C-statistic ($C$)**: anticipated discrimination (AUC) of the model in the validation population.
+
+### Step 1 — Simulating the linear predictor (LP) distribution
+
+Both tabs need an assumed distribution for the model's linear predictor (LP) in the validation population. The app assumes $\\mathrm{LP}\\sim \\mathcal{N}(\\mu,\\sigma^2)$ and solves for $(\\mu,\\sigma)$ so the simulated population matches the target $C$ and $p$:
+$$
+\\sigma = \\sqrt{2}\\,\\Phi^{-1}(C)
+$$
+$\\mu$ is then found numerically (binary search with numerical integration) so that $\\mathbb{E}[\\mathrm{expit}(\\mathrm{LP})] = p$.
+
+---
+
+## Tab 1 — Riley/Archer (CI-width targets)
+
+For each measure, the app finds the minimum $N$ so the 95% CI half-width matches the target (i.e. $\\text{width} = 3.92\\times SE$, so $SE_{\\text{target}} = \\text{width}/3.92$):
+
+**1) Calibration-in-the-large (O/E ratio).** Using $SE(\\ln(O/E)) \\approx \\sqrt{1/E}$ with $E=Np$:
+$$
+N_{O/E}=\\left\\lceil \\frac{1}{p\\,SE_{\\text{target}}^2} \\right\\rceil
+$$
+
+**2) Calibration slope.** The calibration model is $\\text{logit}(p)=\\alpha+\\beta\\cdot\\mathrm{LP}$ (true $\\beta=1$ at perfect calibration). The Fisher information for $\\beta$ is computed empirically on the simulated LP sample (with $w=\\hat p(\\mathrm{LP})(1-\\hat p(\\mathrm{LP}))$):
+$$
+\\mathrm{Var}(\\beta)_{\\text{per obs}}=\\frac{\\mathbb{E}[w]}{\\mathbb{E}[w]\\,\\mathbb{E}[w\\cdot \\mathrm{LP}^2]-\\mathbb{E}[w\\cdot \\mathrm{LP}]^2}
+\\qquad\\Rightarrow\\qquad
+N_{\\text{slope}}=\\left\\lceil \\frac{\\mathrm{Var}(\\beta)_{\\text{per obs}}}{SE_{\\text{target}}^2} \\right\\rceil
+$$
+
+**3) C-statistic.** Uses the **Hanley & McNeil (1982)** variance approximation (the same one used in A4.1):
+$$
+\\mathrm{Var}(C)=\\frac{C(1-C)+(n_1-1)(Q_1-C^2)+(n_0-1)(Q_2-C^2)}{n_1\\,n_0},\\quad Q_1=\\frac{C}{2-C},\\ Q_2=\\frac{2C^2}{1+C}
+$$
+with $n_1=Np$, $n_0=N(1-p)$; $N_C$ is found iteratively so $\\sqrt{\\mathrm{Var}(C)} \\le SE_{\\text{target}}$.
+
+**Recommended $N = \\max(N_{O/E},\\,N_{\\text{slope}},\\,N_C)$.**
+
+---
+
+## Tab 2 — Pavlou (SE targets)
+
+Closed-form / semi-closed-form expressions targeting an absolute SE directly (not a CI width):
+
+**1) C-statistic**: same Hanley–McNeil $\\mathrm{Var}(C)$ formula above, solved by binary search for the minimal $N$ with $SE(C)\\le SE_{\\text{target}}$.
+
+**2) Calibration slope** (Pavlou et al. 2021, Eq. 12 approximation), with $\\sigma=\\sqrt{2}\\,\\Phi^{-1}(C)$:
+$$
+N_{\\text{slope}}=\\left\\lceil \\frac{1}{p(1-p)\\,\\sigma^2\\,SE_{\\text{target}}^2} \\right\\rceil
+$$
+
+**3) Calibration-in-the-large** (intercept), using $\\mathrm{Var}(\\alpha)\\approx \\dfrac{1}{Np(1-p)}$:
+$$
+N_{\\text{large}}=\\left\\lceil \\frac{1}{p(1-p)\\,SE_{\\text{target}}^2} \\right\\rceil
+$$
+
+**Recommended $N = \\max(N_C,\\,N_{\\text{slope}},\\,N_{\\text{large}})$.**
+
+*Tab 3 ("Combined Report") simply re-runs Tabs 1 and 2 with their stored inputs and compares the two recommended $N$ side-by-side. Tab 4 ("Sensitivity Analysis") repeats the Riley/Archer calculation across a range of $p$ or $C$ values.*
+
+---
+
+## Practical guidance
+
+* The default CI-width targets here (O/E width = 0.2, slope width = 0.2, C width = 0.1) match the common defaults used with `pmvalsampsize`.
+* Pavlou's SE targets are typically much smaller numbers than a CI width (e.g. $SE(C)=0.025$) because they bound the standard error directly rather than a $\\pm 1.96\\,SE$ interval.
+* Because both tabs rely on a *simulated* LP distribution as a stand-in for the real validation cohort, results carry some Monte Carlo variability — re-run with a different seed to check stability, especially for small/borderline $N$.
+
+## Limitations of this implementation
+
+* Only a **Normal** LP distribution is currently used when solving $(\\mu,\\sigma)$ from $(C,p)$; the original R packages also allow Beta-distributed risk scores.
+* The C-statistic search in Tab 1 refines the final answer using a **single-point rescaling** ($\\mathrm{Var}(C)\\propto 1/N$) rather than an exhaustive grid search; this is a good approximation for realistic $N$ but is not exact for very small $N$.
+
+---
+
+## Key references
+
+1. Riley RD, et al. *Minimum sample size for external validation of a clinical prediction model with a binary outcome.* Stat Med. 2021;40(19):4230–4251.
+2. Archer L, et al. *pmvalsampsize: an R package for calculating the sample size required for external validation of risk prediction models.* (CRAN / companion paper), 2023.
+3. Pavlou M, et al. *Estimation of required sample size for external validation of risk models for binary outcomes.* Stat Methods Med Res. 2021;30(10):2187–2206.
+4. Hanley JA, McNeil BJ. *The meaning and use of the area under a receiver operating characteristic (ROC) curve.* Radiology. 1982;143(1):29–36.
+""",
+        "d10_content_md": """
+### Purpose (what this method is)
+
+A4.3 plans an external validation study via **full Monte Carlo simulation**: it generates candidate validation datasets directly from a hypothesized linear-predictor (LP) distribution and a chosen **miscalibration scenario**, then checks which sample size achieves the desired precision for several performance metrics *simultaneously*. It complements the analytical A4.2 method for situations where assumptions are easier to specify generatively than analytically (e.g., a specific calibration drift pattern), following the spirit of **Snell et al. (2021)**.
+
+---
+
+### Step 1 — LP distribution
+Choose how the model's linear predictor is distributed in the validation population:
+* **Normal (log-odds):** $\\mathrm{LP}\\sim \\mathcal{N}(\\mu,\\sigma^2)$.
+* **Beta (probabilities):** simulate risk $\\pi\\sim \\mathrm{Beta}(\\alpha,\\beta)$, then $\\mathrm{LP}=\\mathrm{logit}(\\pi)$.
+
+### Step 2 — Miscalibration model
+The data-generating ("true") outcome model relative to the LP is:
+$$
+\\mathrm{logit}\\big(P(Y=1)\\big)=\\gamma+S\\cdot \\mathrm{LP}
+$$
+* $S=1,\\ \\gamma=0$: the model is **perfectly calibrated** to the validation population.
+* $S\\neq 1$: miscalibration in **spread** ($S<1$: original model too extreme/overfitted; $S>1$: too conservative/underfitted).
+* $\\gamma\\neq 0$: miscalibration in overall **level** (intercept).
+
+Alternatively, fix $S$ and **solve for $\\gamma$** numerically (binary search over Monte Carlo draws of LP) so the simulated population matches a target outcome prevalence.
+
+### Step 3 — Simulation loop
+For each candidate $N$ in the chosen range (start/end/step), repeated $R$ times ("Repetitions"):
+1. Draw $N$ values of LP from the chosen distribution.
+2. Generate outcomes $Y\\sim \\mathrm{Bernoulli}\\big(\\mathrm{expit}(\\gamma+S\\cdot\\mathrm{LP})\\big)$.
+3. Fit the calibration model and compute the C-statistic, calibration slope, and $\\ln(O/E)$ (and their CI widths) on the simulated sample.
+4. Record whether each target precision is met for that replicate.
+
+The **mean CI width** across the $R$ replicates is reported for each candidate $N$; the **smallest $N$** for which all requested targets are met on average is the recommended sample size.
+
+---
+
+### Inputs
+* LP distribution & parameters ($\\mu,\\sigma$ or $\\alpha,\\beta$).
+* Miscalibration: direct $(\\gamma, S)$, or target prevalence + $S$ (solve for $\\gamma$).
+* Precision targets: CI widths for the C-statistic, calibration slope, and $\\ln(O/E)$.
+* Simulation settings: $N$ range/step, number of repetitions $R$, random seed.
+
+### Practical guidance
+* Use more repetitions ($R\\ge 500$) for a stable recommendation; the default ($R=200$) is a fast preview and will show visible Monte Carlo noise around the borderline $N$.
+* A wide $N$ range with a small step gives a more precise "first passing $N$" but is much slower (the simulation runs $R$ times per candidate $N$).
+* When the LP is Normal and the model is well-calibrated ($\\gamma=0,\\ S=1$), results should approximately agree with the analytical A4.2 (Riley/Archer) method. Use A4.3 mainly when you need to represent a specific miscalibration scenario that A4.2 cannot capture analytically.
+
+### Key references
+1. Snell KIE, et al. *External validation of clinical prediction models: simulation-based sample size calculations were more reliable than rules of thumb.* J Clin Epidemiol. 2021;135:79–89.
+2. Riley RD, et al. *Minimum sample size for external validation of a clinical prediction model with a binary outcome.* Stat Med. 2021;40(19):4230–4251.
+3. Van Calster B, et al. *A calibration hierarchy for risk models was defined: from utopia to empirical data.* J Clin Epidemiol. 2016;74:167–176.
 """,
         # Email & Reporting
         "report_header": "Report & Downloads",
