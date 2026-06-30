@@ -1022,7 +1022,7 @@ Let:
 
 **Monte Carlo estimate used in the app (for each candidate \\(N\\)):**
 \[
-\\widehat{\\mathcal{A}}(N)=\\frac{1}{R}\\sum_{r=1}^{R} S\\!\\left(y^{(r)}\right)
+\\widehat{\\mathcal{A}}(N)=\\frac{1}{R}\\sum_{r=1}^{R} S\\!\\left(y^{(r)}\\right)
 \]
 where each replicate \\(r\\) simulates a dataset, fits the Bayesian model with MCMC, and evaluates success criteria.
 
