@@ -139,17 +139,6 @@ JP = {
     "title_b4": "A2.2: Cox 検出力 (Schoenfeld)",
     "interpretation": "解釈 (Interpretation)",
     
-    # UI Basics
-    "d8_assumptions": "**仮定**: Hanley & McNeil (1982) の分散近似を使用。AUC の対称正規性を仮定。N を見つけるための数値最適化。",
-    "d8_mode_n_to_width": "N から CI 幅を計算",
-    "d8_mode_width_to_n": "CI 幅から必要な N を計算",
-    "d8_opt_settings": "高度なオプティマイザ設定",
-    "d8_practical_rounding": "実際の丸めを表示",
-    "d8_n_input": "サンプルサイズ (N)",
-    "d8_width_input": "CI 幅 (合計)",
-    "d8_opt_bound": "検索上限",
-    "d8_opt_tol": "許容誤差",
-    
     # Validations (D)
     "title_d8": "A4.1: AUC 精度 (Hanley-McNeil)",
     "d8_desc": "AUC を所望の精度 (CI 幅) で推定するためのサンプルサイズを計算します。",

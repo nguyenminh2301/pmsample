@@ -88,12 +88,10 @@ EN = {
         *The final N is the maximum of these three requirements.*
         """,
         
-        # Bayesian specific 
+        # Bayesian specific
         "perf_cons_help": "Conservative (15% of Max R2)",
         "perf_auc_help": "Anticipated AUC (C-statistic)",
         "perf_r2_help": "Anticipated Cox-Snell R-squared",
-        "perf_cons_help": "Conservative (15% of Max R2)",
-        # Bayesian specific
         "bayes_inputs": "Simulation Settings (Bayesian Assurance)",
         "dgm_settings": "Data Generating Mechanism",
         "sim_settings": "Simulation & MCMC",
@@ -149,18 +147,6 @@ EN = {
         "title_b4": "A2.2: Cox Power (Schoenfeld)",
         "interpretation": "Interpretation",
         
-        # UI Basics
-        "d8_assumptions": "**Assumptions**: Uses Hanley & McNeil (1982) variance approximation. Symmetric Normal assumption for AUC. Numerical optimization to find N.",
-        "d8_mode_n_to_width": "Compute CI width from N",
-        "d8_mode_width_to_n": "Compute required N from CI width",
-        "d8_opt_settings": "Advanced Optimizer Settings",
-        "d8_practical_rounding": "Show Practical Integer Rounding",
-        "d8_n_input": "Sample Size (N)",
-        "d8_width_input": "CI Width (Total)",
-        "d8_opt_bound": "Search Upper Limit",
-        "d8_opt_tol": "Tolerance",
-        
-        # Validations (D)
         # Validations (D)
         "title_d8": "A4.1: AUC Precision (Hanley-McNeil)",
         "d8_desc": "Calculate sample size for estimating AUC with desired precision (CI width).",

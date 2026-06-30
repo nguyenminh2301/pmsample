@@ -139,17 +139,6 @@ ZH = {
     "title_b4": "A2.2: Cox 功效 (Schoenfeld)",
     "interpretation": "解释 (Interpretation)",
     
-    # UI Basics
-    "d8_assumptions": "**假设**: 使用 Hanley & McNeil (1982) 方差近似。AUC 对称正态假设。数值优化寻找 N。",
-    "d8_mode_n_to_width": "从 N 计算 CI 宽度",
-    "d8_mode_width_to_n": "从 CI 宽度计算所需 N",
-    "d8_opt_settings": "高级优化器设置",
-    "d8_practical_rounding": "显示实际取整",
-    "d8_n_input": "样本量 (N)",
-    "d8_width_input": "CI 宽度 (总)",
-    "d8_opt_bound": "搜索上限",
-    "d8_opt_tol": "容差",
-    
     # Validations (D)
     "title_d8": "A4.1: AUC 精度 (Hanley-McNeil)",
     "d8_desc": "计算以所需精度 (CI 宽度) 估计 AUC 的样本量。",

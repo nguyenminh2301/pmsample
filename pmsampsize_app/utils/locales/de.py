@@ -139,17 +139,6 @@ DE = {
     "title_b4": "A2.2: Cox Power (Schoenfeld)",
     "interpretation": "Interpretation",
     
-    # UI Basics
-    "d8_assumptions": "**Annahmen**: Verwendet Varianznäherung nach Hanley & McNeil (1982). Nimmt symmetrische Normalität der AUC an. Numerische Optimierung zur Bestimmung von N.",
-    "d8_mode_n_to_width": "KI-Breite aus N berechnen",
-    "d8_mode_width_to_n": "Benötigtes N aus KI-Breite berechnen",
-    "d8_opt_settings": "Erweiterte Optimierer-Einstellungen",
-    "d8_practical_rounding": "Praktische Rundung anzeigen",
-    "d8_n_input": "Stichprobengröße (N)",
-    "d8_width_input": "KI-Breite (Gesamt)",
-    "d8_opt_bound": "Suchobergrenze",
-    "d8_opt_tol": "Toleranz",
-    
     # Validations (D)
     "title_d8": "A4.1: AUC Präzision (Hanley-McNeil)",
     "d8_desc": "Stichprobengröße zur Schätzung der AUC mit gewünschter Präzision (KI-Breite).",

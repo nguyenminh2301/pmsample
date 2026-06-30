@@ -139,17 +139,6 @@ FR = {
     "title_b4": "A2.2: Puissance Cox (Schoenfeld)",
     "interpretation": "Interprétation",
     
-    # UI Basics
-    "d8_assumptions": "**Hypothèses**: Utilise l'approximation de variance de Hanley & McNeil (1982). Suppose une normalité symétrique de l'AUC. Optimisation numérique pour trouver N.",
-    "d8_mode_n_to_width": "Calculer la largeur IC à partir de N",
-    "d8_mode_width_to_n": "Calculer N requis à partir de la largeur IC",
-    "d8_opt_settings": "Paramètres Avancés de l'Optimiseur",
-    "d8_practical_rounding": "Afficher l'arrondi pratique",
-    "d8_n_input": "Taille d'Échantillon (N)",
-    "d8_width_input": "Largeur IC (Totale)",
-    "d8_opt_bound": "Limite Supérieure de Recherche",
-    "d8_opt_tol": "Tolérance",
-    
     # Validations (D)
     "title_d8": "A4.1: Précision AUC (Hanley-McNeil)",
     "d8_desc": "Taille d'échantillon pour estimer l'AUC avec la précision souhaitée (largeur IC).",

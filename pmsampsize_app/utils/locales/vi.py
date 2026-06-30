@@ -46,7 +46,6 @@ VI = {
         "nav_readme": "Tài liệu Chi tiết (README)",
         "nav_intro": "Giới thiệu & Công thức",
         "nav_calc": "Công cụ tính toán",
-        "intro_heading": "Giới thiệu",
         "intro_text": "Ứng dụng hỗ trợ ước tính cỡ mẫu tối thiểu cho mô hình dự báo lâm sàng (biến nhị phân).",
         "formula_heading": "Cơ sở Toán học (Phương pháp A3.1)",
         "formula_intro": "Phương pháp A3.1 dùng công thức giải tích (Riley), Phương pháp A3.3 dùng mô phỏng Bayesian MCMC.",

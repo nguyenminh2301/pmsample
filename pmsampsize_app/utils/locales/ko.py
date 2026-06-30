@@ -143,9 +143,6 @@ KO = {
         "common_inputs": "공통 파라미터",
         "search_placeholder": "방법 검색...",
         "settings": "설정",
-        "footer_copyright": "© 2026 Prognostic Research Sample Size Tool. 학술/연구용 전용.",
-        "footer_author": "저자 및 유지관리: Minh Nguyen (minhnt@ump.edu.vn)",
-        "footer_disclaimer": "면책 조항: 임상적 보증 없음. 사용자는 결과 검증 및 해석에 대한 책임이 있습니다.",
 
         "intro_complete_md": """
 ### 환영합니다
