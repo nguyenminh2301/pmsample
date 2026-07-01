@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from scipy.stats import norm
+from scipy.optimize import brentq
 from sklearn.linear_model import LogisticRegression
 import math
 
@@ -127,6 +128,34 @@ def auc_to_r2_simulation(auc, p, n_sim=1000000, seed=42):
     return r2_cs
 
 
+def _shrinkage_denom(s, r2):
+    """ (S-1) * ln(1 - R2/S), the term whose inverse (times P) gives N for a target shrinkage S. """
+    return (s - 1) * np.log(1 - r2 / s)
+
+def solve_implied_shrinkage(n, parameters, r2):
+    """
+    Given a chosen sample size N (e.g. the binding criterion among 1-3), solve for the
+    global shrinkage factor S that N actually implies, by inverting:
+        N = P / ((S - 1) * ln(1 - R2/S))
+    via root-finding, since this equation has no closed form in S.
+    Mirrors the "implied shrinkage" diagnostic reported by the R package `pmsampsize`.
+    """
+    if not np.isfinite(n) or n <= 0 or r2 <= 0:
+        return float('nan')
+
+    target = parameters / n
+    lo = r2 + 1e-9
+    hi = 1 - 1e-9
+    if lo >= hi:
+        return float('nan')
+
+    f = lambda s: _shrinkage_denom(s, r2) - target
+    # _shrinkage_denom is monotonically increasing in S over (r2, 1), from 0 to +inf.
+    try:
+        return brentq(f, lo, hi)
+    except ValueError:
+        return float('nan')
+
 def calculate_sample_size(p, parameters, r2=None, auc=None, shrinkage=0.9, conservative=False):
     """
     Main function to calculate minimum sample size.
@@ -193,19 +222,16 @@ def calculate_sample_size(p, parameters, r2=None, auc=None, shrinkage=0.9, conse
     
     # Final N
     n_final = max(n1, n2, n3)
-    
-    # Recalculate implied shrinkage at N_min
-    # S = 1 + (P / N) / ln(1 - R2*(1 - (P/N)/... ) ??)
-    # Easier: use the formula rearranged or just report target.
-    # pmsampsize reports the S implied by N_final.
-    # Formula: S = 1 + P / (N * ln(1 - R2/S)) -> transcendental equation.
-    # The package often solves it or reports the bounding one.
-    # We can skip exact implied shrinkage for now or implement a solver later.
-    # Just return which criterion was max.
-    
+
+    # Implied shrinkage at N_final: invert N = P / ((S-1) * ln(1 - R2/S)) for S.
+    # When N_final == n1 this recovers the target `shrinkage`; when criterion 2 or 3
+    # binds instead, N_final is larger than strictly required for criterion 1, so the
+    # implied shrinkage at that N is better (closer to 1) than the target.
+    implied_shrinkage = solve_implied_shrinkage(n_final, parameters, r2)
+
     criteria_map = {1: n1, 2: n2, 3: n3}
     binding_criterion = max(criteria_map, key=criteria_map.get)
-    
+
     return {
         "n_total": int(n_final),
         "n_events": int(n_final * p),
@@ -217,7 +243,8 @@ def calculate_sample_size(p, parameters, r2=None, auc=None, shrinkage=0.9, conse
             "c3_precision": n3
         },
         "binding_criterion": binding_criterion,
-        "epp": (n_final * p) / parameters
+        "epp": (n_final * p) / parameters,
+        "implied_shrinkage": implied_shrinkage
     }
 
 def generate_scenarios(p_list, params_list, perf_list, perf_type='auc', shrinkage=0.9):
@@ -260,7 +287,8 @@ def generate_scenarios(p_list, params_list, perf_list, perf_type='auc', shrinkag
                     'Binding_Crit': res['binding_criterion'],
                     'N_Crit1': res['criteria']['c1_shrinkage'],
                     'N_Crit2': res['criteria']['c2_small_error'],
-                    'N_Crit3': res['criteria']['c3_precision']
+                    'N_Crit3': res['criteria']['c3_precision'],
+                    'Implied_Shrinkage': res['implied_shrinkage']
                 }
                 results.append(row)
                 

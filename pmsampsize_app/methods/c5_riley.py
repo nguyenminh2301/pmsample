@@ -90,7 +90,7 @@ def render_ui(T):
         with st.expander(f"ℹ️ {T.get('c5_interp_title', 'How to read the results')}"):
             st.markdown(T.get('c5_interp_text', ''))
             
-        st.dataframe(df.style.format({"Prevalence": "{:.3f}", "R2_CS": "{:.3f}", "Performance": "{:.3f}", "EPP": "{:.1f}"}))
+        st.dataframe(df.style.format({"Prevalence": "{:.3f}", "R2_CS": "{:.3f}", "Performance": "{:.3f}", "EPP": "{:.1f}", "Implied_Shrinkage": "{:.3f}"}))
         
         
         # Reporting & Download UI
