@@ -1281,7 +1281,6 @@ $$
 ## Limitations of this implementation
 
 * Only a **Normal** LP distribution is currently used when solving $(\\mu,\\sigma)$ from $(C,p)$; the original R packages also allow Beta-distributed risk scores.
-* The C-statistic search in Tab 1 refines the final answer using a **single-point rescaling** ($\\mathrm{Var}(C)\\propto 1/N$) rather than an exhaustive grid search; this is a good approximation for realistic $N$ but is not exact for very small $N$.
 
 ---
 

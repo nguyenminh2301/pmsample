@@ -198,26 +198,9 @@ def calculate_pmvalsampsize(p, c, oe_width, slope_width, c_width, n_sim=100000, 
     # 4. Required N for C-statistic
     target_se_c = c_width / 3.92
     if target_se_c > 0:
-        # Iterative search for N
-        # Initial guess
-        n_curr = 500
-        for _ in range(20):
-            se = calc_se_c(n_curr, c, p)
-            if se <= target_se_c:
-                # Try to reduce
-                step = n_curr // 10
-            else:
-                # Increase
-                n_curr = int(n_curr * (se / target_se_c)**2) + 1
-                
-        # Final fine tune
-        # Just binary search or crude check?
-        # Let's use the formula inverted approx:
-        # Var ~ K / N.  SE ~ sqrt(K/N). N ~ K/SE^2.
-        # Use current estimate of K
-        se_curr = calc_se_c(n_curr, c, p)
-        k_approx = (se_curr**2) * n_curr
-        n_c = int(np.ceil(k_approx / (target_se_c**2)))
+        # Exact minimal N via binary search on the Hanley-McNeil SE(C) formula
+        # (reuses the same search already used by the Pavlou/sampsizeval tab below).
+        n_c = sampsizeval_c(p, c, target_se_c)
     else:
         n_c = 0
         

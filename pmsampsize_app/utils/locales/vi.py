@@ -1227,7 +1227,6 @@ $$
 ## Hạn chế của bản triển khai này
 
 * Hiện chỉ hỗ trợ phân phối LP dạng **Chuẩn (Normal)** khi giải $(\\mu,\\sigma)$ từ $(C,p)$; các gói R gốc còn hỗ trợ điểm nguy cơ phân phối Beta.
-* Bước tìm $N$ cho C-statistic ở Tab 1 tinh chỉnh kết quả cuối bằng cách **ngoại suy tuyến tính tại một điểm** ($\\mathrm{Var}(C)\\propto 1/N$) thay vì tìm kiếm toàn diện; đây là xấp xỉ tốt với $N$ thực tế nhưng không chính xác tuyệt đối khi $N$ rất nhỏ.
 
 ---
 
